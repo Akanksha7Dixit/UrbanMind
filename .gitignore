@@ -1,0 +1,129 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+**/node_modules/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =========================
+# Build Outputs
+# =========================
+dist/
+build/
+coverage/
+
+# =========================
+# Vite
+# =========================
+.vite/
+
+# =========================
+# React
+# =========================
+frontend/dist/
+frontend/build/
+
+# =========================
+# Backend
+# =========================
+backend/uploads/
+backend/temp/
+
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# FastAPI
+.python_packages/
+
+# =========================
+# Database
+# =========================
+*.sqlite3
+*.db
+
+# MongoDB Local
+/data/db/
+
+# =========================
+# Docker
+# =========================
+.docker/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+# IDEs
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Testing
+# =========================
+coverage/
+.nyc_output/
+
+# =========================
+# Cache
+# =========================
+.cache/
+.parcel-cache/
+.eslintcache
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/
+*.tmp
+
+# =========================
+# Generated Reports
+# =========================
+reports/generated/
+exports/
+pdfs/
+
+# =========================
+# Misc
+# =========================
+# Misc
+# =========================
+*.bak
+*.swp
