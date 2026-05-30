@@ -18,6 +18,22 @@ export default function Sidebar() {
                 <h1 className="text-2xl font-bold tracking-tight text-white">
                     UrbanMind
                 </h1>
+                
+                <div className="mt-3">
+  <span
+    className="
+      inline-flex
+      rounded-full
+      bg-cyan-500/20
+      px-3 py-1
+      text-xs
+      font-medium
+      text-cyan-400
+    "
+  >
+    Development
+  </span>
+</div>
 
                 <p className="mt-1 text-sm text-slate-400">
                     Smart City Intelligence
@@ -38,7 +54,7 @@ export default function Sidebar() {
     rounded-xl px-4 py-3
     transition-all duration-200
 
-    
+
     ${
       isActive
         ? "bg-white/10"

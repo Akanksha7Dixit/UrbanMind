@@ -5,13 +5,13 @@ import Topbar from "./Topbar";
 
 export default function AppLayout() {
   return (
-    <div className="flex h-screen bg-slate-950 text-white">
+    <div className="flex h-screen bg-[#0B1220] text-white">
       <Sidebar />
 
       <div className="flex flex-1 flex-col">
         <Topbar />
 
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto bg-[#0F172A]">
           <Outlet />
         </main>
       </div>

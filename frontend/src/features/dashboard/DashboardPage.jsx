@@ -39,16 +39,16 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 h-80">
+        <div className="rounded-3xl border border-white/10 bg-white/3 p-6 h-80">
           Active Simulations
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 h-80">
+        <div className="rounded-3xl border border-white/10 bg-white/3 p-6 h-80">
           AI Recommendations
         </div>
       </div>
 
-      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 h-96">
+      <div className="rounded-3xl border border-white/10 bg-white/3 p-6 h-96">
         City Operations Map Preview
       </div>
     </div>

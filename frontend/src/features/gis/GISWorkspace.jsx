@@ -16,7 +16,7 @@ export default function GISWorkspace() {
             w-80
             rounded-3xl
             border border-white/10
-            bg-white/[0.03]
+            bg-white/3
             backdrop-blur-xl
             p-6
           "
@@ -71,7 +71,7 @@ export default function GISWorkspace() {
               justify-between
               rounded-2xl
               border border-white/10
-              bg-white/[0.03]
+              bg-white/3
               px-6
             "
           >
@@ -129,7 +129,7 @@ export default function GISWorkspace() {
               h-52
               rounded-3xl
               border border-white/10
-              bg-white/[0.03]
+              bg-white/3
               p-6
             "
           >
