@@ -10,3 +10,21 @@ body,
 body {
   margin: 0;
 }
+body {
+  background: #0b1220;
+}
+
+.urban-gradient {
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(34,211,238,0.15),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(139,92,246,0.12),
+      transparent 40%
+    ),
+    #0b1220;
+}

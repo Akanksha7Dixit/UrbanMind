@@ -76,9 +76,17 @@ export default function Sidebar() {
                 transition-all duration-200
 
                 ${isActive
-                                                ? "bg-white/10"
-                                                : "hover:bg-white/5"
-                                            }
+  ? `
+    bg-cyan-500/10
+    border
+    border-cyan-500/20
+    text-cyan-400
+  `
+  : `
+    text-slate-300
+    hover:bg-white/5
+    hover:text-white
+  `}
               `
                                         }
                                     >

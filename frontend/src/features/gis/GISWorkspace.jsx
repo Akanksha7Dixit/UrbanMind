@@ -1,162 +1,126 @@
-import {
-  Layers3,
-  Filter,
-  Sparkles,
-  Search,
-} from "lucide-react";
-
 export default function GISWorkspace() {
   return (
-    <div className="h-full p-6">
-      <div className="flex h-full gap-6">
+    <div className="p-8">
 
-        {/* Left Panel */}
-        <aside
+      <h1 className="text-4xl font-bold">
+        GIS Workspace
+      </h1>
+
+      <p className="mt-2 text-slate-400">
+        Geospatial Planning Environment
+      </p>
+
+      <div
+        className="
+          mt-8
+          relative
+          h-[700px]
+          overflow-hidden
+          rounded-3xl
+          border border-white/10
+          bg-slate-950
+        "
+      >
+
+        {/* GRID */}
+
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(
+                rgba(255,255,255,.05) 1px,
+                transparent 1px
+              ),
+              linear-gradient(
+                90deg,
+                rgba(255,255,255,.05) 1px,
+                transparent 1px
+              )
+            `,
+            backgroundSize: "40px 40px",
+          }}
+        />
+
+        {/* AI INSIGHT */}
+
+        <div
           className="
+            absolute
+            left-6
+            top-6
             w-80
-            rounded-3xl
+            rounded-2xl
             border border-white/10
-            bg-white/3
-            backdrop-blur-xl
-            p-6
+            bg-slate-900/90
+            p-5
           "
         >
-          <div className="flex items-center gap-3">
-            <Layers3 size={20} />
+          <h3 className="font-semibold">
+            AI Insight
+          </h3>
 
-            <h2 className="font-semibold">
-              Layers
-            </h2>
-          </div>
+          <p className="mt-3 text-cyan-400">
+            Coverage Gap Detected
+          </p>
 
-          <div className="mt-8 space-y-4">
+          <p className="mt-2 text-slate-400">
+            Sector 12 requires additional
+            healthcare infrastructure.
+          </p>
 
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked />
-              Roads
-            </label>
+          <p className="mt-4 text-sm text-emerald-400">
+            Confidence: 91%
+          </p>
+        </div>
 
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked />
-              Hospitals
-            </label>
+        {/* CONTROLS */}
 
-            <label className="flex items-center gap-3">
-              <input type="checkbox" defaultChecked />
-              Schools
-            </label>
+        <div
+          className="
+            absolute
+            right-6
+            top-6
+            flex gap-3
+          "
+        >
+          <button className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2">
+            +
+          </button>
 
-            <label className="flex items-center gap-3">
-              <input type="checkbox" />
-              Parks
-            </label>
+          <button className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2">
+            -
+          </button>
 
-            <label className="flex items-center gap-3">
-              <input type="checkbox" />
-              Metro Stations
-            </label>
+          <button className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2">
+            Layers
+          </button>
 
-          </div>
-        </aside>
+          <button className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2">
+            Heatmap
+          </button>
+        </div>
 
-        {/* Main Workspace */}
-        <div className="flex flex-1 flex-col gap-6">
+        {/* CENTER LABEL */}
 
-          {/* GIS Toolbar */}
-          <div
+        <div
+          className="
+            absolute
+            inset-0
+            flex
+            items-center
+            justify-center
+          "
+        >
+          <h2
             className="
-              flex
-              h-16
-              items-center
-              justify-between
-              rounded-2xl
-              border border-white/10
-              bg-white/3
-              px-6
+              text-5xl
+              font-bold
+              text-slate-700
             "
           >
-            <div className="flex items-center gap-4">
-              <Search size={18} />
-
-              <span className="text-slate-400">
-                Search infrastructure...
-              </span>
-            </div>
-
-            <div className="flex gap-3">
-              <button className="rounded-xl border border-white/10 px-4 py-2">
-                <Filter size={16} />
-              </button>
-
-              <button className="rounded-xl border border-white/10 px-4 py-2">
-                Layers
-              </button>
-            </div>
-          </div>
-
-          {/* Map Canvas */}
-          <div
-            className="
-              relative
-              flex-1
-              overflow-hidden
-              rounded-3xl
-              border border-white/10
-              bg-gradient-to-br
-              from-slate-900
-              via-slate-950
-              to-slate-900
-            "
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-
-                <h2 className="text-3xl font-bold">
-                  GIS Map Canvas
-                </h2>
-
-                <p className="mt-2 text-slate-400">
-                  Leaflet Map Will Render Here
-                </p>
-
-              </div>
-            </div>
-          </div>
-
-          {/* AI Insights */}
-          <div
-            className="
-              h-52
-              rounded-3xl
-              border border-white/10
-              bg-white/3
-              p-6
-            "
-          >
-            <div className="flex items-center gap-3">
-
-              <Sparkles
-                className="text-cyan-400"
-                size={18}
-              />
-
-              <h3 className="font-semibold">
-                AI Insights
-              </h3>
-
-            </div>
-
-            <div className="mt-6">
-              Coverage gap detected in Sector 12.
-
-              Recommended:
-              Build Hospital
-
-              Confidence:
-              91%
-            </div>
-          </div>
-
+            CITY MAP PREVIEW
+          </h2>
         </div>
 
       </div>

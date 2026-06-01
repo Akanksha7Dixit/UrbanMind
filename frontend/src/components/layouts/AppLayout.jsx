@@ -11,9 +11,9 @@ export default function AppLayout() {
       <div className="flex flex-1 flex-col">
         <Topbar />
 
-        <main className="flex-1 overflow-auto bg-[#0F172A]">
-          <Outlet />
-        </main>
+        <main className="flex-1 overflow-auto urban-gradient">
+  <Outlet />
+</main>
       </div>
     </div>
   );
