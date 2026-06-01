@@ -28,3 +28,11 @@ body {
     ),
     #0b1220;
 }
+
+.toolbar-btn {
+  @apply flex items-center gap-2 rounded-xl border border-white/10 bg-slate-900 px-4 py-2 transition;
+}
+
+.toolbar-btn:hover {
+  @apply border-cyan-500/30;
+}
