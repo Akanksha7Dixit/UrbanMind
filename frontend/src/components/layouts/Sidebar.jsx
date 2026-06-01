@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { NAV_ITEMS } from "../../constants/navigation";
+import { NAV_GROUPS } from "../../constants/navigation";
 
 export default function Sidebar() {
     return (
@@ -18,10 +18,10 @@ export default function Sidebar() {
                 <h1 className="text-2xl font-bold tracking-tight text-white">
                     UrbanMind
                 </h1>
-                
+
                 <div className="mt-3">
-  <span
-    className="
+                    <span
+                        className="
       inline-flex
       rounded-full
       bg-cyan-500/20
@@ -30,44 +30,69 @@ export default function Sidebar() {
       font-medium
       text-cyan-400
     "
-  >
-    Development
-  </span>
-</div>
+                    >
+                        Development
+                    </span>
+                </div>
 
                 <p className="mt-1 text-sm text-slate-400">
                     Smart City Intelligence
                 </p>
             </div>
+            <nav className="p-4">
 
-            <nav className="space-y-2 p-4">
-                {NAV_ITEMS.map((item) => {
-                    const Icon = item.icon;
+                {NAV_GROUPS.map((group) => (
+                    <div
+                        key={group.title}
+                        className="mb-8"
+                    >
+                        <h3
+                            className="
+          mb-3
+          px-4
+          text-xs
+          font-semibold
+          tracking-wider
+          text-slate-500
+        "
+                        >
+                            {group.title}
+                        </h3>
 
-                    return (
-                       <NavLink
-  key={item.path}
-  to={item.path}
-  className={({ isActive }) =>
-    `
-    flex items-center gap-3
-    rounded-xl px-4 py-3
-    transition-all duration-200
+                        <div className="space-y-2">
 
+                            {group.items.map((item) => {
+                                const Icon = item.icon;
 
-    ${
-      isActive
-        ? "bg-white/10"
-        : "hover:bg-white/5"
-    }
-  `
-  }
->
-                            <Icon size={18} />
-                            {item.label}
-                        </NavLink>
-                    );
-                })}
+                                return (
+                                    <NavLink
+                                        key={item.path}
+                                        to={item.path}
+                                        className={({ isActive }) =>
+                                            `
+                flex items-center gap-3
+                rounded-xl
+                px-4 py-3
+                transition-all duration-200
+
+                ${isActive
+                                                ? "bg-white/10"
+                                                : "hover:bg-white/5"
+                                            }
+              `
+                                        }
+                                    >
+                                        <Icon size={18} />
+
+                                        {item.label}
+                                    </NavLink>
+                                );
+                            })}
+
+                        </div>
+                    </div>
+                ))}
+
             </nav>
         </aside>
     );

@@ -7,40 +7,52 @@ import {
   Settings,
 } from "lucide-react";
 
-export const NAV_ITEMS = [
+export const NAV_GROUPS = [
   {
-    label: "Dashboard",
-    path: "/dashboard",
-    icon: LayoutDashboard,
+    title: "WORKSPACE",
+    items: [
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        label: "GIS Workspace",
+        path: "/gis",
+        icon: Map,
+      },
+      {
+        label: "Scenario Builder",
+        path: "/simulation",
+        icon: GitCompare,
+      },
+    ],
   },
 
   {
-    label: "GIS Workspace",
-    path: "/gis",
-    icon: Map,
+    title: "ANALYTICS",
+    items: [
+      {
+        label: "Analytics",
+        path: "/analytics",
+        icon: BarChart3,
+      },
+      {
+        label: "Reports",
+        path: "/reports",
+        icon: FileText,
+      },
+    ],
   },
 
   {
-    label: "Scenario Builder",
-    path: "/simulation",
-    icon: GitCompare,
-  },
-
-  {
-    label: "Analytics",
-    path: "/analytics",
-    icon: BarChart3,
-  },
-
-  {
-    label: "Reports",
-    path: "/reports",
-    icon: FileText,
-  },
-
-  {
-    label: "Settings",
-    path: "/settings",
-    icon: Settings,
+    title: "SYSTEM",
+    items: [
+      {
+        label: "Settings",
+        path: "/settings",
+        icon: Settings,
+      },
+    ],
   },
 ];
