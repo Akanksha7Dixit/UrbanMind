@@ -14,12 +14,32 @@ import AIRecommendationCenter from "../../features/ai-center/AIRecommendationCen
 import CitizenPortal from "../../features/citizen-portal/CitizenPortal";
 import SettingsPage from "../../features/settings/SettingsPage";
 
+import LoginPage from "../../features/auth/LoginPage";
+import RegisterPage from "../../features/auth/RegisterPage";
+import ForgotPasswordPage from "../../features/auth/ForgotPasswordPage";
+
 import AppLayout from "../../components/layouts/AppLayout";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+
+        <Route
+          path="/auth/login"
+          element={<LoginPage />}
+        />
+
+        <Route
+          path="/auth/register"
+          element={<RegisterPage />}
+        />
+
+        <Route
+          path="/auth/forgot-password"
+          element={<ForgotPasswordPage />}
+        />
+
         <Route element={<AppLayout />}>
           <Route
             path="/"
@@ -57,14 +77,29 @@ export default function AppRouter() {
           />
 
           <Route
-  path="/citizen-portal"
-  element={<CitizenPortal />}
-/>
+            path="/citizen-portal"
+            element={<CitizenPortal />}
+          />
 
 
           <Route
             path="/settings"
             element={<SettingsPage />}
+          />
+
+          <Route
+            path="/auth/login"
+            element={<LoginPage />}
+          />
+
+          <Route
+            path="/auth/register"
+            element={<RegisterPage />}
+          />
+
+          <Route
+            path="/auth/forgot-password"
+            element={<ForgotPasswordPage />}
           />
         </Route>
       </Routes>

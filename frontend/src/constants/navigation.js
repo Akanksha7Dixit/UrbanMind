@@ -17,16 +17,23 @@ export const NAV_GROUPS = [
         label: "Dashboard",
         path: "/dashboard",
         icon: LayoutDashboard,
+        roles: [
+          "admin",
+          "planner",
+          "analyst",
+        ],
       },
       {
         label: "GIS Workspace",
         path: "/gis",
         icon: Map,
+        roles: ["admin", "planner"],
       },
       {
         label: "Scenario Builder",
         path: "/simulation",
         icon: GitCompare,
+        roles: ["admin", "planner"],
       },
     ],
   },
@@ -38,22 +45,33 @@ export const NAV_GROUPS = [
         label: "Analytics",
         path: "/analytics",
         icon: BarChart3,
+        roles: ["admin", "analyst"],
+
       },
       {
         label: "Reports",
         path: "/reports",
         icon: FileText,
+        roles: ["admin", "planner", "analyst"],
       },
 
       {
         label: "AI Center",
         path: "/ai-recommendations",
         icon: Sparkles,
+        roles: [
+          "admin",
+          "planner",
+        ],
       },
       {
         label: "Citizen Portal",
         path: "/citizen-portal",
         icon: Users,
+        roles: [
+          "admin",
+          "citizen",
+        ],
       },
     ],
   },
@@ -65,6 +83,9 @@ export const NAV_GROUPS = [
         label: "Settings",
         path: "/settings",
         icon: Settings,
+        roles: [
+          "admin",
+        ],
       },
     ],
   },

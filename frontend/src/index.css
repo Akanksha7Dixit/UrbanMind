@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+:root {
+  font-family: "Manrope", sans-serif;
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  background: #020617;
+}
+
 html,
 body,
 #root {

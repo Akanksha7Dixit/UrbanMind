@@ -1,7 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { NAV_GROUPS } from "../../constants/navigation";
+import { useAuthStore } from "../../store/authStore";
 
 export default function Sidebar() {
+
+    const user = useAuthStore(
+        (state) => state.user
+    );
+
     return (
         <aside
             className="
@@ -15,8 +21,7 @@ export default function Sidebar() {
   "
         >
             <div className="border-b border-white/10 p-6">
-                <h1 className="text-2xl font-bold tracking-tight text-white">
-                    UrbanMind
+                <h1 className="text-[34px] font-extrabold tracking-tight text-white">                    UrbanMind
                 </h1>
 
                 <div className="mt-3">
@@ -35,7 +40,7 @@ export default function Sidebar() {
                     </span>
                 </div>
 
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-2 text-sm leading-relaxed text-slate-400">
                     Smart City Intelligence
                 </p>
             </div>
@@ -48,54 +53,63 @@ export default function Sidebar() {
                     >
                         <h3
                             className="
-          mb-3
-          px-4
-          text-xs
-          font-semibold
-          tracking-wider
-          text-slate-500
-        "
+    mb-3
+    px-4
+    text-[11px]
+    font-semibold
+    uppercase
+    tracking-[0.2em]
+    text-slate-500
+  "
                         >
                             {group.title}
                         </h3>
 
                         <div className="space-y-2">
 
-                            {group.items.map((item) => {
-                                const Icon = item.icon;
+                            {group.items
+                                .filter(
+                                    (item) =>
+                                        !item.roles ||
+                                        item.roles.includes(user?.role)
+                                )
+                                .map((item) => {
+                                    const Icon = item.icon;
 
-                                return (
-                                    <NavLink
-                                        key={item.path}
-                                        to={item.path}
-                                        className={({ isActive }) =>
-                                            `
+                                    return (
+                                        <NavLink
+                                            key={item.path}
+                                            to={item.path}
+                                            className={({ isActive }) =>
+                                                `
                 flex items-center gap-3
                 rounded-xl
                 px-4 py-3
+                text-[15px]
+                font-medium
                 transition-all duration-200
 
                 ${isActive
-  ? `
+                                                    ? `
     bg-cyan-500/10
     border
     border-cyan-500/20
     text-cyan-400
   `
-  : `
+                                                    : `
     text-slate-300
     hover:bg-white/5
     hover:text-white
   `}
               `
-                                        }
-                                    >
-                                        <Icon size={18} />
+                                            }
+                                        >
+                                            <Icon size={18} />
 
-                                        {item.label}
-                                    </NavLink>
-                                );
-                            })}
+                                            {item.label}
+                                        </NavLink>
+                                    );
+                                })}
 
                         </div>
                     </div>
