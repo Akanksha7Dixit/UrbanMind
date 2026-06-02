@@ -40,3 +40,18 @@ body {
 .analytics-card {
   @apply rounded-3xl border border-white/10 bg-white/[0.03] p-6;
 }
+.report-card {
+  @apply rounded-3xl border border-white/10 bg-white/[0.03] p-6 transition;
+}
+
+.report-card:hover {
+  @apply border-cyan-500/30;
+}
+
+.report-btn {
+  @apply flex items-center gap-2 rounded-2xl border border-white/10 px-4 py-3;
+}
+
+.report-btn:hover {
+  @apply border-cyan-500/30;
+}
