@@ -6,17 +6,26 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import { useState } from "react";
+import NotificationPanel from "../shared/NotificationPanel";
+
+
 export default function Topbar() {
+  
+  const [showNotifications, setShowNotifications] =useState(false);
+
   return (
     <header
-      className="
-        h-16
-        border-b border-white/10
-        bg-[#0B1220]/80
-        backdrop-blur-xl
-        px-6
-      "
-    >
+  className="
+    relative
+    z-[999]
+    h-16
+    border-b border-white/10
+    bg-[#0B1220]/80
+    backdrop-blur-xl
+    px-6
+  "
+>
       <div className="flex h-full items-center justify-between">
 
         {/* Search */}
@@ -95,32 +104,44 @@ export default function Topbar() {
           </button>
 
           {/* Notifications */}
-          <button
-            className="
-              relative
-              rounded-xl
-              border border-white/10
-              bg-white/3
-              p-2.5
-              transition-all
-              duration-200
-              hover:bg-white/6
-            "
-          >
-            <Bell size={18} />
 
-            <span
-              className="
-                absolute
-                right-2
-                top-2
-                h-2
-                w-2
-                rounded-full
-                bg-cyan-400
-              "
-            />
-          </button>
+<div className="relative">
+  <button
+    onClick={() =>
+      setShowNotifications(
+        !showNotifications
+      )
+    }
+    className="
+      relative
+      rounded-xl
+      border border-white/10
+      bg-white/[0.03]
+      p-2.5
+      transition-all
+      duration-200
+      hover:bg-white/6
+    "
+  >
+    <Bell size={18} />
+
+    <span
+      className="
+        absolute
+        right-2
+        top-2
+        h-2
+        w-2
+        rounded-full
+        bg-cyan-400
+      "
+    />
+  </button>
+
+  {showNotifications && (
+    <NotificationPanel />
+  )}
+</div>
 
           {/* User Profile */}
           <div
