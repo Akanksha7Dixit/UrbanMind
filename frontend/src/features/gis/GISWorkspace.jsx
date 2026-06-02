@@ -56,7 +56,7 @@ export default function GISWorkspace() {
                 max-w-md
                 rounded-2xl
                 border border-white/10
-                bg-white/[0.03]
+                bg-white/3
                 px-4 py-3
                 outline-none
               "
