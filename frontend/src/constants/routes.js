@@ -11,6 +11,8 @@ export const ROUTES = {
 
   REPORTS: "/reports",
 
+  AI_RECOMMENDATIONS: "/ai-recommendations",
+
   SETTINGS: "/settings",
 
   LOGIN: "/auth/login",

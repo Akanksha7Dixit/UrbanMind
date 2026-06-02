@@ -5,6 +5,7 @@ import {
   BarChart3,
   FileText,
   Settings,
+  Sparkles,
 } from "lucide-react";
 
 export const NAV_GROUPS = [
@@ -42,6 +43,12 @@ export const NAV_GROUPS = [
         path: "/reports",
         icon: FileText,
       },
+
+      {
+  label: "AI Center",
+  path: "/ai-recommendations",
+  icon: Sparkles,
+},
     ],
   },
 
