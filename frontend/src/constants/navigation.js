@@ -1,4 +1,5 @@
 import {
+  Users,
   LayoutDashboard,
   Map,
   GitCompare,
@@ -45,10 +46,15 @@ export const NAV_GROUPS = [
       },
 
       {
-  label: "AI Center",
-  path: "/ai-recommendations",
-  icon: Sparkles,
-},
+        label: "AI Center",
+        path: "/ai-recommendations",
+        icon: Sparkles,
+      },
+      {
+        label: "Citizen Portal",
+        path: "/citizen-portal",
+        icon: Users,
+      },
     ],
   },
 
