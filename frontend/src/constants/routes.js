@@ -13,6 +13,8 @@ export const ROUTES = {
 
   AI_RECOMMENDATIONS: "/ai-recommendations",
 
+  CITIZEN_PORTAL: "/citizen-portal",
+
   SETTINGS: "/settings",
 
   LOGIN: "/auth/login",

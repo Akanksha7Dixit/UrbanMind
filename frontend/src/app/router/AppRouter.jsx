@@ -11,6 +11,7 @@ import ScenarioBuilder from "../../features/simulation/ScenarioBuilder";
 import AnalyticsPage from "../../features/analytics/AnalyticsPage";
 import ReportsPage from "../../features/reports/ReportsPage";
 import AIRecommendationCenter from "../../features/ai-center/AIRecommendationCenter";
+import CitizenPortal from "../../features/citizen-portal/CitizenPortal";
 import SettingsPage from "../../features/settings/SettingsPage";
 
 import AppLayout from "../../components/layouts/AppLayout";
@@ -54,6 +55,12 @@ export default function AppRouter() {
             path="/ai-recommendations"
             element={<AIRecommendationCenter />}
           />
+
+          <Route
+  path="/citizen-portal"
+  element={<CitizenPortal />}
+/>
+
 
           <Route
             path="/settings"
