@@ -1,24 +1,9 @@
-import {
-  Layers3,
-  Filter,
-  Pencil,
-  Ruler,
-  Download,
-  Share2,
-  Sparkles,
-} from "lucide-react";
-
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-} from "react-leaflet";
+import { Layers3, Filter, Pencil, Ruler, Download, Share2, Sparkles, } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Popup, } from "react-leaflet";
 
 export default function GISWorkspace() {
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-
+    <div className="min-h-screen flex flex-col">
       {/* TOOLBAR */}
 
       <div className="border-b border-white/10 bg-slate-950 p-4">
@@ -96,276 +81,437 @@ export default function GISWorkspace() {
 
       {/* CONTENT */}
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 ">
 
         {/* LEFT PANEL */}
 
-        <aside
-          className="
-            hidden xl:block
-            w-72
-            overflow-y-auto
-            border-r border-white/10
-            bg-slate-950
-            p-8
-          "
-        >
-          <h2 className="text-3xl font-semibold">
-            Layers
-          </h2>
-
-          <div className="mt-10">
-
-            <p className="text-xs tracking-widest text-slate-500 uppercase">
-              Infrastructure
-            </p>
-
-            <div className="mt-5 space-y-5">
-
-              <label className="flex items-center gap-3">
-                <input type="checkbox" defaultChecked />
-                Roads
-              </label>
-
-              <label className="flex items-center gap-3">
-                <input type="checkbox" defaultChecked />
-                Metro
-              </label>
-
-            </div>
-
-          </div>
-
-          <div className="mt-12">
-
-            <p className="text-xs tracking-widest text-slate-500 uppercase">
-              Public Services
-            </p>
-
-            <div className="mt-5 space-y-5">
-
-              <label className="flex items-center gap-3">
-                <input type="checkbox" defaultChecked />
-                Hospitals
-              </label>
-
-              <label className="flex items-center gap-3">
-                <input type="checkbox" defaultChecked />
-                Schools
-              </label>
-
-            </div>
-
-          </div>
-
-          <div className="mt-12">
-
-            <p className="text-xs tracking-widest text-slate-500 uppercase">
-              Analytics
-            </p>
-
-            <div className="mt-5 space-y-5">
-
-              <label className="flex items-center gap-3">
-                <input type="checkbox" defaultChecked />
-                Population Density
-              </label>
-
-              <label className="flex items-center gap-3">
-                <input type="checkbox" defaultChecked />
-                Traffic Heatmap
-              </label>
-
-            </div>
-
-          </div>
-
-          <div
-            className="
-              mt-12
-              rounded-3xl
-              border border-cyan-500/20
-              bg-cyan-500/5
-              p-5
-            "
-          >
-            <p className="text-cyan-400">
-              Active Insight
-            </p>
-
-            <h3 className="mt-3 text-xl font-semibold">
-              Coverage Gap
-            </h3>
-
-            <p className="mt-3 text-slate-400">
-              Sector 12 lacks healthcare infrastructure.
-            </p>
-          </div>
-
-        </aside>
-
         {/* MAIN */}
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1">
+          <div className="mx-auto w-full max-w-[1600px] px-8 xl:px-14 py-10">
+            {/* HEADER */}
 
-          {/* MAP */}
+            <div className="mb-10">
+              <h1 className="text-4xl font-semibold tracking-tight">
+                GIS Command Center
+              </h1>
 
-          <div className="h-[700px] border-b border-white/10">
+              <p className="mt-4 max-w-4xl text-xl leading-relaxed text-slate-400">
+                Urban infrastructure, mobility,
+                healthcare and population intelligence
+                platform.
+              </p>
+            </div>
 
-            <MapContainer
-              center={[28.6139, 77.209]}
-              zoom={12}
-              className="h-full w-full"
+            {/* MAP SECTION */}
+
+            <section
+              className="
+    rounded-3xl
+    border border-white/10
+    bg-white/[0.02]
+    p-8
+    mb-16
+  "
             >
-              <TileLayer
-                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              />
+              <div className="mb-8">
+                <h2 className="text-3xl font-semibold">
+                  Live City Operations Map
+                </h2>
 
-              <Marker position={[28.6139, 77.209]}>
-                <Popup>
-                  Central Hospital
-                </Popup>
-              </Marker>
-
-            </MapContainer>
-
-          </div>
-
-          {/* AI INSIGHTS */}
-
-          <section className="p-8">
-
-            <h2 className="text-3xl font-semibold">
-              AI Insights
-            </h2>
-
-            <div className="mt-6 grid gap-6 lg:grid-cols-3">
-
-              <div
-                className="
-                  lg:col-span-2
-                  rounded-3xl
-                  border border-cyan-500/20
-                  bg-cyan-500/5
-                  p-6
-                "
-              >
-                <p className="text-cyan-400">
-                  Recommendation
+                <p className="mt-2 text-slate-400">
+                  Real-time spatial intelligence
+                  workspace.
                 </p>
-
-                <h3 className="mt-4 text-4xl font-bold">
-                  Build Hospital
-                </h3>
-
-                <p className="mt-4 text-slate-400">
-                  Sector 12 has low healthcare
-                  coverage and increasing population.
-                </p>
-
-                <div className="mt-6 flex gap-6">
-                  <span className="text-emerald-400">
-                    Confidence 91%
-                  </span>
-
-                  <span className="text-cyan-400">
-                    High ROI
-                  </span>
-                </div>
               </div>
 
               <div
                 className="
-                  rounded-3xl
-                  border border-white/10
-                  p-6
-                "
+    relative
+    overflow-hidden
+    rounded-3xl
+    border border-white/10
+    h-[650px] xl:h-[800px]
+  "
               >
-                <p className="text-slate-400">
-                  Selected Asset
-                </p>
+                <MapContainer
+                  center={[28.6139, 77.209]}
+                  zoom={12}
+                  className="h-full w-full"
+                >
+                  <TileLayer
+                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                  />
 
-                <h3 className="mt-4 text-3xl font-bold">
-                  Hospital
-                </h3>
+                  <Marker position={[28.6139, 77.209]}>
+                    <Popup>
+                      Central Hospital
+                    </Popup>
+                  </Marker>
+                </MapContainer>
 
-                <div className="mt-6 space-y-4">
-
-                  <div>
-                    <p className="text-slate-500">
+                <div
+                  className="
+    absolute
+    right-6
+    top-6
+    z-[1000]
+    grid
+    gap-4
+  "
+                >
+                  <div className="rounded-2xl bg-slate-950/90 p-4 backdrop-blur-xl">
+                    <p className="text-xs text-slate-400">
                       Population
                     </p>
 
-                    <p className="text-2xl font-semibold">
-                      120K
+                    <p className="text-2xl font-bold">
+                      1.2M
                     </p>
                   </div>
 
-                  <div>
-                    <p className="text-slate-500">
+                  <div className="rounded-2xl bg-slate-950/90 p-4 backdrop-blur-xl">
+                    <p className="text-xs text-slate-400">
                       Coverage
                     </p>
 
-                    <p className="text-2xl font-semibold">
-                      67%
+                    <p className="text-2xl font-bold">
+                      91%
                     </p>
                   </div>
-
-                </div>
-              </div>
-
-            </div>
-
-            {/* FORECAST */}
-
-            <div
-              className="
-                mt-6
-                rounded-3xl
-                border border-white/10
-                p-6
-              "
-            >
-              <h3 className="text-xl font-semibold">
-                Demand Forecast
-              </h3>
-
-              <div className="mt-6 grid gap-6 md:grid-cols-3">
-
-                <div>
-                  <p className="text-slate-500">
-                    Population Growth
-                  </p>
-
-                  <p className="mt-2 text-4xl font-bold">
-                    +18%
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-slate-500">
-                    Healthcare Demand
-                  </p>
-
-                  <p className="mt-2 text-4xl font-bold">
-                    +24%
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-slate-500">
-                    Risk Level
-                  </p>
-
-                  <p className="mt-2 text-xl font-semibold text-amber-400">
-                    Medium
-                  </p>
                 </div>
 
               </div>
-            </div>
+            </section>
 
-          </section>
+            {/* AI SECTION */}
+
+            <section className="mt-12">
+
+              <h2 className="mb-6 text-2xl font-semibold">
+                AI Intelligence Center
+              </h2>
+
+              <div
+                className="
+          grid
+          gap-6
+          lg:grid-cols-3
+        "
+              >
+
+                <div
+                  className="
+            lg:col-span-2
+            rounded-3xl
+            border border-cyan-500/20
+            bg-cyan-500/5
+            p-8
+          "
+                >
+                  <p className="text-cyan-400">
+                    Recommendation
+                  </p>
+
+                  <h3 className="mt-4 text-3xl font-semibold">
+                    Build Hospital
+                  </h3>
+
+                  <p className="mt-4 text-lg text-slate-400">
+                    Sector 12 has low healthcare
+                    coverage and increasing population.
+                  </p>
+
+                  <div className="mt-10 flex flex-wrap gap-8">
+                    <span className="text-emerald-400">
+                      Confidence 91%
+                    </span>
+
+                    <span className="text-cyan-400">
+                      High ROI
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  className="
+    rounded-3xl
+    border border-white/10
+    bg-white/[0.02]
+    p-8
+    transition-all
+    duration-300
+    hover:border-cyan-500/20
+  "
+                >
+                  <p className="text-slate-500">
+                    Selected Asset
+                  </p>
+
+                  <h3 className="mt-4 text-4xl font-bold">
+                    Hospital
+                  </h3>
+
+                  <div className="mt-8 space-y-6">
+
+                    <div>
+                      <p className="text-slate-500">
+                        Population
+                      </p>
+
+                      <p className="text-3xl font-bold">
+                        120K
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-500">
+                        Coverage
+                      </p>
+
+                      <p className="text-3xl font-bold">
+                        67%
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+            </section>
+
+            {/* METRICS */}
+
+            <section className="mt-12">
+
+              <h2 className="mb-6 text-2xl font-semibold">
+                Urban Metrics
+              </h2>
+
+              <div
+                className="
+          grid
+          gap-6
+          md:grid-cols-2
+          xl:grid-cols-4
+        "
+              >
+
+                <div className="rounded-3xl border border-white/10 p-8">
+                  <p className="text-slate-500">Population</p>
+                  <h3 className="mt-3 text-3xl font-semibold">
+                    1.2M
+                  </h3>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 p-8">
+                  <p className="text-slate-500">Coverage</p>
+                  <h3 className="mt-3 text-3xl font-semibold">
+                    91%
+                  </h3>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 p-8">
+                  <p className="text-slate-500">Hospitals</p>
+                  <h3 className="mt-3 text-3xl font-semibold">
+                    12
+                  </h3>
+                </div>
+
+                <div className="rounded-3xl border border-white/10 p-8">
+                  <p className="text-slate-500">Road Network</p>
+                  <h3 className="mt-3 text-3xl font-semibold">
+                    64 km
+                  </h3>
+                </div>
+
+              </div>
+
+            </section>
+
+            <section className="mt-16">
+
+              <h2 className="mb-8 text-2xl font-semibold">
+                Infrastructure Assets
+              </h2>
+
+              <div
+                className="
+      rounded-3xl
+      border border-white/10
+      bg-white/[0.02]
+      overflow-hidden
+    "
+              >
+
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="p-6 text-left">Asset</th>
+                      <th className="p-6 text-left">Type</th>
+                      <th className="p-6 text-left">Coverage</th>
+                      <th className="p-6 text-left">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+
+                    <tr className="border-b border-white/5">
+                      <td className="p-6">Central Hospital</td>
+                      <td className="p-6">Healthcare</td>
+                      <td className="p-6">67%</td>
+                      <td className="p-6 text-emerald-400">
+                        Active
+                      </td>
+                    </tr>
+
+                    <tr className="border-b border-white/5">
+                      <td className="p-6">Metro Line 2</td>
+                      <td className="p-6">Transit</td>
+                      <td className="p-6">91%</td>
+                      <td className="p-6 text-cyan-400">
+                        Healthy
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td className="p-6">School Cluster A</td>
+                      <td className="p-6">Education</td>
+                      <td className="p-6">82%</td>
+                      <td className="p-6 text-yellow-400">
+                        Monitor
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+
+                <section className="mt-16">
+
+                  <h2 className="mb-8 text-2xl font-semibold">
+                    Demand Forecast
+                  </h2>
+
+                  <div
+                    className="
+      grid
+      gap-6
+      lg:grid-cols-3
+    "
+                  >
+
+                    <div className="rounded-3xl border border-white/10 p-8">
+                      <p className="text-slate-500">
+                        Healthcare Demand
+                      </p>
+
+                      <h3 className="mt-4 text-3xl font-semibold">
+                        +18%
+                      </h3>
+                    </div>
+
+                    <div className="rounded-3xl border border-white/10 p-8">
+                      <p className="text-slate-500">
+                        Transit Demand
+                      </p>
+
+                      <h3 className="mt-4 text-3xl font-semibold">
+                        +12%
+                      </h3>
+                    </div>
+
+                    <div className="rounded-3xl border border-white/10 p-8">
+                      <p className="text-slate-500">
+                        Population Growth
+                      </p>
+
+                      <h3 className="mt-4 text-3xl font-semibold">
+                        +9%
+                      </h3>
+                    </div>
+
+                  </div>
+
+                </section>
+
+                <section className="mt-16">
+  <h2 className="mb-6 text-2xl font-semibold">
+    Network Health
+  </h2>
+
+  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+      <p className="text-sm text-slate-500">Road Network</p>
+      <h3 className="mt-3 text-3xl font-semibold">94%</h3>
+      <p className="mt-2 text-emerald-400">Healthy</p>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+      <p className="text-sm text-slate-500">Metro Network</p>
+      <h3 className="mt-3 text-3xl font-semibold">91%</h3>
+      <p className="mt-2 text-cyan-400">Stable</p>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+      <p className="text-sm text-slate-500">Healthcare</p>
+      <h3 className="mt-3 text-3xl font-semibold">67%</h3>
+      <p className="mt-2 text-yellow-400">Needs Attention</p>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+      <p className="text-sm text-slate-500">Education</p>
+      <h3 className="mt-3 text-3xl font-semibold">82%</h3>
+      <p className="mt-2 text-emerald-400">Good</p>
+    </div>
+
+  </div>
+</section>
+
+<section className="mt-16">
+  <h2 className="mb-6 text-2xl font-semibold">
+    Scenario Opportunities
+  </h2>
+
+  <div className="grid gap-6 xl:grid-cols-2">
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <p className="text-cyan-400 text-sm">
+        Opportunity #1
+      </p>
+
+      <h3 className="mt-3 text-2xl font-semibold">
+        Hospital Expansion
+      </h3>
+
+      <p className="mt-4 text-slate-400">
+        Increase healthcare coverage by 18% in Sector 12.
+      </p>
+    </div>
+
+    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+      <p className="text-cyan-400 text-sm">
+        Opportunity #2
+      </p>
+
+      <h3 className="mt-3 text-2xl font-semibold">
+        Metro Extension
+      </h3>
+
+      <p className="mt-4 text-slate-400">
+        Reduce congestion by approximately 12%.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+              </div>
+
+            </section>
+
+          </div>
 
         </main>
 
