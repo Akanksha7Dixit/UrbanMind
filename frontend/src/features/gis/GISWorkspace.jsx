@@ -1,7 +1,10 @@
 import { Layers3, Filter, Pencil, Ruler, Download, Share2, Sparkles, } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, } from "react-leaflet";
+import { useState } from "react";
+import AIAssistantDrawer from "../../components/ai/AIAssistantDrawer";
 
 export default function GISWorkspace() {
+  const [aiOpen, setAiOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col">
       {/* TOOLBAR */}
@@ -61,14 +64,15 @@ export default function GISWorkspace() {
             </button>
 
             <button
+              onClick={() => setAiOpen(true)}
               className="
-                flex items-center gap-2
-                rounded-2xl
-                bg-cyan-500
-                px-5 py-3
-                font-medium
-                text-slate-950
-              "
+    flex items-center gap-2
+    rounded-2xl
+    bg-cyan-500
+    px-5 py-3
+    font-medium
+    text-slate-950
+  "
             >
               <Sparkles size={18} />
               AI Analyze
@@ -436,84 +440,88 @@ export default function GISWorkspace() {
                 </section>
 
                 <section className="mt-16">
-  <h2 className="mb-6 text-2xl font-semibold">
-    Network Health
-  </h2>
+                  <h2 className="mb-6 text-2xl font-semibold">
+                    Network Health
+                  </h2>
 
-  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
-    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
-      <p className="text-sm text-slate-500">Road Network</p>
-      <h3 className="mt-3 text-3xl font-semibold">94%</h3>
-      <p className="mt-2 text-emerald-400">Healthy</p>
-    </div>
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+                      <p className="text-sm text-slate-500">Road Network</p>
+                      <h3 className="mt-3 text-3xl font-semibold">94%</h3>
+                      <p className="mt-2 text-emerald-400">Healthy</p>
+                    </div>
 
-    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
-      <p className="text-sm text-slate-500">Metro Network</p>
-      <h3 className="mt-3 text-3xl font-semibold">91%</h3>
-      <p className="mt-2 text-cyan-400">Stable</p>
-    </div>
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+                      <p className="text-sm text-slate-500">Metro Network</p>
+                      <h3 className="mt-3 text-3xl font-semibold">91%</h3>
+                      <p className="mt-2 text-cyan-400">Stable</p>
+                    </div>
 
-    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
-      <p className="text-sm text-slate-500">Healthcare</p>
-      <h3 className="mt-3 text-3xl font-semibold">67%</h3>
-      <p className="mt-2 text-yellow-400">Needs Attention</p>
-    </div>
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+                      <p className="text-sm text-slate-500">Healthcare</p>
+                      <h3 className="mt-3 text-3xl font-semibold">67%</h3>
+                      <p className="mt-2 text-yellow-400">Needs Attention</p>
+                    </div>
 
-    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
-      <p className="text-sm text-slate-500">Education</p>
-      <h3 className="mt-3 text-3xl font-semibold">82%</h3>
-      <p className="mt-2 text-emerald-400">Good</p>
-    </div>
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+                      <p className="text-sm text-slate-500">Education</p>
+                      <h3 className="mt-3 text-3xl font-semibold">82%</h3>
+                      <p className="mt-2 text-emerald-400">Good</p>
+                    </div>
 
-  </div>
-</section>
+                  </div>
+                </section>
 
-<section className="mt-16">
-  <h2 className="mb-6 text-2xl font-semibold">
-    Scenario Opportunities
-  </h2>
+                <section className="mt-16">
+                  <h2 className="mb-6 text-2xl font-semibold">
+                    Scenario Opportunities
+                  </h2>
 
-  <div className="grid gap-6 xl:grid-cols-2">
+                  <div className="grid gap-6 xl:grid-cols-2">
 
-    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8">
-      <p className="text-cyan-400 text-sm">
-        Opportunity #1
-      </p>
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+                      <p className="text-cyan-400 text-sm">
+                        Opportunity #1
+                      </p>
 
-      <h3 className="mt-3 text-2xl font-semibold">
-        Hospital Expansion
-      </h3>
+                      <h3 className="mt-3 text-2xl font-semibold">
+                        Hospital Expansion
+                      </h3>
 
-      <p className="mt-4 text-slate-400">
-        Increase healthcare coverage by 18% in Sector 12.
-      </p>
-    </div>
+                      <p className="mt-4 text-slate-400">
+                        Increase healthcare coverage by 18% in Sector 12.
+                      </p>
+                    </div>
 
-    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8">
-      <p className="text-cyan-400 text-sm">
-        Opportunity #2
-      </p>
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-8">
+                      <p className="text-cyan-400 text-sm">
+                        Opportunity #2
+                      </p>
 
-      <h3 className="mt-3 text-2xl font-semibold">
-        Metro Extension
-      </h3>
+                      <h3 className="mt-3 text-2xl font-semibold">
+                        Metro Extension
+                      </h3>
 
-      <p className="mt-4 text-slate-400">
-        Reduce congestion by approximately 12%.
-      </p>
-    </div>
+                      <p className="mt-4 text-slate-400">
+                        Reduce congestion by approximately 12%.
+                      </p>
+                    </div>
 
-  </div>
-</section>
+                  </div>
+                </section>
 
               </div>
 
             </section>
 
           </div>
-
         </main>
+
+        <AIAssistantDrawer
+          open={aiOpen}
+          onClose={() => setAiOpen(false)}
+        />
 
       </div>
 
