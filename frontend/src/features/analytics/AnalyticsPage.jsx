@@ -1,4 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
+import PopulationChart from "../../components/charts/PopulationChart";
+import InfrastructureChart from "../../components/charts/InfrastructureChart";
 
 const populationData = [
   { year: "2025", value: 105 },
@@ -50,8 +52,8 @@ export default function AnalyticsPage() {
           Executive Overview
         </p>
 
-        <h1 className="mt-4 text-5xl font-bold">
-          City Performance Analytics
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight">
+            City Performance Analytics
         </h1>
 
         <p className="mt-4 max-w-3xl text-slate-400">
@@ -63,82 +65,67 @@ export default function AnalyticsPage() {
 
       {/* KPI CARDS */}
 
+      <div
+  className="
+    grid
+    gap-6
+    xl:grid-cols-2
+  "
+>
+  <PopulationChart />
+
+  <InfrastructureChart />
+</div>
+
+      {/* KPI ROWS*/}
+
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-          <p className="text-slate-400">
-            Population Growth
-          </p>
+  <div className="rounded-3xl border border-white/10 p-6">
+    <p className="text-sm text-slate-500">
+      Population
+    </p>
 
-          <h3 className="mt-3 text-4xl font-bold">
-            +5.4%
-          </h3>
-        </div>
+    <h3 className="mt-2 text-3xl font-semibold">
+      1.2M
+    </h3>
+  </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-          <p className="text-slate-400">
-            Infrastructure Score
-          </p>
+  <div className="rounded-3xl border border-white/10 p-6">
+    <p className="text-sm text-slate-500">
+      Coverage
+    </p>
 
-          <h3 className="mt-3 text-4xl font-bold">
-            91%
-          </h3>
-        </div>
+    <h3 className="mt-2 text-3xl font-semibold">
+      91%
+    </h3>
+  </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-          <p className="text-slate-400">
-            Mobility Index
-          </p>
+  <div className="rounded-3xl border border-white/10 p-6">
+    <p className="text-sm text-slate-500">
+      Hospitals
+    </p>
 
-          <h3 className="mt-3 text-4xl font-bold">
-            82
-          </h3>
-        </div>
+    <h3 className="mt-2 text-3xl font-semibold">
+      12
+    </h3>
+  </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-          <p className="text-slate-400">
-            Environment Score
-          </p>
+  <div className="rounded-3xl border border-white/10 p-6">
+    <p className="text-sm text-slate-500">
+      Transit Score
+    </p>
 
-          <h3 className="mt-3 text-4xl font-bold">
-            67
-          </h3>
-        </div>
+    <h3 className="mt-2 text-3xl font-semibold">
+      88
+    </h3>
+  </div>
 
-      </div>
+</div>
 
-      {/* POPULATION TREND */}
 
-      <section
-        className="
-          rounded-3xl
-          border border-white/10
-          bg-white/[0.03]
-          p-6
-        "
-      >
-        <h2 className="mb-6 text-2xl font-semibold">
-          Population Growth Trend
-        </h2>
 
-        <div className="h-[350px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={populationData}>
-              <XAxis dataKey="year" />
-              <YAxis />
-              <Tooltip />
-
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#06b6d4"
-                strokeWidth={3}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
+      
       {/* CHARTS */}
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -175,41 +162,6 @@ export default function AnalyticsPage() {
         </section>
 
         {/* INFRA */}
-
-        <section
-          className="
-            rounded-3xl
-            border border-white/10
-            bg-white/[0.03]
-            p-6
-          "
-        >
-          <h2 className="mb-6 text-2xl font-semibold">
-            Infrastructure Distribution
-          </h2>
-
-          <div className="h-[350px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={infraData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={120}
-                >
-                  {infraData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index]}
-                    />
-                  ))}
-                </Pie>
-
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
 
       </div>
 
