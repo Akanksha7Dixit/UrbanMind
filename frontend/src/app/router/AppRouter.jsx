@@ -19,6 +19,7 @@ import RegisterPage from "../../features/auth/RegisterPage";
 import ForgotPasswordPage from "../../features/auth/ForgotPasswordPage";
 
 import ProtectedRoute from "../../components/auth/ProtectedRoute";
+import RoleProtectedRoute from "../../components/auth/RoleProtectedRoute";
 import AppLayout from "../../components/layouts/AppLayout";
 
 export default function AppRouter() {
@@ -84,17 +85,41 @@ export default function AppRouter() {
 
           <Route
             path="/ai-recommendations"
-            element={<AIRecommendationCenter />}
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "planner",
+                ]}
+              >
+                <AIRecommendationCenter />
+              </RoleProtectedRoute>
+            }
           />
 
           <Route
             path="/citizen-portal"
-            element={<CitizenPortal />}
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "citizen",
+                ]}
+              >
+                <CitizenPortal />
+              </RoleProtectedRoute>
+            }
           />
 
           <Route
             path="/settings"
-            element={<SettingsPage />}
+            element={
+              <RoleProtectedRoute
+                allowedRoles={["admin"]}
+              >
+                <SettingsPage />
+              </RoleProtectedRoute>
+            }
           />
         </Route>
 
