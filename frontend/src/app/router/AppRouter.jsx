@@ -18,12 +18,15 @@ import LoginPage from "../../features/auth/LoginPage";
 import RegisterPage from "../../features/auth/RegisterPage";
 import ForgotPasswordPage from "../../features/auth/ForgotPasswordPage";
 
+import ProtectedRoute from "../../components/auth/ProtectedRoute";
 import AppLayout from "../../components/layouts/AppLayout";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* Public Routes */}
 
         <Route
           path="/auth/login"
@@ -40,10 +43,18 @@ export default function AppRouter() {
           element={<ForgotPasswordPage />}
         />
 
-        <Route element={<AppLayout />}>
+        {/* Protected Routes */}
+
+        <Route
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route
             path="/"
-            element={<Navigate to="/dashboard" />}
+            element={<Navigate to="/dashboard" replace />}
           />
 
           <Route
@@ -81,27 +92,19 @@ export default function AppRouter() {
             element={<CitizenPortal />}
           />
 
-
           <Route
             path="/settings"
             element={<SettingsPage />}
           />
-
-          <Route
-            path="/auth/login"
-            element={<LoginPage />}
-          />
-
-          <Route
-            path="/auth/register"
-            element={<RegisterPage />}
-          />
-
-          <Route
-            path="/auth/forgot-password"
-            element={<ForgotPasswordPage />}
-          />
         </Route>
+
+        {/* Fallback */}
+
+        <Route
+          path="*"
+          element={<Navigate to="/dashboard" replace />}
+        />
+
       </Routes>
     </BrowserRouter>
   );

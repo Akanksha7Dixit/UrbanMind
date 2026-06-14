@@ -1,6 +1,22 @@
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+
+  const login = useAuthStore(
+    (state) => state.login
+  );
+
+  const handleLogin = () => {
+    login({
+      name: "Admin",
+      role: "admin",
+    });
+
+    navigate("/dashboard");
+  };
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 p-6">
 
@@ -39,6 +55,7 @@ export default function LoginPage() {
         </div>
 
         <button
+          onClick={handleLogin}
           className="
             mt-6
             w-full
