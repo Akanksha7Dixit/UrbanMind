@@ -4,6 +4,7 @@ import {
   Sparkles,
   Moon,
   ChevronDown,
+  Sun,
 } from "lucide-react";
 
 import {
@@ -15,6 +16,7 @@ import NotificationPanel from "../shared/NotificationPanel";
 import ProfileDropdown from "../shared/ProfileDropdown";
 import AIAssistantDrawer from "../ai/AIAssistantDrawer";
 import CommandPalette from "../command/CommandPalette";
+import { useThemeStore } from "../../store/themeStore";
 
 export default function Topbar() {
   const [showNotifications, setShowNotifications] =
@@ -28,6 +30,9 @@ export default function Topbar() {
 
   const [commandOpen, setCommandOpen] =
     useState(false);
+
+  const { darkMode, toggleTheme } =
+  useThemeStore();
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -140,17 +145,19 @@ export default function Topbar() {
             {/* Theme */}
 
             <button
+              onClick={toggleTheme}
               className="
-                rounded-xl
-                border border-white/10
-                bg-white/[0.03]
-                p-2.5
-                transition-all
-                duration-200
-                hover:bg-white/[0.06]
-              "
+    rounded-xl
+    border border-white/10
+    bg-white/[0.03]
+    p-2.5
+  "
             >
-              <Moon size={18} />
+              {darkMode ? (
+                <Sun size={18} />
+              ) : (
+                <Moon size={18} />
+              )}
             </button>
 
             {/* Notifications */}
