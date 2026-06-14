@@ -1,5 +1,4 @@
 import { Search, X } from "lucide-react";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function CommandPalette({
@@ -7,25 +6,6 @@ export default function CommandPalette({
   onClose,
 }) {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    window.addEventListener(
-      "keydown",
-      handleEscape
-    );
-
-    return () =>
-      window.removeEventListener(
-        "keydown",
-        handleEscape
-      );
-  }, [onClose]);
 
   if (!open) return null;
 
@@ -58,114 +38,87 @@ export default function CommandPalette({
       label: "Citizen Portal",
       path: "/citizen-portal",
     },
-    {
-      label: "Settings",
-      path: "/settings",
-    },
   ];
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    onClose();
+  };
 
   return (
     <div
-      onClick={onClose}
       className="
         fixed inset-0
-        z-[9999]
+        z-[99999]
+        flex items-start justify-center
         bg-black/50
         backdrop-blur-sm
-        flex
-        items-start
-        justify-center
         pt-24
       "
+      onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         className="
-          w-full
-          max-w-2xl
+          w-[650px]
           rounded-3xl
           border border-white/10
           bg-slate-950
+          p-6
           shadow-2xl
-          overflow-hidden
         "
       >
-        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">
+            Command Palette
+          </h3>
 
-        <div
-          className="
-            flex items-center gap-3
-            border-b border-white/10
-            px-5 py-4
-          "
-        >
-          <Search
-            size={18}
-            className="text-slate-400"
-          />
-
-          <input
-            autoFocus
-            placeholder="Search UrbanMind..."
-            className="
-              flex-1
-              bg-transparent
-              outline-none
-              text-sm
-            "
-          />
-
-          <button
-            onClick={onClose}
-            className="
-              rounded-lg
-              p-1
-              hover:bg-white/5
-            "
-          >
+          <button onClick={onClose}>
             <X size={18} />
           </button>
         </div>
 
-        {/* Commands */}
+        <div
+          className="
+            flex items-center gap-3
+            rounded-2xl
+            border border-white/10
+            px-4 py-3
+          "
+        >
+          <Search size={18} />
 
-        <div className="p-3">
+          <input
+            placeholder="Search pages..."
+            className="
+              flex-1
+              bg-transparent
+              outline-none
+            "
+          />
+        </div>
 
+        <div className="mt-6 space-y-2">
           {commands.map((item) => (
             <button
               key={item.path}
-              onClick={() => {
-                navigate(item.path);
-                onClose();
-              }}
+              onClick={() =>
+                handleNavigate(item.path)
+              }
               className="
                 flex
                 w-full
-                items-center
                 rounded-xl
                 px-4 py-3
-                text-left
                 transition-all
                 duration-200
-                hover:bg-white/[0.05]
+                hover:bg-cyan-500/10
+                hover:text-cyan-400
               "
             >
               {item.label}
             </button>
           ))}
-
-        </div>
-
-        {/* Footer */}
-
-        <div
-          className="
-            border-t border-white/10
-            px-5 py-3
-            text-xs text-slate-500
-          "
-        >
-          Press ESC to close
         </div>
       </div>
     </div>
