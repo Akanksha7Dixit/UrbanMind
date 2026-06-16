@@ -6,8 +6,8 @@ import AIAssistantDrawer from "../../components/ai/AIAssistantDrawer";
 export default function GISWorkspace() {
   const [aiOpen, setAiOpen] = useState(false);
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* TOOLBAR */}
+<div className="w-full flex flex-col">
+        {/* TOOLBAR */}
 
       <div className="border-b border-white/10 bg-slate-950 p-4">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
