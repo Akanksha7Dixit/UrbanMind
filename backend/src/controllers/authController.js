@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 exports.registerUser = async (
   req,
@@ -81,16 +82,32 @@ exports.loginUser = async (
       });
     }
 
-    res.json({
-      success: true,
-      message: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    console.log("JWT_SECRET =", process.env.JWT_SECRET);
+    console.log("JWT_EXPIRE =", process.env.JWT_EXPIRE);
+
+    const token = jwt.sign(
+  {
+    id: user._id,
+    role: user.role,
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn:
+      process.env.JWT_EXPIRE,
+  }
+);
+
+res.json({
+  success: true,
+  message: "Login successful",
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  },
+});
   } catch (error) {
     res.status(500).json({
       message: error.message,
