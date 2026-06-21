@@ -1,6 +1,12 @@
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
 import { useAuthStore } from "../../store/authStore";
+import { loginUser } from "../../services/authService";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -9,14 +15,45 @@ export default function LoginPage() {
     (state) => state.login
   );
 
-  const handleLogin = () => {
-    login({
-      name: "Admin",
-      role: "admin",
-    });
+  const [email, setEmail] =
+    useState("");
 
-    navigate("/dashboard");
+  const [password, setPassword] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const data =
+        await loginUser(
+          email,
+          password
+        );
+
+      login(
+        data.user,
+        data.token
+      );
+
+      navigate("/dashboard");
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+        "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 p-6">
 
@@ -43,19 +80,50 @@ export default function LoginPage() {
           <input
             type="email"
             placeholder="Email"
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3"
+            value={email}
+            onChange={(e) =>
+              setEmail(
+                e.target.value
+              )
+            }
+            className="
+              w-full
+              rounded-xl
+              border border-white/10
+              bg-slate-900
+              px-4 py-3
+            "
           />
 
           <input
             type="password"
             placeholder="Password"
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3"
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+            className="
+              w-full
+              rounded-xl
+              border border-white/10
+              bg-slate-900
+              px-4 py-3
+            "
           />
 
         </div>
 
+        {error && (
+          <p className="mt-4 text-sm text-red-400">
+            {error}
+          </p>
+        )}
+
         <button
           onClick={handleLogin}
+          disabled={loading}
           className="
             mt-6
             w-full
@@ -66,11 +134,20 @@ export default function LoginPage() {
             text-slate-950
           "
         >
-          Sign In
+          {loading
+            ? "Signing In..."
+            : "Sign In"}
         </button>
 
-        <div className="mt-6 flex justify-between text-sm text-slate-400">
-
+        <div
+          className="
+            mt-6
+            flex
+            justify-between
+            text-sm
+            text-slate-400
+          "
+        >
           <Link to="/auth/register">
             Register
           </Link>
@@ -78,8 +155,8 @@ export default function LoginPage() {
           <Link to="/auth/forgot-password">
             Forgot Password
           </Link>
-
         </div>
+
       </div>
     </div>
   );

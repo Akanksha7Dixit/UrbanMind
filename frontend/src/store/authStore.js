@@ -1,27 +1,36 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export const useAuthStore = create(
-  persist(
-    (set) => ({
-      user: null,
+export const useAuthStore =
+  create(
+    persist(
+      (set) => ({
+        user: null,
 
-      isAuthenticated: false,
+        token: null,
 
-      login: (user) =>
-        set({
+        isAuthenticated: false,
+
+        login: (
           user,
-          isAuthenticated: true,
-        }),
+          token
+        ) =>
+          set({
+            user,
+            token,
+            isAuthenticated: true,
+          }),
 
-      logout: () =>
-        set({
-          user: null,
-          isAuthenticated: false,
-        }),
-    }),
-    {
-      name: "urbanmind-auth",
-    }
-  )
-);
+        logout: () =>
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+          }),
+      }),
+      {
+        name:
+          "urbanmind-auth",
+      }
+    )
+  );
