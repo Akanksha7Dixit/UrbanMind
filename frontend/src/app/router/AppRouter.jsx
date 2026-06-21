@@ -22,6 +22,8 @@ import ProtectedRoute from "../../components/auth/ProtectedRoute";
 import RoleProtectedRoute from "../../components/auth/RoleProtectedRoute";
 import AppLayout from "../../components/layouts/AppLayout";
 
+import IssueManagement from "../../features/planning/IssueManagement";
+
 export default function AppRouter() {
   return (
     <BrowserRouter>
@@ -128,6 +130,11 @@ export default function AppRouter() {
         <Route
           path="*"
           element={<Navigate to="/dashboard" replace />}
+        />
+
+        <Route
+        path="/issues"
+        element={<IssueManagement />}
         />
 
       </Routes>

@@ -36,3 +36,25 @@ export const createIssue =
 
     return response.data;
   };
+
+  export const updateIssueStatus =
+  async (
+    issueId,
+    status,
+    token
+  ) => {
+
+    const response =
+      await axios.patch(
+        `${API_URL}/${issueId}`,
+        { status },
+        {
+          headers: {
+            Authorization:
+              `Bearer ${token}`,
+          },
+        }
+      );
+
+    return response.data;
+  };
