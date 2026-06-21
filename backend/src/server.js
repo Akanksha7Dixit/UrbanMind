@@ -2,9 +2,15 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
+const issueRoutes =
+  require("./routes/issueRoutes");
+
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes =require("./routes/userRoutes");
+
+const dashboardRoutes =
+  require("./routes/dashboardRoutes");
 
 const app = express();
 
@@ -29,6 +35,16 @@ app.use("/api/auth", authRoutes);
 app.use(
   "/api/users",
   userRoutes
+);
+// Issue Routes
+app.use(
+  "/api/issues",
+  issueRoutes
+);
+// Dashboard Routes
+app.use(
+  "/api/dashboard",
+  dashboardRoutes
 );
 
 // Server

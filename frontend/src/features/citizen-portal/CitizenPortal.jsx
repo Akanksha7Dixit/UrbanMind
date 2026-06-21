@@ -7,8 +7,99 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  getIssues,
+  createIssue,
+} from "../../services/issueService";
+
+import {
+  useAuthStore,
+} from "../../store/authStore";
+
 export default function CitizenPortal() {
+  const token =
+    useAuthStore(
+      (state) => state.token
+    );
+
+  const [issues, setIssues] =
+    useState([]);
+
+  useEffect(() => {
+    const fetchIssues =
+      async () => {
+        try {
+          const data =
+            await getIssues(
+              token
+            );
+
+          setIssues(
+            data.issues
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      };
+    if (token) {
+      fetchIssues();
+    }
+  }, [token]);
+
+  const [formData, setFormData] =
+    useState({
+      title: "",
+      description: "",
+      category: "",
+      location: "",
+    });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]:
+        e.target.value,
+    });
+  };
+  const handleSubmit =
+    async (e) => {
+      e.preventDefault();
+
+      try {
+        await createIssue(
+          formData,
+          token
+        );
+
+        const data =
+          await getIssues(
+            token
+          );
+
+        setIssues(
+          data.issues
+        );
+
+        setFormData({
+          title: "",
+          description: "",
+          category: "",
+          location: "",
+        });
+
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
   return (
+
+
     <div className="space-y-8 p-8">
 
       {/* HEADER */}
@@ -96,6 +187,87 @@ export default function CitizenPortal() {
 
       </div>
 
+      {/* ISSUE REPORTING */}
+
+      <section className="ai-card">
+
+        <h2 className="mb-6 text-2xl font-semibold">
+          Report New Issue
+        </h2>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
+
+          <input
+            type="text"
+            name="title"
+            placeholder="Issue Title"
+            value={formData.title}
+            onChange={handleChange}
+            className="
+        w-full rounded-xl
+        bg-slate-900
+        p-3
+      "
+          />
+
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+            className="
+        w-full rounded-xl
+        bg-slate-900
+        p-3
+      "
+          />
+
+          <input
+            type="text"
+            name="category"
+            placeholder="Category"
+            value={formData.category}
+            onChange={handleChange}
+            className="
+        w-full rounded-xl
+        bg-slate-900
+        p-3
+      "
+          />
+
+          <input
+            type="text"
+            name="location"
+            placeholder="Location"
+            value={formData.location}
+            onChange={handleChange}
+            className="
+        w-full rounded-xl
+        bg-slate-900
+        p-3
+      "
+          />
+
+          <button
+            type="submit"
+            className="
+        rounded-xl
+        bg-cyan-500
+        px-6
+        py-3
+        font-semibold
+      "
+          >
+            Submit Issue
+          </button>
+
+        </form>
+
+      </section>
+
       {/* ACTIVE ISSUES */}
 
       <section>
@@ -105,41 +277,45 @@ export default function CitizenPortal() {
 
         <div className="grid gap-6 lg:grid-cols-3">
 
-          <div className="ai-card">
-            <AlertTriangle className="text-red-400" />
+          {issues.map((issue) => (
 
-            <h3 className="mt-4 font-semibold">
-              Road Damage
-            </h3>
+            <div
+              key={issue._id}
+              className="ai-card"
+            >
+              <AlertTriangle
+                className="text-cyan-400"
+              />
 
-            <p className="mt-3 text-slate-400">
-              Sector 8 reported potholes.
-            </p>
-          </div>
+              <h3 className="mt-4 font-semibold">
+                {issue.title}
+              </h3>
 
-          <div className="ai-card">
-            <AlertTriangle className="text-amber-400" />
+              <p className="mt-3 text-slate-400">
+                {issue.description}
+              </p>
 
-            <h3 className="mt-4 font-semibold">
-              Water Supply
-            </h3>
+              <span
+                className={`
+    inline-block mt-4 px-3 py-1
+    rounded-full text-sm font-medium
 
-            <p className="mt-3 text-slate-400">
-              Reduced pressure complaints.
-            </p>
-          </div>
+    ${issue.status === "Pending"
+                    ? "bg-yellow-500/20 text-yellow-400"
 
-          <div className="ai-card">
-            <AlertTriangle className="text-cyan-400" />
+                    : issue.status === "Resolved"
+                      ? "bg-green-500/20 text-green-400"
 
-            <h3 className="mt-4 font-semibold">
-              Street Lighting
-            </h3>
+                      : "bg-cyan-500/20 text-cyan-400"
+                  }
+  `}
+              >
+                {issue.status}
+              </span>
 
-            <p className="mt-3 text-slate-400">
-              Maintenance request pending.
-            </p>
-          </div>
+            </div>
+
+          ))}
 
         </div>
       </section>

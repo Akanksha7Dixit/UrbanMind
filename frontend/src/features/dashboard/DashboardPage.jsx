@@ -4,6 +4,18 @@ import UrbanHealthHero from "../../components/shared/UrbanHealthHero";
 import StatusCard from "../../components/shared/StatusCard";
 
 import {
+  useEffect,
+  useState,
+} from "react";
+
+import { useAuthStore }
+  from "../../store/authStore";
+
+import {
+  getDashboardStats,
+} from "../../services/dashboardService";
+
+import {
   Users,
   Car,
   Wind,
@@ -11,6 +23,36 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
+  const token =
+  useAuthStore(
+    (state) => state.token
+  );
+
+const [stats, setStats] =
+  useState(null);
+
+  useEffect(() => {
+  const fetchStats =
+    async () => {
+      try {
+        const data =
+          await getDashboardStats(
+            token
+          );
+
+        setStats(
+          data.stats
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+  if (token) {
+    fetchStats();
+  }
+}, [token]);
+
   return (
     <div className="space-y-8 p-8">
       {/* Header */}
@@ -41,35 +83,47 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-4 gap-6">
-        <KpiCard
-          title="Population"
-          value="1.2M"
-          change="+5.4%"
-          icon={Users}
-        />
+      {/* KPI Cards */}
 
-        <KpiCard
-          title="Traffic Score"
-          value="82"
-          change="+2%"
-          icon={Car}
-        />
+<div className="grid grid-cols-4 gap-6">
 
-        <KpiCard
-          title="AQI"
-          value="67"
-          change="-4%"
-          icon={Wind}
-        />
+  <KpiCard
+    title="Total Users"
+    value={
+      stats?.totalUsers ?? 0
+    }
+    change="+"
+    icon={Users}
+  />
 
-        <KpiCard
-          title="Budget"
-          value="$420M"
-          change="+8%"
-          icon={Wallet}
-        />
-      </div>
+  <KpiCard
+    title="Total Issues"
+    value={
+      stats?.totalIssues ?? 0
+    }
+    change="+"
+    icon={Car}
+  />
+
+  <KpiCard
+    title="Pending Issues"
+    value={
+      stats?.pendingIssues ?? 0
+    }
+    change="+"
+    icon={Wind}
+  />
+
+  <KpiCard
+    title="Resolved Issues"
+    value={
+      stats?.resolvedIssues ?? 0
+    }
+    change="+"
+    icon={Wallet}
+  />
+
+</div>
 
       {/* GIS Preview */}
 
