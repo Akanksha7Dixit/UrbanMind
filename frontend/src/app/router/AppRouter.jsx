@@ -23,6 +23,7 @@ import RoleProtectedRoute from "../../components/auth/RoleProtectedRoute";
 import AppLayout from "../../components/layouts/AppLayout";
 
 import IssueManagement from "../../features/planning/IssueManagement";
+import IssueSubmission from "../../features/citizen/IssueSubmission";
 
 export default function AppRouter() {
   return (
@@ -100,18 +101,32 @@ export default function AppRouter() {
           />
 
           <Route
-            path="/citizen-portal"
-            element={
-              <RoleProtectedRoute
-                allowedRoles={[
-                  "admin",
-                  "citizen",
-                ]}
-              >
-                <CitizenPortal />
-              </RoleProtectedRoute>
-            }
-          />
+  path="/citizen-portal"
+  element={
+    <RoleProtectedRoute
+      allowedRoles={[
+        "admin",
+        "citizen",
+      ]}
+    >
+      <CitizenPortal />
+    </RoleProtectedRoute>
+  }
+/>
+
+<Route
+  path="/report-issue"
+  element={
+    <RoleProtectedRoute
+      allowedRoles={[
+        "admin",
+        "citizen",
+      ]}
+    >
+      <IssueSubmission />
+    </RoleProtectedRoute>
+  }
+/>
 
           <Route
             path="/settings"
@@ -133,9 +148,18 @@ export default function AppRouter() {
         />
 
         <Route
-        path="/issues"
-        element={<IssueManagement />}
-        />
+  path="/issues"
+  element={
+    <RoleProtectedRoute
+      allowedRoles={[
+        "admin",
+        "planner",
+      ]}
+    >
+      <IssueManagement />
+    </RoleProtectedRoute>
+  }
+/>
 
       </Routes>
     </BrowserRouter>

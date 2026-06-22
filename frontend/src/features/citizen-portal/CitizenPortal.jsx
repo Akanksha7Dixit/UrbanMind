@@ -7,6 +7,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { Link } from "react-router-dom";
+
 import {
   useEffect,
   useState,
@@ -104,15 +106,49 @@ export default function CitizenPortal() {
 
       {/* HEADER */}
 
-      <div>
-        <h1 className="text-4xl font-bold">
-          Citizen Portal
-        </h1>
+      {/* HERO */}
 
-        <p className="mt-2 text-slate-400">
-          Community engagement, feedback and public service monitoring.
-        </p>
-      </div>
+<section
+  className="
+    rounded-3xl
+    border border-white/10
+    bg-gradient-to-r
+    from-cyan-950/20
+    via-slate-950
+    to-indigo-950/20
+    p-8
+  "
+>
+  <p className="text-cyan-400">
+    Community Overview
+  </p>
+
+  <h2 className="mt-4 text-5xl font-bold">
+    125,000 Active Citizens
+  </h2>
+
+  <p className="mt-4 max-w-3xl text-slate-400">
+    Monitor community feedback,
+    service requests,
+    satisfaction scores and
+    engagement trends.
+  </p>
+
+  <Link
+    to="/report-issue"
+    className="
+      mt-6 inline-block
+      rounded-xl
+      bg-cyan-500
+      px-6 py-3
+      font-semibold
+      text-slate-950
+    "
+  >
+    Report New Issue
+  </Link>
+
+</section>
 
       {/* HERO */}
 
@@ -139,7 +175,49 @@ export default function CitizenPortal() {
           Monitor community feedback, service requests,
           satisfaction scores and engagement trends.
         </p>
+
+        <section
+          className="
+    rounded-3xl
+    border border-white/10
+    bg-gradient-to-r
+    from-cyan-950/20
+    via-slate-950
+    to-indigo-950/20
+    p-8
+  "
+        >
+          <p className="text-cyan-400">
+            Community Overview
+          </p>
+
+          <h2 className="mt-4 text-5xl font-bold">
+            125,000 Active Citizens
+          </h2>
+
+          <p className="mt-4 max-w-3xl text-slate-400">
+            Monitor community feedback, service requests,
+            satisfaction scores and engagement trends.
+          </p>
+
+          <Link
+            to="/report-issue"
+            className="
+      mt-6 inline-block
+      rounded-xl
+      bg-cyan-500
+      px-6 py-3
+      font-semibold
+      text-slate-950
+    "
+          >
+            Report New Issue
+          </Link>
+
+        </section>
       </section>
+
+
 
       {/* KPI */}
 
