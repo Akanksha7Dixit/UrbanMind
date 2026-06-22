@@ -5,6 +5,7 @@ const API_URL =
 
 export const getDashboardStats =
   async (token) => {
+
     const response =
       await axios.get(
         `${API_URL}/stats`,

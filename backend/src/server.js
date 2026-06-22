@@ -12,6 +12,11 @@ const userRoutes =require("./routes/userRoutes");
 const dashboardRoutes =
   require("./routes/dashboardRoutes");
 
+const recommendationRoutes =
+  require(
+    "./routes/recommendationRoutes"
+  );
+
 const app = express();
 
 // Connect Database
@@ -45,6 +50,11 @@ app.use(
 app.use(
   "/api/dashboard",
   dashboardRoutes
+);
+
+app.use(
+  "/api/recommendations",
+  recommendationRoutes
 );
 
 // Server
