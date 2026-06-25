@@ -9,6 +9,7 @@ const {
   "../controllers/issueController"
 );
 
+
 const {
   authorize,
 } = require(
@@ -45,5 +46,4 @@ router.patch(
   ),
   updateIssueStatus
 );
-
 module.exports = router;
