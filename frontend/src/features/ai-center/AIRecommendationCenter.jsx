@@ -7,7 +7,53 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useAuthStore,
+} from "../../store/authStore";
+
+import {
+  getRecommendations,
+} from "../../services/recommendationService";
+
 export default function AIRecommendationCenter() {
+
+  const token =
+  useAuthStore(
+    (state) => state.token
+  );
+
+const [
+  recommendations,
+  setRecommendations,
+] = useState([]);
+
+useEffect(() => {
+  const fetchRecommendations =
+    async () => {
+      try {
+        const data =
+          await getRecommendations(
+            token
+          );
+
+        setRecommendations(
+          data.recommendations
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+  if (token) {
+    fetchRecommendations();
+  }
+}, [token]);
+
   return (
     <div className="space-y-8 p-8">
 
@@ -55,90 +101,73 @@ export default function AIRecommendationCenter() {
       {/* HIGH PRIORITY */}
 
       <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          High Priority Recommendations
-        </h2>
+  <h2 className="mb-6 text-2xl font-semibold">
+    AI Recommendations
+  </h2>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+  <div className="grid gap-6 lg:grid-cols-2">
 
-          <div className="ai-card">
-            <AlertTriangle className="text-red-400" />
+    {recommendations.map((item) => (
 
-            <h3 className="mt-4 text-xl font-semibold">
-              Build Hospital in Sector 12
-            </h3>
+      <div
+        key={item._id}
+        className="ai-card"
+      >
 
-            <p className="mt-3 text-slate-400">
-              Healthcare coverage below threshold.
-            </p>
+        <AlertTriangle className="text-cyan-400" />
 
-            <span className="mt-4 inline-block text-cyan-400">
-              Confidence 91%
-            </span>
-          </div>
+        <h3 className="mt-4 text-xl font-semibold">
+          {item.title}
+        </h3>
 
-          <div className="ai-card">
-            <Building2 className="text-amber-400" />
+        <p className="mt-3 text-slate-400">
+          {item.description}
+        </p>
 
-            <h3 className="mt-4 text-xl font-semibold">
-              Expand Metro Corridor
-            </h3>
+        <div className="mt-5 flex gap-3">
 
-            <p className="mt-3 text-slate-400">
-              Reduce congestion in growth districts.
-            </p>
+          <span
+            className="
+              rounded-full
+              bg-cyan-500/20
+              px-3
+              py-1
+              text-cyan-400
+            "
+          >
+            {item.confidence}% Confidence
+          </span>
 
-            <span className="mt-4 inline-block text-cyan-400">
-              Confidence 88%
-            </span>
-          </div>
+          <span
+            className={`
+              rounded-full
+              px-3
+              py-1
 
-        </div>
-      </section>
+              ${
+                item.priority === "High"
+                  ? "bg-red-500/20 text-red-400"
 
-      {/* MEDIUM PRIORITY */}
+                  : item.priority === "Medium"
+                  ? "bg-yellow-500/20 text-yellow-400"
 
-      <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Medium Priority Recommendations
-        </h2>
-
-        <div className="grid gap-6 lg:grid-cols-2">
-
-          <div className="ai-card">
-            <TrendingUp className="text-cyan-400" />
-
-            Green Corridor Development
-          </div>
-
-          <div className="ai-card">
-            <Building2 className="text-cyan-400" />
-
-            Smart Parking Infrastructure
-          </div>
+                  : "bg-green-500/20 text-green-400"
+              }
+            `}
+          >
+            {item.priority}
+          </span>
 
         </div>
-      </section>
 
-      {/* LOW PRIORITY */}
+      </div>
 
-      <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Low Priority Recommendations
-        </h2>
+    ))}
 
-        <div className="grid gap-6 lg:grid-cols-2">
+  </div>
 
-          <div className="ai-card">
-            Waterfront Beautification
-          </div>
+</section>
 
-          <div className="ai-card">
-            Tourism Promotion Zones
-          </div>
-
-        </div>
-      </section>
 
       {/* IMPACT ANALYSIS */}
 
