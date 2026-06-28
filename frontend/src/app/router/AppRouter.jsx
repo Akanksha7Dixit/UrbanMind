@@ -24,6 +24,7 @@ import AppLayout from "../../components/layouts/AppLayout";
 
 import IssueManagement from "../../features/planning/IssueManagement";
 import IssueSubmission from "../../features/citizen/IssueSubmission";
+import InfrastructureManagement from "../../features/planning/InfrastructureManagement";
 
 export default function AppRouter() {
   return (
@@ -127,6 +128,21 @@ export default function AppRouter() {
     </RoleProtectedRoute>
   }
 />
+
+<Route
+  path="/infrastructure"
+  element={
+    <RoleProtectedRoute
+      allowedRoles={[
+        "admin",
+        "planner",
+      ]}
+    >
+      <InfrastructureManagement />
+    </RoleProtectedRoute>
+  }
+/>
+
 
           <Route
             path="/settings"

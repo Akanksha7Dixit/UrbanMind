@@ -1,23 +1,16 @@
-const express =
-  require("express");
+const express = require("express");
+
+const router = express.Router();
+
+const { protect } =
+require("../middleware/authMiddleware");
 
 const {
   getDashboardStats,
-} = require(
-  "../controllers/dashboardController"
-);
-
-const {
-  protect,
-} = require(
-  "../middleware/authMiddleware"
-);
-
-const router =
-  express.Router();
+} = require("../controllers/dashboardController");
 
 router.get(
-  "/stats",
+  "/",
   protect,
   getDashboardStats
 );

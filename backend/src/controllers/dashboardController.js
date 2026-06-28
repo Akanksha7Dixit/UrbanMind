@@ -1,38 +1,47 @@
 const User = require("../models/User");
 const Issue = require("../models/Issue");
+const Recommendation = require("../models/Recommendation");
+const Infrastructure = require("../models/Infrastructure");
 
-exports.getDashboardStats =
-  async (req, res) => {
-    try {
-      const totalUsers =
-        await User.countDocuments();
+const getDashboardStats = async (req, res) => {
+  try {
 
-      const totalIssues =
-        await Issue.countDocuments();
+    const totalUsers = await User.countDocuments();
 
-      const pendingIssues =
-        await Issue.countDocuments({
-          status: "Pending",
-        });
+    const totalIssues = await Issue.countDocuments();
 
-      const resolvedIssues =
-        await Issue.countDocuments({
-          status: "Resolved",
-        });
+    const pendingIssues = await Issue.countDocuments({
+      status: "Pending",
+    });
 
-      res.json({
-        success: true,
-        stats: {
-          totalUsers,
-          totalIssues,
-          pendingIssues,
-          resolvedIssues,
-        },
-      });
-    } catch (error) {
-      res.status(500).json({
-        message:
-          error.message,
-      });
-    }
-  };
+    const resolvedIssues = await Issue.countDocuments({
+      status: "Resolved",
+    });
+
+    const totalRecommendations =
+      await Recommendation.countDocuments();
+
+    const totalInfrastructure =
+      await Infrastructure.countDocuments();
+
+    res.json({
+      totalUsers,
+      totalIssues,
+      pendingIssues,
+      resolvedIssues,
+      totalRecommendations,
+      totalInfrastructure,
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      message: err.message,
+    });
+
+  }
+};
+
+module.exports = {
+  getDashboardStats,
+};

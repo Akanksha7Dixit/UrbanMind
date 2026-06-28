@@ -1,10 +1,64 @@
 import { Layers3, Filter, Pencil, Ruler, Download, Share2, Sparkles, } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, } from "react-leaflet";
-import { useState } from "react";
 import AIAssistantDrawer from "../../components/ai/AIAssistantDrawer";
+
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  useAuthStore,
+} from "../../store/authStore";
+
+import {
+  getInfrastructure,
+} from "../../services/infrastructureService";
 
 export default function GISWorkspace() {
   const [aiOpen, setAiOpen] = useState(false);
+
+  const token =
+  useAuthStore(
+    (state) => state.token
+  );
+
+const [
+  infrastructure,
+  setInfrastructure,
+] = useState([]);
+
+
+useEffect(() => {
+
+  const fetchInfrastructure =
+    async () => {
+
+      try {
+
+        const data =
+          await getInfrastructure(
+            token
+          );
+
+        setInfrastructure(
+          data.infrastructure
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+  if (token) {
+    fetchInfrastructure();
+  }
+
+}, [token]);
+
   return (
 <div className="w-full flex flex-col">
         {/* TOOLBAR */}
@@ -360,36 +414,45 @@ export default function GISWorkspace() {
                     </tr>
                   </thead>
 
-                  <tbody>
+                 <tbody>
 
-                    <tr className="border-b border-white/5">
-                      <td className="p-6">Central Hospital</td>
-                      <td className="p-6">Healthcare</td>
-                      <td className="p-6">67%</td>
-                      <td className="p-6 text-emerald-400">
-                        Active
-                      </td>
-                    </tr>
+  {infrastructure.map((item) => (
 
-                    <tr className="border-b border-white/5">
-                      <td className="p-6">Metro Line 2</td>
-                      <td className="p-6">Transit</td>
-                      <td className="p-6">91%</td>
-                      <td className="p-6 text-cyan-400">
-                        Healthy
-                      </td>
-                    </tr>
+    <tr
+      key={item._id}
+      className="border-b border-white/5"
+    >
 
-                    <tr>
-                      <td className="p-6">School Cluster A</td>
-                      <td className="p-6">Education</td>
-                      <td className="p-6">82%</td>
-                      <td className="p-6 text-yellow-400">
-                        Monitor
-                      </td>
-                    </tr>
+      <td className="p-6">
+        {item.name}
+      </td>
 
-                  </tbody>
+      <td className="p-6">
+        {item.type}
+      </td>
+
+      <td className="p-6">
+        {item.utilization}%
+      </td>
+
+      <td
+        className={`p-6
+
+        ${
+          item.status === "Operational"
+            ? "text-emerald-400"
+
+            : "text-yellow-400"
+        }`}
+      >
+        {item.status}
+      </td>
+
+    </tr>
+
+  ))}
+
+</tbody>
                 </table>
 
                 <section className="mt-16">

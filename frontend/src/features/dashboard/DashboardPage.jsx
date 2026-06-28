@@ -24,34 +24,34 @@ import {
 
 export default function DashboardPage() {
   const token =
-  useAuthStore(
-    (state) => state.token
-  );
+    useAuthStore(
+      (state) => state.token
+    );
 
-const [stats, setStats] =
-  useState(null);
+  const [stats, setStats] =
+    useState(null);
 
   useEffect(() => {
-  const fetchStats =
-    async () => {
-      try {
-        const data =
-          await getDashboardStats(
-            token
+    const fetchStats =
+      async () => {
+        try {
+          const data =
+            await getDashboardStats(
+              token
+            );
+
+          setStats(
+            data
           );
+        } catch (error) {
+          console.error(error);
+        }
+      };
 
-        setStats(
-          data.stats
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-  if (token) {
-    fetchStats();
-  }
-}, [token]);
+    if (token) {
+      fetchStats();
+    }
+  }, [token]);
 
   return (
     <div className="space-y-8 p-8">
@@ -85,77 +85,77 @@ const [stats, setStats] =
       {/* KPI Cards */}
       {/* KPI Cards */}
 
-<div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-4 gap-6">
 
-  <KpiCard
-    title="Total Users"
-    value={
-      stats?.totalUsers ?? 0
-    }
-    change="+"
-    icon={Users}
-  />
+        <KpiCard
+          title="Total Users"
+          value={
+            stats?.totalUsers ?? 0
+          }
+          change="+"
+          icon={Users}
+        />
 
-  <KpiCard
-    title="Total Issues"
-    value={
-      stats?.totalIssues ?? 0
-    }
-    change="+"
-    icon={Car}
-  />
+        <KpiCard
+          title="Total Issues"
+          value={
+            stats?.totalIssues ?? 0
+          }
+          change="+"
+          icon={Car}
+        />
 
-  <KpiCard
-    title="Pending Issues"
-    value={
-      stats?.pendingIssues ?? 0
-    }
-    change="+"
-    icon={Wind}
-  />
+        <KpiCard
+          title="Pending Issues"
+          value={
+            stats?.pendingIssues ?? 0
+          }
+          change="+"
+          icon={Wind}
+        />
 
-  <KpiCard
-    title="Resolved Issues"
-    value={
-      stats?.resolvedIssues ?? 0
-    }
-    change="+"
-    icon={Wallet}
-  />
+        <KpiCard
+          title="Resolved Issues"
+          value={
+            stats?.resolvedIssues ?? 0
+          }
+          change="+"
+          icon={Wallet}
+        />
 
-</div>
+      </div>
 
       {/* GIS Preview */}
 
-<div
-  className="
+      <div
+        className="
     rounded-3xl
     border border-white/10
     bg-white/[0.03]
     p-6
     h-[550px]
   "
->
-  <h3 className="mb-6 text-xl font-semibold">
-    City Operations Map Preview
-  </h3>
+      >
+        <h3 className="mb-6 text-xl font-semibold">
+          City Operations Map Preview
+        </h3>
 
-  <div
-    className="
+        <div
+          className="
       relative
       h-full
       overflow-hidden
       rounded-2xl
       bg-slate-950
     "
-  >
+        >
 
-    {/* Grid Overlay */}
+          {/* Grid Overlay */}
 
-    <div
-      className="absolute inset-0 opacity-20"
-      style={{
-        backgroundImage: `
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage: `
           linear-gradient(
             rgba(255,255,255,.05) 1px,
             transparent 1px
@@ -166,40 +166,40 @@ const [stats, setStats] =
             transparent 1px
           )
         `,
-        backgroundSize: "40px 40px",
-      }}
-    />
+              backgroundSize: "40px 40px",
+            }}
+          />
 
-    {/* AI Insight Card */}
+          {/* AI Insight Card */}
 
-    <div className="absolute left-6 top-6 z-30">
-      <div
-        className="
+          <div className="absolute left-6 top-6 z-30">
+            <div
+              className="
           rounded-xl
           border border-white/10
           bg-slate-900/90
           p-4
           backdrop-blur-xl
         "
-      >
-        <p className="text-cyan-400">
-          Coverage Gap
-        </p>
+            >
+              <p className="text-cyan-400">
+                Coverage Gap
+              </p>
 
-        <p className="mt-2 font-medium">
-          Sector 12
-        </p>
+              <p className="mt-2 font-medium">
+                Sector 12
+              </p>
 
-        <p className="text-sm text-slate-400">
-          Confidence 91%
-        </p>
-      </div>
-    </div>
+              <p className="text-sm text-slate-400">
+                Confidence 91%
+              </p>
+            </div>
+          </div>
 
-    {/* Layer Panel */}
+          {/* Layer Panel */}
 
-    <div
-      className="
+          <div
+            className="
         absolute
         left-6
         top-32
@@ -211,40 +211,40 @@ const [stats, setStats] =
         p-4
         backdrop-blur-xl
       "
-    >
-      <p className="mb-4 font-medium">
-        Map Layers
-      </p>
+          >
+            <p className="mb-4 font-medium">
+              Map Layers
+            </p>
 
-      <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-sm">
 
-        <label className="flex items-center gap-2">
-          <input type="checkbox" defaultChecked />
-          Roads
-        </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" defaultChecked />
+                Roads
+              </label>
 
-        <label className="flex items-center gap-2">
-          <input type="checkbox" defaultChecked />
-          Hospitals
-        </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" defaultChecked />
+                Hospitals
+              </label>
 
-        <label className="flex items-center gap-2">
-          <input type="checkbox" defaultChecked />
-          Schools
-        </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" defaultChecked />
+                Schools
+              </label>
 
-        <label className="flex items-center gap-2">
-          <input type="checkbox" defaultChecked />
-          Metro
-        </label>
+              <label className="flex items-center gap-2">
+                <input type="checkbox" defaultChecked />
+                Metro
+              </label>
 
-      </div>
-    </div>
+            </div>
+          </div>
 
-    {/* Map Stats */}
+          {/* Map Stats */}
 
-    <div
-      className="
+          <div
+            className="
         absolute
         right-6
         top-6
@@ -252,66 +252,66 @@ const [stats, setStats] =
         flex
         gap-3
       "
-    >
-      <div
-        className="
+          >
+            <div
+              className="
           rounded-xl
           border border-white/10
           bg-slate-900/80
           px-4
           py-2
         "
-      >
-        <p className="text-xs text-slate-400">
-          Hospitals
-        </p>
+            >
+              <p className="text-xs text-slate-400">
+                Hospitals
+              </p>
 
-        <p className="font-semibold">
-          12
-        </p>
-      </div>
+              <p className="font-semibold">
+                12
+              </p>
+            </div>
 
-      <div
-        className="
+            <div
+              className="
           rounded-xl
           border border-white/10
           bg-slate-900/80
           px-4
           py-2
         "
-      >
-        <p className="text-xs text-slate-400">
-          Roads
-        </p>
+            >
+              <p className="text-xs text-slate-400">
+                Roads
+              </p>
 
-        <p className="font-semibold">
-          64 km
-        </p>
-      </div>
+              <p className="font-semibold">
+                64 km
+              </p>
+            </div>
 
-      <div
-        className="
+            <div
+              className="
           rounded-xl
           border border-white/10
           bg-slate-900/80
           px-4
           py-2
         "
-      >
-        <p className="text-xs text-slate-400">
-          Coverage
-        </p>
+            >
+              <p className="text-xs text-slate-400">
+                Coverage
+              </p>
 
-        <p className="font-semibold text-emerald-400">
-          91%
-        </p>
-      </div>
-    </div>
+              <p className="font-semibold text-emerald-400">
+                91%
+              </p>
+            </div>
+          </div>
 
-    {/* Main Roads */}
+          {/* Main Roads */}
 
-    <div
-      className="
+          <div
+            className="
         absolute
         left-0
         top-1/2
@@ -319,10 +319,10 @@ const [stats, setStats] =
         w-full
         bg-cyan-500/20
       "
-    />
+          />
 
-    <div
-      className="
+          <div
+            className="
         absolute
         left-1/2
         top-0
@@ -330,10 +330,10 @@ const [stats, setStats] =
         w-[2px]
         bg-cyan-500/20
       "
-    />
+          />
 
-    <div
-      className="
+          <div
+            className="
         absolute
         left-[28%]
         top-[42%]
@@ -341,10 +341,10 @@ const [stats, setStats] =
         w-[35%]
         bg-cyan-500/20
       "
-    />
+          />
 
-    <div
-      className="
+          <div
+            className="
         absolute
         left-[45%]
         top-[35%]
@@ -352,10 +352,10 @@ const [stats, setStats] =
         w-[2px]
         bg-cyan-500/20
       "
-    />
+          />
 
-    <div
-      className="
+          <div
+            className="
         absolute
         left-[60%]
         top-[50%]
@@ -363,25 +363,25 @@ const [stats, setStats] =
         w-[18%]
         bg-cyan-500/20
       "
-    />
+          />
 
-    {/* Infrastructure Nodes */}
+          {/* Infrastructure Nodes */}
 
-    <div className="absolute left-40 top-32 h-4 w-4 rounded-full bg-cyan-400 shadow-lg shadow-cyan-500/50" />
-    <div className="absolute left-72 top-48 h-4 w-4 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50" />
-    <div className="absolute left-[55%] top-[35%] h-4 w-4 rounded-full bg-purple-400 shadow-lg shadow-purple-500/50" />
-    <div className="absolute right-40 top-40 h-4 w-4 rounded-full bg-yellow-400 shadow-lg shadow-yellow-500/50" />
-    <div className="absolute right-80 bottom-24 h-4 w-4 rounded-full bg-red-400 shadow-lg shadow-red-500/50" />
-    <div className="absolute left-[70%] top-[60%] h-4 w-4 rounded-full bg-cyan-400 shadow-lg shadow-cyan-500/50" />
-    <div className="absolute left-[45%] top-[65%] h-4 w-4 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50" />
-    <div className="absolute left-[30%] top-[55%] h-4 w-4 rounded-full bg-blue-400 shadow-lg shadow-blue-500/50" />
-    <div className="absolute left-[75%] top-[30%] h-4 w-4 rounded-full bg-pink-400 shadow-lg shadow-pink-500/50" />
-    <div className="absolute left-[60%] top-[75%] h-4 w-4 rounded-full bg-orange-400 shadow-lg shadow-orange-500/50" />
+          <div className="absolute left-40 top-32 h-4 w-4 rounded-full bg-cyan-400 shadow-lg shadow-cyan-500/50" />
+          <div className="absolute left-72 top-48 h-4 w-4 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50" />
+          <div className="absolute left-[55%] top-[35%] h-4 w-4 rounded-full bg-purple-400 shadow-lg shadow-purple-500/50" />
+          <div className="absolute right-40 top-40 h-4 w-4 rounded-full bg-yellow-400 shadow-lg shadow-yellow-500/50" />
+          <div className="absolute right-80 bottom-24 h-4 w-4 rounded-full bg-red-400 shadow-lg shadow-red-500/50" />
+          <div className="absolute left-[70%] top-[60%] h-4 w-4 rounded-full bg-cyan-400 shadow-lg shadow-cyan-500/50" />
+          <div className="absolute left-[45%] top-[65%] h-4 w-4 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50" />
+          <div className="absolute left-[30%] top-[55%] h-4 w-4 rounded-full bg-blue-400 shadow-lg shadow-blue-500/50" />
+          <div className="absolute left-[75%] top-[30%] h-4 w-4 rounded-full bg-pink-400 shadow-lg shadow-pink-500/50" />
+          <div className="absolute left-[60%] top-[75%] h-4 w-4 rounded-full bg-orange-400 shadow-lg shadow-orange-500/50" />
 
-    {/* Watermark */}
+          {/* Watermark */}
 
-    <div
-      className="
+          <div
+            className="
         absolute
         inset-0
         flex
@@ -389,21 +389,21 @@ const [stats, setStats] =
         justify-center
         pointer-events-none
       "
-    >
-      <span
-        className="
+          >
+            <span
+              className="
           text-7xl
           font-bold
           tracking-widest
           text-slate-800
         "
-      >
-        URBAN GIS
-      </span>
-    </div>
+            >
+              URBAN GIS
+            </span>
+          </div>
 
-  </div>
-</div>
+        </div>
+      </div>
 
       {/* Simulations + AI */}
       <div className="grid grid-cols-12 gap-6">

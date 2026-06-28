@@ -17,6 +17,9 @@ const recommendationRoutes =
     "./routes/recommendationRoutes"
   );
 
+const infrastructureRoutes =
+  require("./routes/infrastructureRoutes");
+
 const app = express();
 
 // Connect Database
@@ -25,6 +28,11 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use(
+  "/api/infrastructure",
+  infrastructureRoutes
+);
 
 // Test Route
 app.get("/", (req, res) => {
