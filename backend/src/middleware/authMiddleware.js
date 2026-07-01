@@ -29,16 +29,18 @@ const protect = (
         token,
         process.env.JWT_SECRET
       );
+    console.log("Decoded JWT:", decoded);
 
     req.user = decoded;
 
     next();
   } catch (error) {
-    return res.status(401).json({
-      message:
-        "Invalid token",
-    });
-  }
+  console.log("JWT ERROR:", error);
+
+  return res.status(401).json({
+    message: error.message,
+  });
+}
 };
 
 module.exports = {

@@ -7,6 +7,7 @@ import {
   FileText,
   Settings,
   Sparkles,
+  Building2,
 } from "lucide-react";
 
 export const NAV_GROUPS = [
@@ -34,6 +35,15 @@ export const NAV_GROUPS = [
         path: "/simulation",
         icon: GitCompare,
         roles: ["admin", "planner"],
+      },
+      {
+        label: "Infrastructure",
+        path: "/infrastructure",
+        icon: Building2,
+        roles: [
+          "admin",
+          "planner",
+        ],
       },
     ],
   },
