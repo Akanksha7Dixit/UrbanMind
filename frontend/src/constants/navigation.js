@@ -8,45 +8,67 @@ import {
   Settings,
   Sparkles,
   Building2,
+  AlertTriangle,
 } from "lucide-react";
 
 export const NAV_GROUPS = [
   {
-    title: "WORKSPACE",
-    items: [
-      {
-        label: "Dashboard",
-        path: "/dashboard",
-        icon: LayoutDashboard,
-        roles: [
-          "admin",
-          "planner",
-          "analyst",
-        ],
-      },
-      {
-        label: "GIS Workspace",
-        path: "/gis",
-        icon: Map,
-        roles: ["admin", "planner"],
-      },
-      {
-        label: "Scenario Builder",
-        path: "/simulation",
-        icon: GitCompare,
-        roles: ["admin", "planner"],
-      },
-      {
-        label: "Infrastructure",
-        path: "/infrastructure",
-        icon: Building2,
-        roles: [
-          "admin",
-          "planner",
-        ],
-      },
-    ],
-  },
+  title: "WORKSPACE",
+  items: [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: LayoutDashboard,
+      roles: [
+        "admin",
+        "planner",
+        "analyst",
+      ],
+    },
+
+    {
+      label: "GIS Workspace",
+      path: "/gis",
+      icon: Map,
+      roles: [
+        "admin",
+        "planner",
+      ],
+    },
+
+    {
+      label: "Scenario Builder",
+      path: "/simulation",
+      icon: GitCompare,
+      roles: [
+        "admin",
+        "planner",
+      ],
+    },
+
+    {
+      label: "Infrastructure",
+      path: "/infrastructure",
+      icon: Building2,
+      roles: [
+        "admin",
+        "planner",
+      ],
+    },
+
+    {
+      label: "Issue Management",
+      path: "/issues",
+      icon: AlertTriangle,
+      roles: [
+        "admin",
+        "planner",
+      ],
+    },
+
+  ],
+},
+
 
   {
     title: "ANALYTICS",

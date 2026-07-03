@@ -5,9 +5,9 @@ const {
   createIssue,
   getIssues,
   updateIssueStatus,
-} = require(
-  "../controllers/issueController"
-);
+  updateIssue,
+  deleteIssue,
+} = require("../controllers/issueController");
 
 
 const {
@@ -46,4 +46,25 @@ router.patch(
   ),
   updateIssueStatus
 );
+
+router.put(
+  "/:id",
+  protect,
+  authorize(
+    "admin",
+    "planner"
+  ),
+  updateIssue
+);
+
+router.delete(
+  "/:id",
+  protect,
+  authorize(
+    "admin",
+    "planner"
+  ),
+  deleteIssue
+);
+
 module.exports = router;

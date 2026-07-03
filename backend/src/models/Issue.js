@@ -14,12 +14,40 @@ const issueSchema = new mongoose.Schema(
 
     category: {
       type: String,
+      enum: [
+        "Road",
+        "Water",
+        "Electricity",
+        "Garbage",
+        "Traffic",
+        "Infrastructure",
+      ],
       default: "Infrastructure",
+    },
+
+    priority: {
+      type: String,
+      enum: [
+        "Low",
+        "Medium",
+        "High",
+      ],
+      default: "Medium",
     },
 
     status: {
       type: String,
+      enum: [
+        "Pending",
+        "In Progress",
+        "Resolved",
+      ],
       default: "Pending",
+    },
+
+    location: {
+      type: String,
+      default: "",
     },
 
     createdBy: {

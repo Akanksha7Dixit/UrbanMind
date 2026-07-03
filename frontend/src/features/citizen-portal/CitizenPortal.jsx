@@ -7,11 +7,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-import { Link } from "react-router-dom";
-
 import {
   useEffect,
   useState,
+  useRef,
 } from "react";
 
 import {
@@ -24,34 +23,21 @@ import {
 } from "../../store/authStore";
 
 export default function CitizenPortal() {
-  const token =
-    useAuthStore(
-      (state) => state.token
-    );
+
+  const token = useAuthStore(
+    (state) => state.token
+  );
+
+  const formRef = useRef(null);
 
   const [issues, setIssues] =
     useState([]);
 
-  useEffect(() => {
-    const fetchIssues =
-      async () => {
-        try {
-          const data =
-            await getIssues(
-              token
-            );
+  const [loading, setLoading] =
+    useState(true);
 
-          setIssues(
-            data.issues
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      };
-    if (token) {
-      fetchIssues();
-    }
-  }, [token]);
+  const [submitting, setSubmitting] =
+    useState(false);
 
   const [formData, setFormData] =
     useState({
@@ -61,30 +47,71 @@ export default function CitizenPortal() {
       location: "",
     });
 
+  useEffect(() => {
+    if (token) {
+      fetchIssues();
+    }
+  }, [token]);
+
+  const fetchIssues = async () => {
+    try {
+
+      setLoading(true);
+
+      const data =
+        await getIssues(token);
+
+      setIssues(data.issues);
+
+    } catch (error) {
+
+      console.error(error);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]:
         e.target.value,
     });
+
   };
+
   const handleSubmit =
     async (e) => {
+
       e.preventDefault();
 
+      if (
+        !formData.title ||
+        !formData.description
+      ) {
+        alert(
+          "Please fill all required fields."
+        );
+        return;
+      }
+
       try {
+
+        setSubmitting(true);
+
         await createIssue(
           formData,
           token
         );
 
-        const data =
-          await getIssues(
-            token
-          );
+        await fetchIssues();
 
-        setIssues(
-          data.issues
+        alert(
+          "Issue reported successfully."
         );
 
         setFormData({
@@ -95,62 +122,22 @@ export default function CitizenPortal() {
         });
 
       } catch (error) {
+
         console.error(error);
+
+      } finally {
+
+        setSubmitting(false);
+
       }
+
     };
 
   return (
 
-
     <div className="space-y-8 p-8">
 
-      {/* HEADER */}
-
-      {/* HERO */}
-
-<section
-  className="
-    rounded-3xl
-    border border-white/10
-    bg-gradient-to-r
-    from-cyan-950/20
-    via-slate-950
-    to-indigo-950/20
-    p-8
-  "
->
-  <p className="text-cyan-400">
-    Community Overview
-  </p>
-
-  <h2 className="mt-4 text-5xl font-bold">
-    125,000 Active Citizens
-  </h2>
-
-  <p className="mt-4 max-w-3xl text-slate-400">
-    Monitor community feedback,
-    service requests,
-    satisfaction scores and
-    engagement trends.
-  </p>
-
-  <Link
-    to="/report-issue"
-    className="
-      mt-6 inline-block
-      rounded-xl
-      bg-cyan-500
-      px-6 py-3
-      font-semibold
-      text-slate-950
-    "
-  >
-    Report New Issue
-  </Link>
-
-</section>
-
-      {/* HERO */}
+      {/* ================= HERO ================= */}
 
       <section
         className="
@@ -163,71 +150,60 @@ export default function CitizenPortal() {
           p-8
         "
       >
+
         <p className="text-cyan-400">
           Community Overview
         </p>
 
-        <h2 className="mt-4 text-5xl font-bold">
+        <h1 className="mt-4 text-5xl font-bold">
           125,000 Active Citizens
-        </h2>
+        </h1>
 
         <p className="mt-4 max-w-3xl text-slate-400">
-          Monitor community feedback, service requests,
-          satisfaction scores and engagement trends.
+          Monitor community feedback,
+          issue reporting,
+          satisfaction scores,
+          and citizen engagement.
         </p>
 
-        <section
+        <button
+          onClick={() =>
+            formRef.current?.scrollIntoView({
+              behavior: "smooth",
+            })
+          }
           className="
-    rounded-3xl
-    border border-white/10
-    bg-gradient-to-r
-    from-cyan-950/20
-    via-slate-950
-    to-indigo-950/20
-    p-8
-  "
+            mt-6
+            rounded-xl
+            bg-cyan-500
+            px-6
+            py-3
+            font-semibold
+            text-slate-950
+          "
         >
-          <p className="text-cyan-400">
-            Community Overview
-          </p>
+          Report New Issue
+        </button>
 
-          <h2 className="mt-4 text-5xl font-bold">
-            125,000 Active Citizens
-          </h2>
-
-          <p className="mt-4 max-w-3xl text-slate-400">
-            Monitor community feedback, service requests,
-            satisfaction scores and engagement trends.
-          </p>
-
-          <Link
-            to="/report-issue"
-            className="
-      mt-6 inline-block
-      rounded-xl
-      bg-cyan-500
-      px-6 py-3
-      font-semibold
-      text-slate-950
-    "
-          >
-            Report New Issue
-          </Link>
-
-        </section>
       </section>
 
+      {/* ================= KPI CARDS ================= */}
 
-
-      {/* KPI */}
-
-      <div className="grid gap-6 lg:grid-cols-4">
+      <div
+        className="
+          grid
+          gap-6
+          lg:grid-cols-4
+        "
+      >
 
         <div className="ai-card">
           <Users />
+
           <h3 className="mt-4 text-4xl font-bold">
             125K
           </h3>
+
           <p className="text-slate-400">
             Registered Citizens
           </p>
@@ -235,19 +211,29 @@ export default function CitizenPortal() {
 
         <div className="ai-card">
           <MessageSquare />
+
           <h3 className="mt-4 text-4xl font-bold">
-            4,820
+            {issues.length}
           </h3>
+
           <p className="text-slate-400">
-            Feedback Entries
+            Total Issues
           </p>
         </div>
 
         <div className="ai-card">
           <Wrench />
+
           <h3 className="mt-4 text-4xl font-bold">
-            312
+            {
+              issues.filter(
+                (issue) =>
+                  issue.status !==
+                  "Resolved"
+              ).length
+            }
           </h3>
+
           <p className="text-slate-400">
             Active Requests
           </p>
@@ -255,9 +241,11 @@ export default function CitizenPortal() {
 
         <div className="ai-card">
           <Smile />
+
           <h3 className="mt-4 text-4xl font-bold">
             87%
           </h3>
+
           <p className="text-slate-400">
             Satisfaction
           </p>
@@ -265,180 +253,382 @@ export default function CitizenPortal() {
 
       </div>
 
-      {/* ISSUE REPORTING */}
+      {/* ================= ISSUE FORM ================= */}
 
-      <section className="ai-card">
+      <section
+        ref={formRef}
+        className="ai-card"
+      >
 
-        <h2 className="mb-6 text-2xl font-semibold">
+        <h2
+          className="
+            mb-6
+            text-2xl
+            font-semibold
+          "
+        >
           Report New Issue
         </h2>
 
         <form
           onSubmit={handleSubmit}
           className="space-y-4"
-        >
-
-          <input
+        >          <input
             type="text"
             name="title"
             placeholder="Issue Title"
             value={formData.title}
             onChange={handleChange}
             className="
-        w-full rounded-xl
-        bg-slate-900
-        p-3
-      "
+              w-full
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+            "
+            required
           />
 
           <textarea
             name="description"
-            placeholder="Description"
+            placeholder="Describe the issue..."
             value={formData.description}
             onChange={handleChange}
+            rows={5}
             className="
-        w-full rounded-xl
-        bg-slate-900
-        p-3
-      "
+              w-full
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+            "
+            required
           />
 
-          <input
-            type="text"
+          <select
             name="category"
-            placeholder="Category"
             value={formData.category}
             onChange={handleChange}
             className="
-        w-full rounded-xl
-        bg-slate-900
-        p-3
-      "
-          />
+              w-full
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+            "
+          >
+            <option value="">
+              Select Category
+            </option>
+
+            <option value="Road">
+              Road
+            </option>
+
+            <option value="Water">
+              Water
+            </option>
+
+            <option value="Electricity">
+              Electricity
+            </option>
+
+            <option value="Garbage">
+              Garbage
+            </option>
+
+            <option value="Traffic">
+              Traffic
+            </option>
+
+            <option value="Infrastructure">
+              Infrastructure
+            </option>
+
+          </select>
 
           <input
             type="text"
             name="location"
-            placeholder="Location"
+            placeholder="Location / Sector"
             value={formData.location}
             onChange={handleChange}
             className="
-        w-full rounded-xl
-        bg-slate-900
-        p-3
-      "
+              w-full
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+            "
           />
 
           <button
             type="submit"
+            disabled={submitting}
             className="
-        rounded-xl
-        bg-cyan-500
-        px-6
-        py-3
-        font-semibold
-      "
+              rounded-xl
+              bg-cyan-500
+              px-6
+              py-3
+              font-semibold
+              text-slate-950
+              transition
+              hover:bg-cyan-400
+              disabled:opacity-60
+            "
           >
-            Submit Issue
+            {submitting
+              ? "Submitting..."
+              : "Submit Issue"}
           </button>
 
         </form>
 
       </section>
 
-      {/* ACTIVE ISSUES */}
+      {/* ================= ACTIVE ISSUES ================= */}
 
       <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Active Issues
-        </h2>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="mb-6 flex items-center justify-between">
 
-          {issues.map((issue) => (
+          <h2 className="text-2xl font-semibold">
+            Active Issues
+          </h2>
 
-            <div
-              key={issue._id}
-              className="ai-card"
-            >
-              <AlertTriangle
-                className="text-cyan-400"
-              />
-
-              <h3 className="mt-4 font-semibold">
-                {issue.title}
-              </h3>
-
-              <p className="mt-3 text-slate-400">
-                {issue.description}
-              </p>
-
-              <span
-                className={`
-    inline-block mt-4 px-3 py-1
-    rounded-full text-sm font-medium
-
-    ${issue.status === "Pending"
-                    ? "bg-yellow-500/20 text-yellow-400"
-
-                    : issue.status === "Resolved"
-                      ? "bg-green-500/20 text-green-400"
-
-                      : "bg-cyan-500/20 text-cyan-400"
-                  }
-  `}
-              >
-                {issue.status}
-              </span>
-
-            </div>
-
-          ))}
+          <span className="text-slate-400">
+            {issues.length} Issues
+          </span>
 
         </div>
-      </section>
 
-      {/* FEEDBACK */}
+        {loading ? (
+
+          <div className="ai-card text-center py-12">
+            Loading issues...
+          </div>
+
+        ) : issues.length === 0 ? (
+
+          <div className="ai-card text-center py-12">
+
+            <AlertTriangle
+              size={50}
+              className="mx-auto text-yellow-400"
+            />
+
+            <h3 className="mt-4 text-2xl font-bold">
+              No Issues Reported
+            </h3>
+
+            <p className="mt-2 text-slate-400">
+              Be the first citizen to report an issue.
+            </p>
+
+          </div>
+
+        ) : (
+
+          <div className="grid gap-6 lg:grid-cols-3">
+
+            {issues.map((issue) => (
+
+              <div
+                key={issue._id}
+                className="ai-card"
+              >
+
+                <AlertTriangle
+                  className="text-cyan-400"
+                />
+
+                <h3 className="mt-4 text-xl font-bold">
+                  {issue.title}
+                </h3>
+
+                <p className="mt-3 text-slate-400">
+                  {issue.description}
+                </p>
+
+                <p className="mt-3 text-sm text-cyan-400">
+                  Category:
+                  {" "}
+                  {issue.category}
+                </p>
+
+                <p className="mt-2 text-sm text-slate-400">
+                  Location:
+                  {" "}
+                  {issue.location || "N/A"}
+                </p>
+
+                <p className="mt-2 text-xs text-slate-500">
+                  Reported by:
+                  {" "}
+                  {issue.createdBy?.name}
+                </p>
+
+                <p className="text-xs text-slate-500">
+                  {new Date(
+                    issue.createdAt
+                  ).toLocaleDateString()}
+                </p>
+
+                <span
+                  className={`
+                    inline-block
+                    mt-5
+                    rounded-full
+                    px-3
+                    py-1
+                    text-sm
+
+                    ${
+                      issue.status === "Pending"
+                        ? "bg-yellow-500/20 text-yellow-400"
+
+                        : issue.status === "Resolved"
+                        ? "bg-green-500/20 text-green-400"
+
+                        : "bg-cyan-500/20 text-cyan-400"
+                    }
+                  `}
+                >
+                  {issue.status}
+                </span>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </section>      {/* ================= PUBLIC FEEDBACK ================= */}
 
       <section
         className="
           rounded-3xl
-          border border-white/10
+          border
+          border-white/10
           p-8
         "
       >
-        <h2 className="text-2xl font-semibold">
-          Public Feedback
-        </h2>
 
-        <div className="mt-6 space-y-4">
+        <div className="flex items-center justify-between">
 
-          <div className="rounded-2xl bg-white/[0.03] p-4">
-            Healthcare services improved significantly.
+          <div>
+
+            <h2 className="text-2xl font-semibold">
+              Public Feedback
+            </h2>
+
+            <p className="mt-2 text-slate-400">
+              Latest citizen opinions and suggestions.
+            </p>
+
           </div>
 
-          <div className="rounded-2xl bg-white/[0.03] p-4">
-            Public transport frequency should increase.
+          <MessageSquare
+            size={36}
+            className="text-cyan-400"
+          />
+
+        </div>
+
+        <div className="mt-8 space-y-4">
+
+          <div
+            className="
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.03]
+              p-5
+            "
+          >
+            <p className="text-slate-300">
+              Healthcare services have improved
+              significantly over the last few
+              months.
+            </p>
+
+            <p className="mt-3 text-sm text-slate-500">
+              Citizen Feedback
+            </p>
           </div>
 
-          <div className="rounded-2xl bg-white/[0.03] p-4">
-            New green corridors are highly appreciated.
+          <div
+            className="
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.03]
+              p-5
+            "
+          >
+            <p className="text-slate-300">
+              Public transport frequency should
+              increase during office hours.
+            </p>
+
+            <p className="mt-3 text-sm text-slate-500">
+              Citizen Suggestion
+            </p>
+          </div>
+
+          <div
+            className="
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.03]
+              p-5 "
+            >
+            <p className="text-slate-300">
+              New green corridors are highly
+              appreciated by local residents.
+            </p>
+
+            <p className="mt-3 text-sm text-slate-500">
+              Community Survey
+            </p>
           </div>
 
         </div>
+
       </section>
 
-      {/* ENGAGEMENT */}
+      {/* ================= ENGAGEMENT ANALYTICS ================= */}
 
       <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Engagement Analytics
-        </h2>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="mb-6">
+
+          <h2 className="text-2xl font-semibold">
+            Engagement Analytics
+          </h2>
+
+          <p className="mt-2 text-slate-400">
+            Community participation metrics.
+          </p>
+
+        </div>
+
+        <div
+          className="
+            grid
+            gap-6
+            lg:grid-cols-3
+          "
+        >
 
           <div className="ai-card">
-            <TrendingUp />
+
+            <TrendingUp
+              className="text-cyan-400"
+            />
 
             <h3 className="mt-4 text-4xl font-bold">
               +24%
@@ -447,10 +637,14 @@ export default function CitizenPortal() {
             <p className="text-slate-400">
               Citizen Participation
             </p>
+
           </div>
 
           <div className="ai-card">
-            <TrendingUp />
+
+            <TrendingUp
+              className="text-emerald-400"
+            />
 
             <h3 className="mt-4 text-4xl font-bold">
               +16%
@@ -459,10 +653,14 @@ export default function CitizenPortal() {
             <p className="text-slate-400">
               Issue Resolution
             </p>
+
           </div>
 
           <div className="ai-card">
-            <TrendingUp />
+
+            <TrendingUp
+              className="text-yellow-400"
+            />
 
             <h3 className="mt-4 text-4xl font-bold">
               +12%
@@ -471,11 +669,42 @@ export default function CitizenPortal() {
             <p className="text-slate-400">
               Satisfaction Growth
             </p>
+
           </div>
 
         </div>
+
       </section>
 
+      {/* ================= FOOTER ================= */}
+
+      <footer
+        className="
+          rounded-3xl
+          border
+          border-white/10
+          bg-gradient-to-r
+          from-slate-950
+          to-slate-900
+          p-8
+          text-center
+        "
+      >
+
+        <h2 className="text-3xl font-bold">
+          Building Smarter Cities Together
+        </h2>
+
+        <p className="mt-3 text-slate-400">
+          Every issue reported by citizens
+          contributes to a safer, cleaner,
+          and more sustainable city.
+        </p>
+
+      </footer>
+
     </div>
+
   );
+
 }

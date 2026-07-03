@@ -22,16 +22,17 @@ import ProtectedRoute from "../../components/auth/ProtectedRoute";
 import RoleProtectedRoute from "../../components/auth/RoleProtectedRoute";
 import AppLayout from "../../components/layouts/AppLayout";
 
+import InfrastructureManagement from "../../features/planning/InfrastructureManagement";
 import IssueManagement from "../../features/planning/IssueManagement";
 import IssueSubmission from "../../features/citizen/IssueSubmission";
-import InfrastructureManagement from "../../features/planning/InfrastructureManagement";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
+
       <Routes>
 
-        {/* Public Routes */}
+        {/* ================= PUBLIC ROUTES ================= */}
 
         <Route
           path="/auth/login"
@@ -48,7 +49,7 @@ export default function AppRouter() {
           element={<ForgotPasswordPage />}
         />
 
-        {/* Protected Routes */}
+        {/* ================= PROTECTED ROUTES ================= */}
 
         <Route
           element={
@@ -57,9 +58,15 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         >
+
           <Route
             path="/"
-            element={<Navigate to="/dashboard" replace />}
+            element={
+              <Navigate
+                to="/dashboard"
+                replace
+              />
+            }
           />
 
           <Route
@@ -102,82 +109,90 @@ export default function AppRouter() {
           />
 
           <Route
-  path="/citizen-portal"
-  element={
-    <RoleProtectedRoute
-      allowedRoles={[
-        "admin",
-        "citizen",
-      ]}
-    >
-      <CitizenPortal />
-    </RoleProtectedRoute>
-  }
-/>
+            path="/citizen-portal"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "citizen",
+                ]}
+              >
+                <CitizenPortal />
+              </RoleProtectedRoute>
+            }
+          />
 
-<Route
-  path="/report-issue"
-  element={
-    <RoleProtectedRoute
-      allowedRoles={[
-        "admin",
-        "citizen",
-      ]}
-    >
-      <IssueSubmission />
-    </RoleProtectedRoute>
-  }
-/>
+          <Route
+            path="/report-issue"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "citizen",
+                ]}
+              >
+                <IssueSubmission />
+              </RoleProtectedRoute>
+            }
+          />
 
-<Route
-  path="/infrastructure"
-  element={
-    <RoleProtectedRoute
-      allowedRoles={[
-        "admin",
-        "planner",
-      ]}
-    >
-      <InfrastructureManagement />
-    </RoleProtectedRoute>
-  }
-/>
+          <Route
+            path="/infrastructure"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "planner",
+                ]}
+              >
+                <InfrastructureManagement />
+              </RoleProtectedRoute>
+            }
+          />
 
+          <Route
+            path="/issues"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "admin",
+                  "planner",
+                ]}
+              >
+                <IssueManagement />
+              </RoleProtectedRoute>
+            }
+          />
 
           <Route
             path="/settings"
             element={
               <RoleProtectedRoute
-                allowedRoles={["admin"]}
+                allowedRoles={[
+                  "admin",
+                ]}
               >
                 <SettingsPage />
               </RoleProtectedRoute>
             }
           />
+
         </Route>
 
-        {/* Fallback */}
+        {/* ================= FALLBACK ================= */}
 
         <Route
           path="*"
-          element={<Navigate to="/dashboard" replace />}
+          element={
+            <Navigate
+              to="/dashboard"
+              replace
+            />
+          }
         />
 
-        <Route
-  path="/issues"
-  element={
-    <RoleProtectedRoute
-      allowedRoles={[
-        "admin",
-        "planner",
-      ]}
-    >
-      <IssueManagement />
-    </RoleProtectedRoute>
-  }
-/>
-
       </Routes>
+
     </BrowserRouter>
   );
 }
