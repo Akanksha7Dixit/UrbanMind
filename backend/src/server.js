@@ -5,6 +5,9 @@ require("dotenv").config();
 const issueRoutes =
   require("./routes/issueRoutes");
 
+const analyticsRoutes =
+  require("./routes/analyticsRoutes");
+
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes =require("./routes/userRoutes");
@@ -32,6 +35,11 @@ app.use(express.json());
 app.use(
   "/api/infrastructure",
   infrastructureRoutes
+);
+
+app.use(
+  "/api/analytics",
+  analyticsRoutes
 );
 
 // Test Route

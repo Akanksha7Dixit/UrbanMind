@@ -18,6 +18,9 @@ import AIAssistantDrawer from "../ai/AIAssistantDrawer";
 import CommandPalette from "../command/CommandPalette";
 import { useThemeStore } from "../../store/themeStore";
 
+import { Menu } from "lucide-react";
+import { useLayoutStore } from "../../store/layoutStore";
+
 export default function Topbar() {
   const [showNotifications, setShowNotifications] =
     useState(false);
@@ -31,8 +34,13 @@ export default function Topbar() {
   const [commandOpen, setCommandOpen] =
     useState(false);
 
+  const toggleSidebar =
+    useLayoutStore(
+      (state) => state.toggleSidebar
+    );
+
   const { darkMode, toggleTheme } =
-  useThemeStore();
+    useThemeStore();
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -71,6 +79,21 @@ export default function Topbar() {
         "
       >
         <div className="flex h-full items-center justify-between">
+
+          <button
+onClick={toggleSidebar}
+className="
+mr-3
+rounded-lg
+border
+border-white/10
+p-2
+hover:bg-white/5
+transition
+"
+>
+<Menu size={20}/>
+</button>
 
           {/* Search */}
 

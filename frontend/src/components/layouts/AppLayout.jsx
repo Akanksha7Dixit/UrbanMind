@@ -2,11 +2,16 @@ import { Outlet } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import { useLayoutStore } from "../../store/layoutStore";
 
 import { useThemeStore } from "../../store/themeStore";
 
 export default function AppLayout() {
   const { darkMode } = useThemeStore();
+  const sidebarState =
+useLayoutStore(
+(state)=>state.sidebarState
+);
 
   return (
     <div
@@ -17,8 +22,17 @@ export default function AppLayout() {
     >
       <Sidebar />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar />
+<div
+  className="
+    flex
+    flex-1
+    flex-col
+    overflow-hidden
+    transition-all
+    duration-300
+  "
+>
+          <Topbar />
 
         <main
           className={`
