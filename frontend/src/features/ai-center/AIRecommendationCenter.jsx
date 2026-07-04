@@ -23,36 +23,56 @@ import {
 export default function AIRecommendationCenter() {
 
   const token =
-  useAuthStore(
-    (state) => state.token
-  );
+    useAuthStore(
+      (state) => state.token
+    );
 
-const [
-  recommendations,
-  setRecommendations,
-] = useState([]);
+  const [recommendations, setRecommendations] =
+    useState([]);
 
-useEffect(() => {
-  const fetchRecommendations =
-    async () => {
-      try {
-        const data =
-          await getRecommendations(
-            token
+  const [healthScore, setHealthScore] =
+    useState(0);
+
+  const [totalInfrastructure, setTotalInfrastructure] =
+    useState(0);
+
+  const [totalIssues, setTotalIssues] =
+    useState(0);
+
+  useEffect(() => {
+    const fetchRecommendations =
+      async () => {
+        try {
+          const data =
+            await getRecommendations(
+              token
+            );
+
+          setRecommendations(
+            data.recommendations
           );
 
-        setRecommendations(
-          data.recommendations
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    };
+          setHealthScore(
+            data.healthScore
+          );
 
-  if (token) {
-    fetchRecommendations();
-  }
-}, [token]);
+          setTotalInfrastructure(
+            data.totalInfrastructure
+          );
+
+          setTotalIssues(
+            data.totalIssues
+          );
+
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    if (token) {
+      fetchRecommendations();
+    }
+  }, [token]);
 
   return (
     <div className="space-y-8 p-8">
@@ -82,144 +102,149 @@ useEffect(() => {
         <div className="flex items-center gap-3">
           <Brain className="text-cyan-400" />
           <p className="text-cyan-400">
-            UrbanMind AI Summary
+            AI Decision Intelligence
           </p>
         </div>
 
-        <h2 className="mt-4 text-4xl font-bold">
-          Healthcare Expansion Recommended
+        <h2 className="mt-4 text-5xl font-bold text-cyan-400">
+          {healthScore}%
         </h2>
 
-        <p className="mt-6 max-w-4xl text-slate-400">
-          Analysis indicates critical healthcare demand
-          growth in Sector 12. Expansion is projected
-          to improve city-wide coverage while maintaining
-          strong ROI and reducing future service pressure.
+        <p className="mt-4 text-slate-400">
+          UrbanMind continuously evaluates infrastructure utilization,
+maintenance status and citizen complaints to recommend
+priority actions for planners and administrators.
         </p>
       </section>
 
       {/* HIGH PRIORITY */}
 
       <section>
-  <h2 className="mb-6 text-2xl font-semibold">
-    AI Recommendations
-  </h2>
+        <h2 className="mb-6 text-2xl font-semibold">
+          AI Recommendations
+        </h2>
 
-  <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
 
-    {recommendations.map((item) => (
+          {recommendations.map((item) => (
 
-      <div
-        key={item._id}
-        className="ai-card"
-      >
+            <div
+              key={item._id}
+              className="ai-card"
+            >
 
-        <AlertTriangle className="text-cyan-400" />
+              <AlertTriangle className="text-cyan-400" />
 
-        <h3 className="mt-4 text-xl font-semibold">
-          {item.title}
-        </h3>
+              <h3 className="mt-4 text-xl font-semibold">
+                {item.title}
+              </h3>
 
-        <p className="mt-3 text-slate-400">
-          {item.description}
-        </p>
+              <p className="mt-3 text-slate-400">
+                {item.recommendation}
+              </p>
 
-        <div className="mt-5 flex gap-3">
+              <div className="mt-5 flex gap-3">
 
-          <span
-            className="
-              rounded-full
-              bg-cyan-500/20
-              px-3
-              py-1
-              text-cyan-400
-            "
-          >
-            {item.confidence}% Confidence
-          </span>
-
-          <span
-            className={`
+                <span
+                  className={`
               rounded-full
               px-3
               py-1
 
-              ${
-                item.priority === "High"
-                  ? "bg-red-500/20 text-red-400"
+              ${item.priority === "High"
+                      ? "bg-red-500/20 text-red-400"
 
-                  : item.priority === "Medium"
-                  ? "bg-yellow-500/20 text-yellow-400"
+                      : item.priority === "Medium"
+                        ? "bg-yellow-500/20 text-yellow-400"
 
-                  : "bg-green-500/20 text-green-400"
-              }
+                        : "bg-green-500/20 text-green-400"
+                    }
             `}
-          >
-            {item.priority}
-          </span>
+                >
+                  {item.priority}
+                </span>
+
+              </div>
+
+            </div>
+
+          ))}
 
         </div>
 
-      </div>
+      </section>
 
-    ))}
+
+      {/* IMPACT ANALYSIS */}
+{/* ================= CITY STATISTICS ================= */}
+
+<section>
+
+  <h2 className="mb-6 text-2xl font-semibold">
+    City Statistics
+  </h2>
+
+  <div className="grid gap-6 lg:grid-cols-4">
+
+    <div className="ai-card">
+
+      <Building2 className="text-cyan-400" />
+
+      <p className="mt-4 text-slate-400">
+        Infrastructure
+      </p>
+
+      <h2 className="mt-3 text-5xl font-bold">
+        {totalInfrastructure}
+      </h2>
+
+    </div>
+
+    <div className="ai-card">
+
+      <AlertTriangle className="text-red-400" />
+
+      <p className="mt-4 text-slate-400">
+        Citizen Issues
+      </p>
+
+      <h2 className="mt-3 text-5xl font-bold">
+        {totalIssues}
+      </h2>
+
+    </div>
+
+    <div className="ai-card">
+
+      <Brain className="text-cyan-400" />
+
+      <p className="mt-4 text-slate-400">
+        AI Recommendations
+      </p>
+
+      <h2 className="mt-3 text-5xl font-bold">
+        {recommendations.length}
+      </h2>
+
+    </div>
+
+    <div className="ai-card">
+
+      <TrendingUp className="text-green-400" />
+
+      <p className="mt-4 text-slate-400">
+        Urban Health
+      </p>
+
+      <h2 className="mt-3 text-5xl font-bold text-cyan-400">
+        {healthScore}%
+      </h2>
+
+    </div>
 
   </div>
 
 </section>
-
-
-      {/* IMPACT ANALYSIS */}
-
-      <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Impact Analysis
-        </h2>
-
-        <div className="grid gap-6 lg:grid-cols-4">
-
-          <div className="ai-card">
-            <p className="text-slate-400">
-              Coverage
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold">
-              +14%
-            </h3>
-          </div>
-
-          <div className="ai-card">
-            <p className="text-slate-400">
-              Traffic
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold">
-              -8%
-            </h3>
-          </div>
-
-          <div className="ai-card">
-            <p className="text-slate-400">
-              AQI
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold">
-              +6%
-            </h3>
-          </div>
-
-          <div className="ai-card">
-            <p className="text-slate-400">
-              ROI
-            </p>
-
-            <h3 className="mt-3 text-4xl font-bold text-cyan-400">
-              High
-            </h3>
-          </div>
-
-        </div>
-      </section>
 
       {/* AI REASONING */}
 
@@ -234,61 +259,148 @@ useEffect(() => {
           AI Reasoning
         </h2>
 
-        <p className="mt-6 text-slate-400 leading-8">
-          Recommendation generated using projected
-          population growth, healthcare demand,
-          accessibility analysis, infrastructure
-          coverage and expected investment return.
-        </p>
+        <p className="mt-6 leading-8 text-slate-400">
+
+UrbanMind Recommendation Engine evaluates:
+
+<br /><br />
+
+• Infrastructure utilization
+
+<br />
+
+• Infrastructure maintenance status
+
+<br />
+
+• Citizen issue trends
+
+<br />
+
+• Urban planning rules
+
+<br />
+
+• City health indicators
+
+<br /><br />
+
+Based on these factors, the platform automatically
+prioritizes investments, maintenance and future
+development projects.
+
+</p>
       </section>
 
       {/* CONFIDENCE MATRIX */}
+<section>
 
-      <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Confidence Matrix
-        </h2>
+  <h2 className="mb-6 text-2xl font-semibold">
+    Recommendation Priorities
+  </h2>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+  <div className="space-y-5">
+{recommendations.length === 0 ? (
 
-          <div className="ai-card">
-            <CheckCircle2 className="text-emerald-400" />
+  <div className="ai-card col-span-2">
 
-            <h3 className="mt-4 font-semibold">
-              Healthcare Expansion
-            </h3>
+    <Brain
+      className="mb-4 text-cyan-400"
+      size={40}
+    />
 
-            <p className="mt-2 text-cyan-400">
-              91%
-            </p>
-          </div>
+    <h2 className="text-2xl font-bold">
+      No Recommendations
+    </h2>
 
-          <div className="ai-card">
-            <ShieldCheck className="text-cyan-400" />
+    <p className="mt-3 text-slate-400">
+      UrbanMind AI analyzed the city and found
+      no critical issues requiring immediate action.
+    </p>
 
-            <h3 className="mt-4 font-semibold">
-              Metro Expansion
-            </h3>
+  </div>
 
-            <p className="mt-2 text-cyan-400">
-              88%
-            </p>
-          </div>
+) : (
 
-          <div className="ai-card">
-            <TrendingUp className="text-cyan-400" />
+  recommendations.map((item, index) => (
 
-            <h3 className="mt-4 font-semibold">
-              Green Corridor
-            </h3>
+    <div
+      key={index}
+      className="ai-card"
+    >
 
-            <p className="mt-2 text-cyan-400">
-              79%
-            </p>
-          </div>
+      <AlertTriangle
+        className="text-cyan-400"
+      />
 
-        </div>
-      </section>
+      <h3 className="mt-4 text-xl font-semibold">
+        {item.title}
+      </h3>
+
+      <p className="mt-3 text-slate-400">
+        {item.recommendation}
+      </p>
+
+      <span
+        className={`mt-5 inline-block rounded-full px-3 py-1
+
+        ${
+          item.priority === "Critical"
+            ? "bg-red-500/20 text-red-400"
+
+            : item.priority === "High"
+            ? "bg-orange-500/20 text-orange-400"
+
+            : item.priority === "Medium"
+            ? "bg-yellow-500/20 text-yellow-400"
+
+            : "bg-green-500/20 text-green-400"
+        }`}
+      >
+
+        {item.priority}
+
+      </span>
+
+    </div>
+
+  ))
+
+)}
+
+  </div>
+
+</section>
+
+<section className="ai-card">
+
+  <div className="flex items-center gap-4">
+
+    <Brain
+      size={36}
+      className="text-cyan-400"
+    />
+
+    <div>
+
+      <h2 className="text-2xl font-bold">
+        UrbanMind AI Engine
+      </h2>
+
+      <p className="mt-2 text-slate-400">
+
+        Recommendations are generated
+        dynamically using infrastructure,
+        citizen complaints and city health
+        indicators.
+
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
 
     </div>
   );
