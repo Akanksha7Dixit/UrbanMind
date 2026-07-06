@@ -20,6 +20,8 @@ const recommendationRoutes =
     "./routes/recommendationRoutes"
   );
 
+  const reportRoutes =
+  require("./routes/reportRoutes");
 const infrastructureRoutes =
   require("./routes/infrastructureRoutes");
 
@@ -73,6 +75,10 @@ app.use(
   recommendationRoutes
 );
 
+app.use(
+  "/api/reports",
+  reportRoutes
+);
 // Server
 const PORT = process.env.PORT || 5000;
 

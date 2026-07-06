@@ -9,7 +9,6 @@ import DashboardPage from "../../features/dashboard/DashboardPage";
 import GISWorkspace from "../../features/gis/GISWorkspace";
 import ScenarioBuilder from "../../features/simulation/ScenarioBuilder";
 import AnalyticsPage from "../../features/analytics/AnalyticsPage";
-import ReportsPage from "../../features/reports/ReportsPage";
 import AIRecommendationCenter from "../../features/ai-center/AIRecommendationCenter";
 import CitizenPortal from "../../features/citizen-portal/CitizenPortal";
 import SettingsPage from "../../features/settings/SettingsPage";
@@ -25,6 +24,8 @@ import AppLayout from "../../components/layouts/AppLayout";
 import InfrastructureManagement from "../../features/planning/InfrastructureManagement";
 import IssueManagement from "../../features/planning/IssueManagement";
 import IssueSubmission from "../../features/citizen/IssueSubmission";
+import ReportsPage from "../../features/reports/pages/ReportsPage";
+import ReportViewerPage from "../../features/reports/pages/ReportViewerPage";
 
 export default function AppRouter() {
   return (
@@ -92,6 +93,11 @@ export default function AppRouter() {
           <Route
             path="/reports"
             element={<ReportsPage />}
+          />
+
+          <Route
+            path="/reports/:id"
+            element={<ReportViewerPage />}
           />
 
           <Route

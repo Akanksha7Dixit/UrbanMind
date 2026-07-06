@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import "leaflet/dist/leaflet.css";
+import { Toaster } from "react-hot-toast";
 
 import "./index.css";
 
