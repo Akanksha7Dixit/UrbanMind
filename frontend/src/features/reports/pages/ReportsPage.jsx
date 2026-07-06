@@ -24,12 +24,11 @@ import {
 export default function ReportsPage() {
 
   const {
+  data,
+  isLoading,
+} = useReports();
 
-    data: reports = [],
-
-    isLoading,
-
-  } = useReports();
+const reports = data?.reports || [];
 
   const [
 

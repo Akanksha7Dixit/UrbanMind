@@ -28,7 +28,7 @@ import ActionBar from "../components/ActionBar";
 import ReportSkeleton from "../components/ReportSkeleton";
 import EmptyReports from "../components/EmptyReports";
 
-import { useReport } from "../hooks/useReport";
+import { useReport } from "../hooks/useReports";
 
 export default function ReportViewerPage() {
 
