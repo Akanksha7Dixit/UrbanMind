@@ -25,6 +25,9 @@ const recommendationRoutes =
 const infrastructureRoutes =
   require("./routes/infrastructureRoutes");
 
+  const settingsRoutes =
+require("./routes/settingsRoutes");
+
 const app = express();
 
 // Connect Database
@@ -42,6 +45,11 @@ app.use(
 app.use(
   "/api/analytics",
   analyticsRoutes
+);
+
+app.use(
+"/api/settings",
+settingsRoutes
 );
 
 // Test Route

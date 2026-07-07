@@ -11,7 +11,6 @@ import ScenarioBuilder from "../../features/simulation/ScenarioBuilder";
 import AnalyticsPage from "../../features/analytics/AnalyticsPage";
 import AIRecommendationCenter from "../../features/ai-center/AIRecommendationCenter";
 import CitizenPortal from "../../features/citizen-portal/CitizenPortal";
-import SettingsPage from "../../features/settings/SettingsPage";
 
 import LoginPage from "../../features/auth/LoginPage";
 import RegisterPage from "../../features/auth/RegisterPage";
@@ -26,6 +25,8 @@ import IssueManagement from "../../features/planning/IssueManagement";
 import IssueSubmission from "../../features/citizen/IssueSubmission";
 import ReportsPage from "../../features/reports/pages/ReportsPage";
 import ReportViewerPage from "../../features/reports/pages/ReportViewerPage";
+
+import SettingsPage from "../../features/settings/SettingsPage";
 
 export default function AppRouter() {
   return (
@@ -93,6 +94,11 @@ export default function AppRouter() {
           <Route
             path="/reports"
             element={<ReportsPage />}
+          />
+
+          <Route
+            path="/settings"
+            element={<SettingsPage />}
           />
 
           <Route
