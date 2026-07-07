@@ -1,18 +1,30 @@
-import { useState } from "react";
 import { X, FilePlus } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function CreateReportModal({
     open,
     onClose,
     onSubmit,
-}) {
+    initialCategory = "Health",
+})  {
+
     const [form, setForm] = useState({
-        title: "",
-        category: "Health",
-        description: "",
-    });
+    title: "",
+    category: initialCategory,
+    description: "",
+});
+useEffect(() => {
+    if (open) {
+        setForm({
+            title: "",
+            category: initialCategory,
+            description: "",
+        });
+    }
+}, [open, initialCategory]);
 
     if (!open) return null;
+
 
     const handleChange = (e) => {
         setForm({

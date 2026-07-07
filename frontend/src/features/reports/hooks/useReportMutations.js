@@ -5,6 +5,8 @@ import {
     deleteReport,
     archiveReport,
 
+    createReport,
+
 } from "../services/reportService";
 
 export function useDeleteReport() {
@@ -36,6 +38,28 @@ export function useArchiveReport() {
     return useMutation({
 
         mutationFn: archiveReport,
+
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({
+
+                queryKey: ["reports"]
+
+            });
+
+        },
+
+    });
+
+}
+
+export function useCreateReport() {
+
+    const queryClient = useQueryClient();
+
+    return useMutation({
+
+        mutationFn: createReport,
 
         onSuccess: () => {
 

@@ -125,3 +125,16 @@ export const archiveReport = async (id) => {
     return data;
 
 };
+/* ===========================================
+   CREATE REPORT
+=========================================== */
+
+export const createReport = async (body) => {
+
+    const { data } = await axiosInstance.post(
+        "/reports",
+        body
+    );
+
+    return data;
+};

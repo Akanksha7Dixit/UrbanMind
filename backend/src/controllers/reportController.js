@@ -12,6 +12,55 @@ const {
     generatePresentation,
 } = require("../services/pptService");
 
+
+exports.createReport = async (req, res) => {
+    try {
+
+        const {
+            title,
+            category,
+            description,
+        } = req.body;
+
+        const report = await Report.create({
+
+            title,
+
+            category,
+
+            description,
+
+            createdBy: req.user.id,
+
+            status: "Generated",
+
+            summary: `${title} generated successfully.`
+
+        });
+
+        res.status(201).json({
+
+            success: true,
+
+            report
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Unable to create report."
+
+        });
+
+    }
+};
+
 /* =========================================
    GET ALL REPORTS
 ========================================= */

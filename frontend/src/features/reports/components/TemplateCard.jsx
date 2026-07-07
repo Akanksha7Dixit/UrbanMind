@@ -57,7 +57,6 @@ export default function TemplateCard({
         text-slate-950
       "
       >
-
         Use Template
 
       </button>

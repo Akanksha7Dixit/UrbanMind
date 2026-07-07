@@ -32,7 +32,9 @@ import { useReport } from "../hooks/useReports";
 
 export default function ReportViewerPage() {
 
-    const { id } = useParams();
+const { id } = useParams();
+
+console.log("Report ID:", id);
 
     const navigate = useNavigate();
 

@@ -3,6 +3,8 @@ import {
   useState,
 } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import {
   Search,
   Filter,
@@ -14,6 +16,8 @@ import ReportsGrid from "../components/ReportsGrid";
 import ExportCard from "../components/ExportCard";
 import TemplateCard from "../components/TemplateCard";
 import ActivityItem from "../components/ActivityItem";
+import CreateReportModal from "../components/CreateReportModal";
+import { useCreateReport } from "../hooks/useReportMutations";
 
 import { useReports } from "../hooks/useReports";
 
@@ -22,6 +26,7 @@ import {
 } from "../utils/reportHelpers";
 
 export default function ReportsPage() {
+  const navigate = useNavigate();
 
   const {
   data,
@@ -29,6 +34,11 @@ export default function ReportsPage() {
 } = useReports();
 
 const reports = data?.reports || [];
+
+const [openModal, setOpenModal] = useState(false);
+const createMutation = useCreateReport();
+
+const [selectedTemplate, setSelectedTemplate] = useState("Health");
 
   const [
 
@@ -108,30 +118,27 @@ const reports = data?.reports || [];
 
   ]);
 
-  const handleGenerate = () => {
+  const handleGenerate = (category) => {
+    setSelectedTemplate(category);
+    setOpenModal(true);
+};
 
-    console.log(
-      "Generate Report"
-    );
+const handleCreateReport = async (form) => {
 
-  };
+    try {
 
-  const handleDownload = (
+        await createMutation.mutateAsync(form);
 
-    report
+        setOpenModal(false);
 
-  ) => {
+    } catch (err) {
 
-    console.log(
+        console.log(err);
 
-      "Download",
+    }
 
-      report
-
-    );
-
-  };
-
+};
+ 
   const handleShare = (
 
     report
@@ -148,40 +155,23 @@ const reports = data?.reports || [];
 
   };
 
-  const handleDelete = (
+const handleView = (report) => {
+    navigate(`/reports/${report._id}`);
+};
 
-    report
-
-  ) => {
-
-    console.log(
-
-      "Delete",
-
-      report
-
+const handleDownload = (report) => {
+    window.open(
+        `http://localhost:5000/api/reports/${report._id}/pdf`,
+        "_blank"
     );
+};
 
-  };
-
-  const handleView = (
-
-    report
-
-  ) => {
-
-    console.log(
-
-      "View",
-
-      report
-
-    );
-
-  };
+const handleDelete = (report) => {
+    console.log(report);
+};
 
   return (
-
+    <>
     <div className="space-y-10 p-8">
 
       <HeroSection
@@ -241,7 +231,6 @@ const reports = data?.reports || [];
             />
 
             <input
-
               value={search}
 
               onChange={(e) =>
@@ -260,7 +249,6 @@ const reports = data?.reports || [];
               bg-transparent
               outline-none
             "
-
             />
 
           </div>
@@ -297,13 +285,10 @@ const reports = data?.reports || [];
             >
 
               <option>
-
                 All
-
               </option>
 
               <option>
-
                 Health
 
               </option>
@@ -364,9 +349,10 @@ const reports = data?.reports || [];
               </option>
             </select>
             <button
-              onClick={
-                handleGenerate
-              }
+              onClick={() => {
+        setSelectedTemplate("Health");
+        setOpenModal(true);
+    }}
               className="
               flex
               items-center
@@ -410,6 +396,7 @@ const reports = data?.reports || [];
 
         </div>
 
+
         <ReportsGrid
 
           reports={filteredReports}
@@ -438,25 +425,25 @@ const reports = data?.reports || [];
         </div>
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <TemplateCard
-            title="Urban Health"
-            description="Comprehensive health and planning report."
-            onUse={handleGenerate}
-          />
+    title="Urban Health"
+    description="Comprehensive health and planning report."
+    onUse={() => handleGenerate("Health")}
+/>
           <TemplateCard
-            title="Infrastructure"
-            description="Infrastructure condition assessment."
-            onUse={handleGenerate}
-          />
+    title="Infrastructure"
+    description="Infrastructure condition assessment."
+    onUse={() => handleGenerate("Infrastructure")}
+/>
           <TemplateCard
-            title="Environment"
-            description="Environmental sustainability report."
-            onUse={handleGenerate}
-          />
+    title="Environment"
+    description="Environmental sustainability report."
+    onUse={() => handleGenerate("Environment")}
+/>
           <TemplateCard
-            title="Simulation"
-            description="Scenario comparison report."
-            onUse={handleGenerate}
-          />
+    title="Simulation"
+    description="Scenario comparison report."
+    onUse={() => handleGenerate("Simulation")}
+/>
         </div>
       </section>
 
@@ -718,6 +705,22 @@ const reports = data?.reports || [];
 
     </div>
 
+    <CreateReportModal
+    open={openModal}
+    onClose={() => setOpenModal(false)}
+    initialCategory={selectedTemplate}
+    onSubmit={handleCreateReport}
+/>
+<CreateReportModal
+    open={openModal}
+    onClose={() => setOpenModal(false)}
+    initialCategory={selectedTemplate}
+    onSubmit={handleCreateReport}
+/>
+
+</>
+
   );
 
 }
+

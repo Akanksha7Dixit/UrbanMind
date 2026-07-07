@@ -16,11 +16,18 @@ const {
     deleteReport,
     archiveReport,
 
+    createReport, 
+
 } = require("../controllers/reportController");
 
 /* =========================================
    REPORTS
 ========================================= */
+router.post(
+    "/",
+    protect,
+    createReport
+);
 
 router.get(
     "/",
