@@ -5,14 +5,18 @@ const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
 
 const {
+
     getSettings,
+
     updateSettings,
+
     resetSettings,
+
 } = require("../controllers/settingsController");
 
-/* ============================================
+/* =========================================
    SETTINGS
-============================================ */
+========================================= */
 
 router.get(
     "/",
@@ -26,8 +30,8 @@ router.put(
     updateSettings
 );
 
-router.delete(
-    "/",
+router.post(
+    "/reset",
     protect,
     resetSettings
 );

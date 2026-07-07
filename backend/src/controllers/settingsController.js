@@ -1,8 +1,9 @@
 const Settings = require("../models/Settings");
+const User = require("../models/User");
 
-/* ============================================================
-   GET USER SETTINGS
-============================================================ */
+/* =========================================
+   GET SETTINGS
+========================================= */
 
 exports.getSettings = async (req, res) => {
     try {
@@ -11,85 +12,100 @@ exports.getSettings = async (req, res) => {
             user: req.user.id,
         });
 
-        // First login → create default settings
+        // First time opening settings
         if (!settings) {
+
+            const user = await User.findById(req.user.id);
 
             settings = await Settings.create({
 
                 user: req.user.id,
 
+                profile: {
+                    fullName: user.name,
+                    email: user.email,
+                    city: "",
+                    department: "",
+                },
+
             });
 
         }
 
-        return res.status(200).json({
+        res.json({
 
             success: true,
-
             settings,
 
         });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
-        return res.status(500).json({
+        res.status(500).json({
 
             success: false,
-
-            message: "Unable to fetch settings.",
+            message: "Unable to load settings.",
 
         });
 
     }
-
 };
 
-
-/* ============================================================
+/* =========================================
    UPDATE SETTINGS
-============================================================ */
+========================================= */
 
 exports.updateSettings = async (req, res) => {
 
     try {
 
-        const settings = await Settings.findOneAndUpdate(
+        let settings = await Settings.findOne({
+            user: req.user.id,
+        });
 
-            {
+        if (!settings) {
+
+            settings = await Settings.create({
                 user: req.user.id,
-            },
+            });
 
-            req.body,
+        }
+
+        settings.profile = req.body.profile;
+        settings.notifications = req.body.notifications;
+        settings.aiMode = req.body.aiMode;
+        settings.gisTheme = req.body.gisTheme;
+
+        await settings.save();
+
+        // Update user name also
+        await User.findByIdAndUpdate(
+
+            req.user.id,
 
             {
-                new: true,
-                upsert: true,
-                runValidators: true,
+                name: req.body.profile.fullName,
             }
 
         );
 
-        return res.status(200).json({
+        res.json({
 
             success: true,
 
-            message: "Settings updated successfully.",
+            message: "Settings updated.",
 
             settings,
 
         });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
-        return res.status(500).json({
+        res.status(500).json({
 
             success: false,
 
@@ -101,44 +117,75 @@ exports.updateSettings = async (req, res) => {
 
 };
 
-
-/* ============================================================
+/* =========================================
    RESET SETTINGS
-============================================================ */
+========================================= */
 
 exports.resetSettings = async (req, res) => {
 
     try {
 
-        await Settings.findOneAndDelete({
+        const user = await User.findById(req.user.id);
+
+        let settings = await Settings.findOne({
 
             user: req.user.id,
 
         });
 
-        const settings = await Settings.create({
+        if (!settings) {
 
-            user: req.user.id,
+            settings = new Settings({
 
-        });
+                user: req.user.id,
 
-        return res.status(200).json({
+            });
+
+        }
+
+        settings.profile = {
+
+            fullName: user.name,
+
+            email: user.email,
+
+            city: "",
+
+            department: "",
+
+        };
+
+        settings.notifications = {
+
+            ai: true,
+
+            infrastructure: true,
+
+            citizen: true,
+
+        };
+
+        settings.aiMode = "Balanced";
+
+        settings.gisTheme = "Dark";
+
+        await settings.save();
+
+        res.json({
 
             success: true,
 
-            message: "Settings reset successfully.",
+            message: "Settings reset.",
 
             settings,
 
         });
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
-        return res.status(500).json({
+        res.status(500).json({
 
             success: false,
 

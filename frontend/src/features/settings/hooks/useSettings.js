@@ -5,14 +5,18 @@ import {
 } from "@tanstack/react-query";
 
 import {
+
     getSettings,
+
     updateSettings,
+
     resetSettings,
+
 } from "../services/settingsService";
 
-/* =========================================
-   GET SETTINGS
-========================================= */
+/* ===============================
+   GET
+================================ */
 
 export function useSettings() {
 
@@ -26,9 +30,9 @@ export function useSettings() {
 
 }
 
-/* =========================================
-   UPDATE SETTINGS
-========================================= */
+/* ===============================
+   UPDATE
+================================ */
 
 export function useUpdateSettings() {
 
@@ -52,9 +56,9 @@ export function useUpdateSettings() {
 
 }
 
-/* =========================================
-   RESET SETTINGS
-========================================= */
+/* ===============================
+   RESET
+================================ */
 
 export function useResetSettings() {
 
