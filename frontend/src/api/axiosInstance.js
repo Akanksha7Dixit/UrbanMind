@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "../store/authStore";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://urbanmind-backend-ix55.onrender.com/api",
 });
 
 axiosInstance.interceptors.request.use((config) => {

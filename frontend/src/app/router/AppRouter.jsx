@@ -5,36 +5,63 @@ import {
   Navigate,
 } from "react-router-dom";
 
+// ===============================
+// PAGES
+// ===============================
+
 import DashboardPage from "../../features/dashboard/DashboardPage";
+
 import GISWorkspace from "../../features/gis/GISWorkspace";
+
 import ScenarioBuilder from "../../features/simulation/ScenarioBuilder";
+
 import AnalyticsPage from "../../features/analytics/AnalyticsPage";
+
 import AIRecommendationCenter from "../../features/ai-center/AIRecommendationCenter";
+
 import CitizenPortal from "../../features/citizen-portal/CitizenPortal";
 
 import LoginPage from "../../features/auth/LoginPage";
+
 import RegisterPage from "../../features/auth/RegisterPage";
+
 import ForgotPasswordPage from "../../features/auth/ForgotPasswordPage";
 
-import ProtectedRoute from "../../components/auth/ProtectedRoute";
-import RoleProtectedRoute from "../../components/auth/RoleProtectedRoute";
-import AppLayout from "../../components/layouts/AppLayout";
-
 import InfrastructureManagement from "../../features/planning/InfrastructureManagement";
+
 import IssueManagement from "../../features/planning/IssueManagement";
+
 import IssueSubmission from "../../features/citizen/IssueSubmission";
+
 import ReportsPage from "../../features/reports/pages/ReportsPage";
+
 import ReportViewerPage from "../../features/reports/pages/ReportViewerPage";
 
 import SettingsPage from "../../features/settings/SettingsPage";
 
+// ===============================
+// AUTH / LAYOUT
+// ===============================
+
+import ProtectedRoute from "../../components/auth/ProtectedRoute";
+
+import RoleProtectedRoute from "../../components/auth/RoleProtectedRoute";
+
+import AppLayout from "../../components/layouts/AppLayout";
+
+
 export default function AppRouter() {
+
   return (
+
     <BrowserRouter>
 
       <Routes>
 
-        {/* ================= PUBLIC ROUTES ================= */}
+
+        {/* =====================================================
+            PUBLIC AUTH ROUTES
+        ====================================================== */}
 
         <Route
           path="/auth/login"
@@ -51,7 +78,66 @@ export default function AppRouter() {
           element={<ForgotPasswordPage />}
         />
 
-        {/* ================= PROTECTED ROUTES ================= */}
+
+        {/* =====================================================
+            PUBLIC RECRUITER DEMO
+        ====================================================== */}
+
+        <Route element={<AppLayout />}>
+
+          {/* Dashboard */}
+
+          <Route
+            path="/demo"
+            element={<DashboardPage />}
+          />
+
+
+          {/* GIS */}
+
+          <Route
+            path="/demo/gis"
+            element={<GISWorkspace />}
+          />
+
+
+          {/* Scenario Builder */}
+
+          <Route
+            path="/demo/simulation"
+            element={<ScenarioBuilder />}
+          />
+
+
+          {/* AI Recommendations */}
+
+          <Route
+            path="/demo/ai-recommendations"
+            element={<AIRecommendationCenter />}
+          />
+
+
+          {/* Analytics */}
+
+          <Route
+            path="/demo/analytics"
+            element={<AnalyticsPage />}
+          />
+
+
+          {/* Reports */}
+
+          <Route
+            path="/demo/reports"
+            element={<ReportsPage />}
+          />
+
+        </Route>
+
+
+        {/* =====================================================
+            PROTECTED APPLICATION
+        ====================================================== */}
 
         <Route
           element={
@@ -61,61 +147,42 @@ export default function AppRouter() {
           }
         >
 
+          {/* =================================================
+              ROOT
+          ================================================== */}
+
           <Route
             path="/"
             element={
               <Navigate
-                to="/dashboard"
+                to="/auth/login"
                 replace
               />
             }
           />
+
+
+          {/* =================================================
+              COMMON DASHBOARD
+          ================================================== */}
 
           <Route
             path="/dashboard"
             element={<DashboardPage />}
           />
 
-          <Route
-            path="/gis"
-            element={<GISWorkspace />}
-          />
+
+          {/* =================================================
+              CITIZEN
+          ================================================== */}
 
           <Route
-            path="/simulation"
-            element={<ScenarioBuilder />}
-          />
-
-          <Route
-            path="/analytics"
-            element={<AnalyticsPage />}
-          />
-
-          <Route
-            path="/reports"
-            element={<ReportsPage />}
-          />
-
-          <Route
-            path="/settings"
-            element={<SettingsPage />}
-          />
-
-          <Route
-            path="/reports/:id"
-            element={<ReportViewerPage />}
-          />
-
-          <Route
-            path="/ai-recommendations"
+            path="/citizen/dashboard"
             element={
               <RoleProtectedRoute
-                allowedRoles={[
-                  "admin",
-                  "planner",
-                ]}
+                allowedRoles={["citizen"]}
               >
-                <AIRecommendationCenter />
+                <CitizenPortal />
               </RoleProtectedRoute>
             }
           />
@@ -125,8 +192,8 @@ export default function AppRouter() {
             element={
               <RoleProtectedRoute
                 allowedRoles={[
-                  "admin",
                   "citizen",
+                  "admin",
                 ]}
               >
                 <CitizenPortal />
@@ -139,11 +206,58 @@ export default function AppRouter() {
             element={
               <RoleProtectedRoute
                 allowedRoles={[
-                  "admin",
                   "citizen",
+                  "admin",
                 ]}
               >
                 <IssueSubmission />
+              </RoleProtectedRoute>
+            }
+          />
+
+
+          {/* =================================================
+              PLANNER
+          ================================================== */}
+
+          <Route
+            path="/planner/dashboard"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "admin",
+                ]}
+              >
+                <DashboardPage />
+              </RoleProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/gis"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "admin",
+                ]}
+              >
+                <GISWorkspace />
+              </RoleProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/simulation"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "admin",
+                ]}
+              >
+                <ScenarioBuilder />
               </RoleProtectedRoute>
             }
           />
@@ -153,8 +267,8 @@ export default function AppRouter() {
             element={
               <RoleProtectedRoute
                 allowedRoles={[
-                  "admin",
                   "planner",
+                  "admin",
                 ]}
               >
                 <InfrastructureManagement />
@@ -167,11 +281,111 @@ export default function AppRouter() {
             element={
               <RoleProtectedRoute
                 allowedRoles={[
-                  "admin",
                   "planner",
+                  "admin",
                 ]}
               >
                 <IssueManagement />
+              </RoleProtectedRoute>
+            }
+          />
+
+
+          {/* =================================================
+              AI / ANALYTICS / REPORTS
+          ================================================== */}
+
+          <Route
+            path="/ai-recommendations"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "analyst",
+                  "admin",
+                ]}
+              >
+                <AIRecommendationCenter />
+              </RoleProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/analytics"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "analyst",
+                  "admin",
+                ]}
+              >
+                <AnalyticsPage />
+              </RoleProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/reports"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "analyst",
+                  "admin",
+                ]}
+              >
+                <ReportsPage />
+              </RoleProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/reports/:id"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "planner",
+                  "analyst",
+                  "admin",
+                ]}
+              >
+                <ReportViewerPage />
+              </RoleProtectedRoute>
+            }
+          />
+
+
+          {/* =================================================
+              ANALYST
+          ================================================== */}
+
+          <Route
+            path="/analyst/dashboard"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={[
+                  "analyst",
+                  "admin",
+                ]}
+              >
+                <DashboardPage />
+              </RoleProtectedRoute>
+            }
+          />
+
+
+          {/* =================================================
+              ADMIN
+          ================================================== */}
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <RoleProtectedRoute
+                allowedRoles={["admin"]}
+              >
+                <DashboardPage />
               </RoleProtectedRoute>
             }
           />
@@ -180,9 +394,7 @@ export default function AppRouter() {
             path="/settings"
             element={
               <RoleProtectedRoute
-                allowedRoles={[
-                  "admin",
-                ]}
+                allowedRoles={["admin"]}
               >
                 <SettingsPage />
               </RoleProtectedRoute>
@@ -191,13 +403,16 @@ export default function AppRouter() {
 
         </Route>
 
-        {/* ================= FALLBACK ================= */}
+
+        {/* =====================================================
+            FALLBACK
+        ====================================================== */}
 
         <Route
           path="*"
           element={
             <Navigate
-              to="/dashboard"
+              to="/auth/login"
               replace
             />
           }
