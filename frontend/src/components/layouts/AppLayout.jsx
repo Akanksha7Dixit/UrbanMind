@@ -177,7 +177,7 @@ export default function AppLayout() {
                       Explore the core platform
                       without an account. For full
                       features and role-specific
-                      capabilities, sign in as a{" "} and if not registered then register first and then login.  ThankYou!😎
+                      capabilities, sign in as a{" "} 
                     </span>
 
                     <span
@@ -189,7 +189,11 @@ export default function AppLayout() {
                       "
                     >
                       Citizen, Planner, Analyst,
-                      or Admin.
+                      or Admin .
+                    </span>
+
+                    <span className="hidden md:inline">
+                       and if not registered then please register first! Thank You😇
                     </span>
 
                   </p>
