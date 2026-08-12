@@ -7,17 +7,31 @@ const {
   deleteInfrastructure,
 } = require("../controllers/infrastructureController");
 
-const { protect } = require("../middleware/authMiddleware");
+const {
+  protect,
+} = require("../middleware/authMiddleware");
 
-const { authorize } = require("../middleware/roleMiddleware");
+const {
+  authorize,
+} = require("../middleware/roleMiddleware");
 
 const router = express.Router();
+
+
+// ==========================================
+// GET
+// ==========================================
 
 router.get(
   "/",
   protect,
   getInfrastructure
 );
+
+
+// ==========================================
+// CREATE
+// ==========================================
 
 router.post(
   "/",
@@ -26,6 +40,11 @@ router.post(
   createInfrastructure
 );
 
+
+// ==========================================
+// UPDATE
+// ==========================================
+
 router.put(
   "/:id",
   protect,
@@ -33,11 +52,17 @@ router.put(
   updateInfrastructure
 );
 
+
+// ==========================================
+// DELETE
+// ==========================================
+
 router.delete(
   "/:id",
   protect,
   authorize("admin", "planner"),
   deleteInfrastructure
 );
+
 
 module.exports = router;

@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+
 import {
   Building2,
   MapPin,
   Activity,
 } from "lucide-react";
+
+import toast from "react-hot-toast";
 
 import { useAuthStore } from "../../store/authStore";
 
@@ -19,12 +22,33 @@ export default function InfrastructureManagement() {
     (state) => state.token
   );
 
-  const [infrastructure, setInfrastructure] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
+  // ==========================================
+  // STATE
+  // ==========================================
+
+  const [infrastructure, setInfrastructure] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [editingId, setEditingId] =
+    useState(null);
+
+  const [deletingId, setDeletingId] =
+    useState(null);
+
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
+  const [typeFilter, setTypeFilter] =
+    useState("All");
+
+  const [statusFilter, setStatusFilter] =
+    useState("All");
 
   const [formData, setFormData] =
     useState({
@@ -35,13 +59,21 @@ export default function InfrastructureManagement() {
       utilization: "",
       latitude: "",
       longitude: "",
+      capacity: "",
+      description: "",
     });
+
+
+  // ==========================================
+  // FETCH INFRASTRUCTURE
+  // ==========================================
 
   useEffect(() => {
     if (token) {
       fetchInfrastructure();
     }
   }, [token]);
+
 
   const fetchInfrastructure = async () => {
     try {
@@ -51,22 +83,46 @@ export default function InfrastructureManagement() {
         await getInfrastructure(token);
 
       setInfrastructure(
-        data.infrastructure
+        data.infrastructure || []
       );
+
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Fetch infrastructure error:",
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to load infrastructure"
+      );
+
     } finally {
       setLoading(false);
     }
   };
 
+
+  // ==========================================
+  // HANDLE FORM CHANGE
+  // ==========================================
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]:
-        e.target.value,
-    });
+    const {
+      name,
+      value,
+    } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
+
+  // ==========================================
+  // RESET FORM
+  // ==========================================
 
   const resetForm = () => {
     setEditingId(null);
@@ -79,50 +135,205 @@ export default function InfrastructureManagement() {
       utilization: "",
       latitude: "",
       longitude: "",
+      capacity: "",
+      description: "",
     });
   };
+
+
+  // ==========================================
+  // VALIDATE FORM
+  // ==========================================
+
+  const validateForm = () => {
+
+    if (!formData.name.trim()) {
+      toast.error(
+        "Infrastructure name is required"
+      );
+      return false;
+    }
+
+    if (!formData.type) {
+      toast.error(
+        "Please select infrastructure type"
+      );
+      return false;
+    }
+
+    if (!formData.sector.trim()) {
+      toast.error(
+        "Sector is required"
+      );
+      return false;
+    }
+
+    const utilization =
+      Number(formData.utilization);
+
+    if (
+      formData.utilization === "" ||
+      Number.isNaN(utilization) ||
+      utilization < 0 ||
+      utilization > 100
+    ) {
+      toast.error(
+        "Utilization must be between 0 and 100"
+      );
+      return false;
+    }
+
+    const latitude =
+      Number(formData.latitude);
+
+    if (
+      formData.latitude === "" ||
+      Number.isNaN(latitude) ||
+      latitude < -90 ||
+      latitude > 90
+    ) {
+      toast.error(
+        "Latitude must be between -90 and 90"
+      );
+      return false;
+    }
+
+    const longitude =
+      Number(formData.longitude);
+
+    if (
+      formData.longitude === "" ||
+      Number.isNaN(longitude) ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      toast.error(
+        "Longitude must be between -180 and 180"
+      );
+      return false;
+    }
+
+    if (
+      formData.capacity !== "" &&
+      Number(formData.capacity) < 0
+    ) {
+      toast.error(
+        "Capacity cannot be negative"
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+
+  // ==========================================
+  // SUBMIT
+  // ==========================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validateForm()) {
+      return;
+    }
+
     try {
+      setSaving(true);
+
+      const payload = {
+        ...formData,
+
+        utilization:
+          Number(formData.utilization),
+
+        latitude:
+          Number(formData.latitude),
+
+        longitude:
+          Number(formData.longitude),
+
+        capacity:
+          formData.capacity === ""
+            ? 0
+            : Number(formData.capacity),
+
+        name:
+          formData.name.trim(),
+
+        sector:
+          formData.sector.trim(),
+
+        description:
+          formData.description.trim(),
+      };
+
 
       if (editingId) {
 
         await updateInfrastructure(
           editingId,
-          formData,
+          payload,
           token
+        );
+
+        toast.success(
+          "Infrastructure updated successfully"
         );
 
       } else {
 
         await createInfrastructure(
-          formData,
+          payload,
           token
         );
 
+        toast.success(
+          "Infrastructure added successfully"
+        );
       }
+
 
       await fetchInfrastructure();
 
       resetForm();
 
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+
+      console.error(
+        "Save infrastructure error:",
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to save infrastructure"
+      );
+
+    } finally {
+      setSaving(false);
     }
   };
+
+
+  // ==========================================
+  // DELETE
+  // ==========================================
 
   const handleDelete = async (id) => {
 
     const confirmDelete =
       window.confirm(
-        "Delete this infrastructure?"
+        "Are you sure you want to delete this infrastructure?"
       );
 
-    if (!confirmDelete) return;
+    if (!confirmDelete) {
+      return;
+    }
 
     try {
+
+      setDeletingId(id);
 
       await deleteInfrastructure(
         id,
@@ -135,63 +346,182 @@ export default function InfrastructureManagement() {
         )
       );
 
-    } catch (err) {
-      console.error(err);
+      toast.success(
+        "Infrastructure deleted successfully"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Delete infrastructure error:",
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to delete infrastructure"
+      );
+
+    } finally {
+      setDeletingId(null);
     }
   };
+
+
+  // ==========================================
+  // EDIT
+  // ==========================================
 
   const handleEdit = (item) => {
 
     setEditingId(item._id);
 
     setFormData({
-      name: item.name,
-      type: item.type,
-      status: item.status,
-      sector: item.sector,
-      utilization: item.utilization,
-      latitude: item.latitude,
-      longitude: item.longitude,
+      name: item.name || "",
+      type: item.type || "",
+      status:
+        item.status || "Operational",
+      sector: item.sector || "",
+      utilization:
+        item.utilization ?? "",
+      latitude:
+        item.latitude ?? "",
+      longitude:
+        item.longitude ?? "",
+      capacity:
+        item.capacity ?? "",
+      description:
+        item.description || "",
     });
 
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
+
+    toast(
+      "Editing infrastructure",
+      {
+        icon: "✏️",
+      }
+    );
   };
 
+
+  // ==========================================
+  // STATISTICS
+  // ==========================================
+
   const highestUtilization =
-    infrastructure.reduce(
-      (max, item) =>
-        item.utilization > max.utilization
-          ? item
-          : max,
-      infrastructure[0]
-    );
+    infrastructure.length
+      ? infrastructure.reduce(
+          (max, item) =>
+            Number(item.utilization) >
+            Number(max.utilization)
+              ? item
+              : max
+        )
+      : null;
+
 
   const lowestUtilization =
-    infrastructure.reduce(
-      (min, item) =>
-        item.utilization < min.utilization
-          ? item
-          : min,
-      infrastructure[0]
-    );
+    infrastructure.length
+      ? infrastructure.reduce(
+          (min, item) =>
+            Number(item.utilization) <
+            Number(min.utilization)
+              ? item
+              : min
+        )
+      : null;
+
 
   const averageUtilization =
     infrastructure.length
       ? (
-        infrastructure.reduce(
-          (sum, item) =>
-            sum + Number(item.utilization),
-          0
-        ) / infrastructure.length
-      ).toFixed(1)
-      : 0;
+          infrastructure.reduce(
+            (sum, item) =>
+              sum +
+              Number(item.utilization || 0),
+            0
+          ) /
+          infrastructure.length
+        ).toFixed(1)
+      : "0.0";
+
+
+  // ==========================================
+  // FILTERING
+  // ==========================================
+
+  const filteredInfrastructure =
+    infrastructure.filter((item) => {
+
+      const query =
+        searchTerm
+          .toLowerCase()
+          .trim();
+
+      const matchesSearch =
+        !query ||
+        item.name
+          ?.toLowerCase()
+          .includes(query) ||
+        item.type
+          ?.toLowerCase()
+          .includes(query) ||
+        item.sector
+          ?.toLowerCase()
+          .includes(query);
+
+
+      const matchesType =
+        typeFilter === "All" ||
+        item.type === typeFilter;
+
+
+      const matchesStatus =
+        statusFilter === "All" ||
+        item.status === statusFilter;
+
+
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesStatus
+      );
+    });
+
+
+  // ==========================================
+  // LOADING
+  // ==========================================
+
+  if (loading) {
+    return (
+      <div className="p-8">
+
+        <div className="ai-card">
+          <p className="text-slate-400">
+            Loading infrastructure...
+          </p>
+        </div>
+
+      </div>
+    );
+  }
+
+
+  // ==========================================
+  // UI
+  // ==========================================
+
   return (
     <div className="space-y-8 p-8">
 
-      {/* Header */}
+      {/* ===================================== */}
+      {/* HEADER */}
+      {/* ===================================== */}
 
       <div>
 
@@ -200,470 +530,855 @@ export default function InfrastructureManagement() {
         </h1>
 
         <p className="mt-2 text-slate-400">
-          Add, update and manage city infrastructure.
+          Add, update and manage city
+          infrastructure.
         </p>
 
       </div>
 
-      {loading ? (
 
-        <div className="text-slate-400">
-          Loading infrastructure...
+      {/* ===================================== */}
+      {/* FORM */}
+      {/* ===================================== */}
+
+      <section className="ai-card">
+
+        <div className="mb-6">
+
+          <h2 className="text-2xl font-bold">
+
+            {editingId
+              ? "Update Infrastructure"
+              : "Add Infrastructure"}
+
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-400">
+            {editingId
+              ? "Update the selected infrastructure asset."
+              : "Add a new city infrastructure asset to UrbanMind."
+            }
+          </p>
+
+        </div>
+
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid gap-4 lg:grid-cols-2"
+        >
+
+          {/* NAME */}
+
+          <input
+            name="name"
+            placeholder="Infrastructure Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+            "
+          />
+
+
+          {/* TYPE */}
+
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+            "
+          >
+
+            <option value="">
+              Select Infrastructure Type
+            </option>
+
+            <option value="Hospital">
+              Hospital
+            </option>
+
+            <option value="School">
+              School
+            </option>
+
+            <option value="Police">
+              Police
+            </option>
+
+            <option value="Transport">
+              Transport
+            </option>
+
+            <option value="Emergency">
+              Emergency
+            </option>
+
+            <option value="Park">
+              Park
+            </option>
+
+            <option value="Road">
+              Road
+            </option>
+
+            <option value="Metro">
+              Metro
+            </option>
+
+            <option value="Other">
+              Other
+            </option>
+
+          </select>
+
+
+          {/* SECTOR */}
+
+          <input
+            name="sector"
+            placeholder="Sector / Zone"
+            value={formData.sector}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+            "
+          />
+
+
+          {/* UTILIZATION */}
+
+          <input
+            name="utilization"
+            type="number"
+            min="0"
+            max="100"
+            placeholder="Utilization (%)"
+            value={formData.utilization}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+            "
+          />
+
+
+          {/* LATITUDE */}
+
+          <input
+            name="latitude"
+            type="number"
+            step="any"
+            min="-90"
+            max="90"
+            placeholder="Latitude"
+            value={formData.latitude}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+            "
+          />
+
+
+          {/* LONGITUDE */}
+
+          <input
+            name="longitude"
+            type="number"
+            step="any"
+            min="-180"
+            max="180"
+            placeholder="Longitude"
+            value={formData.longitude}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+            "
+          />
+
+
+          {/* STATUS */}
+
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+            "
+          >
+
+            <option value="Operational">
+              Operational
+            </option>
+
+            <option value="Under Construction">
+              Under Construction
+            </option>
+
+            <option value="Maintenance">
+              Maintenance
+            </option>
+
+          </select>
+
+
+          {/* CAPACITY */}
+
+          <input
+            name="capacity"
+            type="number"
+            min="0"
+            placeholder="Capacity (e.g. 500)"
+            value={formData.capacity}
+            onChange={handleChange}
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+            "
+          />
+
+
+          {/* DESCRIPTION */}
+
+          <textarea
+            name="description"
+            placeholder="Infrastructure description"
+            value={formData.description}
+            onChange={handleChange}
+            rows="3"
+            className="
+              rounded-xl
+              bg-slate-900
+              p-3
+              outline-none
+              border
+              border-white/10
+              focus:border-cyan-500
+              lg:col-span-2
+            "
+          />
+
+
+          {/* BUTTONS */}
+
+          <div className="flex gap-3 lg:col-span-2">
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="
+                flex-1
+                rounded-xl
+                bg-cyan-500
+                py-3
+                font-semibold
+                text-slate-950
+                transition
+                hover:bg-cyan-400
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
+            >
+
+              {saving
+                ? editingId
+                  ? "Updating..."
+                  : "Adding..."
+                : editingId
+                  ? "Update Infrastructure"
+                  : "Add Infrastructure"}
+
+            </button>
+
+
+            {editingId && (
+
+              <button
+                type="button"
+                onClick={resetForm}
+                disabled={saving}
+                className="
+                  rounded-xl
+                  bg-slate-700
+                  px-6
+                  text-white
+                  transition
+                  hover:bg-slate-600
+                "
+              >
+                Cancel
+              </button>
+
+            )}
+
+          </div>
+
+        </form>
+
+      </section>
+
+
+      {/* ===================================== */}
+      {/* STATISTICS */}
+      {/* ===================================== */}
+
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+
+        <div className="ai-card">
+
+          <p className="text-slate-400">
+            Total Infrastructure
+          </p>
+
+          <h2 className="mt-3 text-4xl font-bold text-cyan-400">
+            {infrastructure.length}
+          </h2>
+
+        </div>
+
+
+        <div className="ai-card">
+
+          <p className="text-slate-400">
+            Operational
+          </p>
+
+          <h2 className="mt-3 text-4xl font-bold text-emerald-400">
+            {
+              infrastructure.filter(
+                (item) =>
+                  item.status ===
+                  "Operational"
+              ).length
+            }
+          </h2>
+
+        </div>
+
+
+        <div className="ai-card">
+
+          <p className="text-slate-400">
+            Under Construction
+          </p>
+
+          <h2 className="mt-3 text-4xl font-bold text-yellow-400">
+            {
+              infrastructure.filter(
+                (item) =>
+                  item.status ===
+                  "Under Construction"
+              ).length
+            }
+          </h2>
+
+        </div>
+
+
+        <div className="ai-card">
+
+          <p className="text-slate-400">
+            Maintenance
+          </p>
+
+          <h2 className="mt-3 text-4xl font-bold text-red-400">
+            {
+              infrastructure.filter(
+                (item) =>
+                  item.status ===
+                  "Maintenance"
+              ).length
+            }
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      {/* ===================================== */}
+      {/* INSIGHTS */}
+      {/* ===================================== */}
+
+      <section className="ai-card">
+
+        <h2 className="mb-6 text-2xl font-bold">
+          Infrastructure Insights
+        </h2>
+
+        <div className="grid gap-6 md:grid-cols-3">
+
+          <div>
+
+            <p className="text-slate-400">
+              Highest Utilization
+            </p>
+
+            <h3 className="mt-2 text-xl font-bold">
+              {highestUtilization?.name ||
+                "No data"}
+            </h3>
+
+            <p className="text-cyan-400">
+              {highestUtilization
+                ? `${highestUtilization.utilization}%`
+                : "—"}
+            </p>
+
+          </div>
+
+
+          <div>
+
+            <p className="text-slate-400">
+              Lowest Utilization
+            </p>
+
+            <h3 className="mt-2 text-xl font-bold">
+              {lowestUtilization?.name ||
+                "No data"}
+            </h3>
+
+            <p className="text-yellow-400">
+              {lowestUtilization
+                ? `${lowestUtilization.utilization}%`
+                : "—"}
+            </p>
+
+          </div>
+
+
+          <div>
+
+            <p className="text-slate-400">
+              Average Utilization
+            </p>
+
+            <h3 className="mt-2 text-3xl font-bold text-emerald-400">
+              {averageUtilization}%
+            </h3>
+
+            <p className="text-slate-400">
+              City Infrastructure Health
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ===================================== */}
+      {/* SEARCH & FILTER */}
+      {/* ===================================== */}
+
+      <div className="grid gap-4 lg:grid-cols-3">
+
+        <input
+          type="text"
+          placeholder="Search infrastructure..."
+          value={searchTerm}
+          onChange={(e) =>
+            setSearchTerm(e.target.value)
+          }
+          className="
+            rounded-xl
+            bg-slate-900
+            p-3
+            outline-none
+            border
+            border-white/10
+          "
+        />
+
+
+        <select
+          value={typeFilter}
+          onChange={(e) =>
+            setTypeFilter(e.target.value)
+          }
+          className="
+            rounded-xl
+            bg-slate-900
+            p-3
+            outline-none
+            border
+            border-white/10
+          "
+        >
+
+          <option>All</option>
+          <option>Hospital</option>
+          <option>School</option>
+          <option>Police</option>
+          <option>Transport</option>
+          <option>Emergency</option>
+          <option>Park</option>
+          <option>Road</option>
+          <option>Metro</option>
+          <option>Other</option>
+
+        </select>
+
+
+        <select
+          value={statusFilter}
+          onChange={(e) =>
+            setStatusFilter(e.target.value)
+          }
+          className="
+            rounded-xl
+            bg-slate-900
+            p-3
+            outline-none
+            border
+            border-white/10
+          "
+        >
+
+          <option>All</option>
+
+          <option>
+            Operational
+          </option>
+
+          <option>
+            Under Construction
+          </option>
+
+          <option>
+            Maintenance
+          </option>
+
+        </select>
+
+      </div>
+
+
+      {/* ===================================== */}
+      {/* RESULTS COUNT */}
+      {/* ===================================== */}
+
+      <div className="flex items-center justify-between">
+
+        <p className="text-sm text-slate-400">
+          Showing{" "}
+          <span className="text-white font-medium">
+            {filteredInfrastructure.length}
+          </span>{" "}
+          of{" "}
+          <span className="text-white font-medium">
+            {infrastructure.length}
+          </span>{" "}
+          infrastructure assets
+        </p>
+
+      </div>
+
+
+      {/* ===================================== */}
+      {/* CARDS */}
+      {/* ===================================== */}
+
+      {filteredInfrastructure.length === 0 ? (
+
+        <div className="ai-card text-center">
+
+          <Building2
+            size={40}
+            className="mx-auto text-slate-500"
+          />
+
+          <h3 className="mt-4 text-xl font-semibold">
+            No infrastructure found
+          </h3>
+
+          <p className="mt-2 text-slate-400">
+            Try changing your search or filters.
+          </p>
+
         </div>
 
       ) : (
 
-        <>
+        <div className="grid gap-6 lg:grid-cols-3">
 
-          {/* Form */}
+          {filteredInfrastructure.map(
+            (item) => (
 
-          <section className="ai-card mb-8">
-
-            <h2 className="mb-6 text-2xl font-bold">
-
-              {editingId
-                ? "Update Infrastructure"
-                : "Add Infrastructure"}
-
-            </h2>
-
-            <form
-              onSubmit={handleSubmit}
-              className="grid gap-4 lg:grid-cols-2"
-            >
-
-              <input
-                name="name"
-                placeholder="Infrastructure Name"
-                value={formData.name}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
-                required
-              />
-
-              <input
-                name="type"
-                placeholder="Type"
-                value={formData.type}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
-                required
-              />
-
-              <input
-                name="sector"
-                placeholder="Sector"
-                value={formData.sector}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
-                required
-              />
-
-              <input
-                name="utilization"
-                type="number"
-                placeholder="Utilization (%)"
-                value={formData.utilization}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
-                required
-              />
-
-              <input
-                name="latitude"
-                type="number"
-                step="any"
-                placeholder="Latitude"
-                value={formData.latitude}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
-                required
-              />
-
-              <input
-                name="longitude"
-                type="number"
-                step="any"
-                placeholder="Longitude"
-                value={formData.longitude}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
-                required
-              />
-
-              <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                className="rounded-xl bg-slate-900 p-3 outline-none"
+              <div
+                key={item._id}
+                className="
+                  ai-card
+                  transition
+                  duration-300
+                  hover:-translate-y-1
+                "
               >
-                <option value="Operational">
-                  Operational
-                </option>
 
-                <option value="Under Construction">
-                  Under Construction
-                </option>
+                <Building2
+                  size={32}
+                  className="text-cyan-400"
+                />
 
-                <option value="Maintenance">
-                  Maintenance
-                </option>
 
-              </select>
+                <h2 className="mt-4 text-2xl font-bold">
+                  {item.name}
+                </h2>
 
-              <div className="flex gap-3">
 
-                <button
-                  type="submit"
-                  className="
-                    flex-1
-                    rounded-xl
-                    bg-cyan-500
-                    py-3
-                    font-semibold
-                    text-slate-950
-                    transition
-                    hover:bg-cyan-400
-                  "
-                >
-                  {editingId
-                    ? "Update Infrastructure"
-                    : "Add Infrastructure"}
-                </button>
-
-                {editingId && (
-
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="
-                      rounded-xl
-                      bg-slate-700
-                      px-6
-                      text-white
-                    "
-                  >
-                    Cancel
-                  </button>
-
-                )}
-
-              </div>
-
-            </form>
-
-          </section>
-
-          {/* Statistics */}
-
-          <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-
-            <div className="ai-card">
-              <p className="text-slate-400">
-                Total Infrastructure
-              </p>
-
-              <h2 className="mt-3 text-4xl font-bold text-cyan-400">
-                {infrastructure.length}
-              </h2>
-            </div>
-
-            <div className="ai-card">
-              <p className="text-slate-400">
-                Operational
-              </p>
-
-              <h2 className="mt-3 text-4xl font-bold text-emerald-400">
-                {
-                  infrastructure.filter(
-                    item => item.status === "Operational"
-                  ).length
-                }
-              </h2>
-            </div>
-
-            <div className="ai-card">
-              <p className="text-slate-400">
-                Under Construction
-              </p>
-
-              <h2 className="mt-3 text-4xl font-bold text-yellow-400">
-                {
-                  infrastructure.filter((item) => {
-                    return item.status === "Under Construction";
-                  }).length
-                }
-              </h2>
-            </div>
-
-            <div className="ai-card">
-              <p className="text-slate-400">
-                Maintenance
-              </p>
-
-              <h2 className="mt-3 text-4xl font-bold text-red-400">
-                {
-                  infrastructure.filter((item) => {
-                    return item.status === "Maintenance";
-                  }).length
-                }
-              </h2>
-            </div>
-
-          </div>
-
-          {/* Infrastructure Insights */}
-          
-          <section className="ai-card mb-8">
-
-            <h2 className="mb-6 text-2xl font-bold">
-              Infrastructure Insights
-            </h2>
-
-            <div className="grid gap-6 md:grid-cols-3">
-
-              <div>
-                <p className="text-slate-400">
-                  Highest Utilization
+                <p className="mt-2 text-slate-400">
+                  {item.type}
                 </p>
 
-                <h3 className="mt-2 text-xl font-bold">
-                  {highestUtilization?.name}
-                </h3>
 
-                <p className="text-cyan-400">
-                  {highestUtilization?.utilization}%
-                </p>
-              </div>
+                <div className="mt-4 flex items-center gap-2 text-slate-400">
 
-              <div>
-                <p className="text-slate-400">
-                  Lowest Utilization
-                </p>
+                  <MapPin size={18} />
 
-                <h3 className="mt-2 text-xl font-bold">
-                  {lowestUtilization?.name}
-                </h3>
+                  {item.sector}
 
-                <p className="text-yellow-400">
-                  {lowestUtilization?.utilization}%
-                </p>
-              </div>
+                </div>
 
-              <div>
-                <p className="text-slate-400">
-                  Average Utilization
-                </p>
 
-                <h3 className="mt-2 text-3xl font-bold text-emerald-400">
-                  {averageUtilization}%
-                </h3>
+                <div className="mt-4 flex items-center gap-2">
 
-                <p className="text-slate-400">
-                  City Infrastructure Health
-                </p>
-              </div>
-
-            </div>
-
-          </section>
-
-          {/*Search Input */}
-          <div className="mb-6 grid gap-4 lg:grid-cols-3">
-
-            {/* Search */}
-
-            <input
-              type="text"
-              placeholder="Search infrastructure..."
-              value={searchTerm}
-              onChange={(e) =>
-                setSearchTerm(e.target.value)
-              }
-              className="
-      rounded-xl
-      bg-slate-900
-      p-3
-      outline-none
-    "
-            />
-
-            {/* Type Filter */}
-
-            <select
-              value={typeFilter}
-              onChange={(e) =>
-                setTypeFilter(e.target.value)
-              }
-              className="
-      rounded-xl
-      bg-slate-900
-      p-3
-      outline-none
-    "
-            >
-              <option>All</option>
-              <option>Hospital</option>
-              <option>Police</option>
-              <option>Transport</option>
-              <option>Emergency</option>
-              <option>School</option>
-              <option>Park</option>
-            </select>
-
-            {/* Status Filter */}
-
-            <select
-              value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value)
-              }
-              className="
-      rounded-xl
-      bg-slate-900
-      p-3
-      outline-none
-    "
-            >
-              <option>All</option>
-              <option>Operational</option>
-              <option>Under Construction</option>
-              <option>Maintenance</option>
-            </select>
-
-          </div>
-
-          {/* Infrastructure Cards */}
-
-          <div className="grid gap-6 lg:grid-cols-3">
-
-            {infrastructure
-              .filter((item) => {
-
-                const query =
-                  searchTerm.toLowerCase();
-
-                const matchesSearch =
-                  item.name
-                    .toLowerCase()
-                    .includes(query) ||
-
-                  item.type
-                    .toLowerCase()
-                    .includes(query) ||
-
-                  item.sector
-                    .toLowerCase()
-                    .includes(query);
-
-                const matchesType =
-                  typeFilter === "All" ||
-                  item.type === typeFilter;
-
-                const matchesStatus =
-                  statusFilter === "All" ||
-                  item.status === statusFilter;
-
-                return (
-                  matchesSearch &&
-                  matchesType &&
-                  matchesStatus
-                );
-
-              })
-              .map((item) => (
-
-                <div
-                  key={item._id}
-                  className="ai-card"
-                >
-
-                  <Building2
-                    size={32}
+                  <Activity
+                    size={18}
                     className="text-cyan-400"
                   />
 
-                  <h2 className="mt-4 text-2xl font-bold">
-                    {item.name}
-                  </h2>
+                  <span
+                    className={`
+                      rounded-full
+                      px-3
+                      py-1
+                      text-sm
 
-                  <p className="mt-2 text-slate-400">
-                    {item.type}
+                      ${
+                        item.status ===
+                        "Operational"
+                          ? "bg-emerald-500/20 text-emerald-400"
+                          : item.status ===
+                            "Under Construction"
+                            ? "bg-yellow-500/20 text-yellow-400"
+                            : "bg-red-500/20 text-red-400"
+                      }
+                    `}
+                  >
+                    {item.status}
+                  </span>
+
+                </div>
+
+
+                {/* CAPACITY */}
+
+                <div className="mt-5">
+
+                  <p className="text-sm text-slate-400">
+                    Capacity
                   </p>
 
-                  <div className="mt-4 flex items-center gap-2 text-slate-400">
-                    <MapPin size={18} />
-                    {item.sector}
-                  </div>
+                  <p className="mt-1 text-lg font-semibold text-white">
+                    {item.capacity
+                      ? item.capacity.toLocaleString()
+                      : "Not specified"}
+                  </p>
 
-                  <div className="mt-4 flex items-center gap-2">
+                </div>
 
-                    <Activity
-                      size={18}
-                      className="text-cyan-400"
-                    />
 
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm ${item.status === "Operational"
-                        ? "bg-emerald-500/20 text-emerald-400"
-                        : item.status === "Under Construction"
-                          ? "bg-yellow-500/20 text-yellow-400"
-                          : "bg-red-500/20 text-red-400"
-                        }`}
-                    >
-                      {item.status}
-                    </span>
+                {/* UTILIZATION */}
 
-                  </div>
+                <div className="mt-5">
 
-                  <div className="mt-6">
+                  <div className="flex justify-between">
 
                     <p className="text-slate-400">
                       Utilization
                     </p>
 
-                    <div className="mt-2 h-3 rounded-full bg-slate-800">
-
-                      <div
-                        className="h-3 rounded-full bg-cyan-400"
-                        style={{
-                          width: `${item.utilization}%`,
-                        }}
-                      />
-
-                    </div>
-
-                    <p className="mt-2 text-cyan-400">
+                    <p className="text-cyan-400">
                       {item.utilization}%
                     </p>
 
                   </div>
 
-                  <div className="mt-6 flex justify-end gap-3">
 
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="rounded-lg bg-yellow-500 px-4 py-2 font-semibold text-black hover:bg-yellow-600"
-                    >
-                      Edit
-                    </button>
+                  <div className="mt-2 h-3 rounded-full bg-slate-800">
 
-                    <button
-                      onClick={() => handleDelete(item._id)}
-                      className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-                    >
-                      Delete
-                    </button>
+                    <div
+                      className={`
+                        h-3
+                        rounded-full
+                        transition-all
+
+                        ${
+                          Number(
+                            item.utilization
+                          ) >= 90
+                            ? "bg-red-400"
+                            : Number(
+                                item.utilization
+                              ) >= 75
+                              ? "bg-yellow-400"
+                              : "bg-cyan-400"
+                        }
+                      `}
+                      style={{
+                        width: `${Math.min(
+                          Number(
+                            item.utilization
+                          ),
+                          100
+                        )}%`,
+                      }}
+                    />
 
                   </div>
 
                 </div>
 
-              ))}
 
-          </div>
+                {/* DESCRIPTION */}
 
-        </>
+                {item.description && (
+
+                  <p className="mt-5 text-sm leading-relaxed text-slate-400">
+
+                    {item.description}
+
+                  </p>
+
+                )}
+
+
+                {/* LOCATION */}
+
+                <div className="mt-5 text-xs text-slate-500">
+
+                  Coordinates:{" "}
+
+                  {item.latitude},{" "}
+                  {item.longitude}
+
+                </div>
+
+
+                {/* ACTIONS */}
+
+                <div className="mt-6 flex justify-end gap-3">
+
+                  <button
+                    onClick={() =>
+                      handleEdit(item)
+                    }
+                    disabled={
+                      deletingId ===
+                      item._id
+                    }
+                    className="
+                      rounded-lg
+                      bg-yellow-500
+                      px-4
+                      py-2
+                      font-semibold
+                      text-black
+                      transition
+                      hover:bg-yellow-400
+                      disabled:opacity-50
+                    "
+                  >
+                    Edit
+                  </button>
+
+
+                  <button
+                    onClick={() =>
+                      handleDelete(
+                        item._id
+                      )
+                    }
+                    disabled={
+                      deletingId ===
+                      item._id
+                    }
+                    className="
+                      rounded-lg
+                      bg-red-600
+                      px-4
+                      py-2
+                      text-white
+                      transition
+                      hover:bg-red-500
+                      disabled:cursor-not-allowed
+                      disabled:opacity-50
+                    "
+                  >
+
+                    {deletingId === item._id
+                      ? "Deleting..."
+                      : "Delete"}
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            )
+          )}
+
+        </div>
 
       )}
 
