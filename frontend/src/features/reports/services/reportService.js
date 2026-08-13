@@ -128,13 +128,23 @@ export const archiveReport = async (id) => {
 /* ===========================================
    CREATE REPORT
 =========================================== */
-
 export const createReport = async (body) => {
 
-    const { data } = await axiosInstance.post(
-        "/reports",
+    console.log(
+        "SERVICE RECEIVED:",
         body
     );
+
+    console.log(
+        "BODY TYPE:",
+        typeof body
+    );
+
+    const { data } =
+        await axiosInstance.post(
+            "/reports",
+            body
+        );
 
     return data;
 };

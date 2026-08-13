@@ -33,17 +33,13 @@ useEffect(() => {
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+   const handleSubmit = (e) => {
+    e.preventDefault();
 
-        onSubmit(form);
+    console.log("MODAL SENDING:", form);
 
-        setForm({
-            title: "",
-            category: "Health",
-            description: "",
-        });
-    };
+    onSubmit(form);
+};
 
     return (
         <div

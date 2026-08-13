@@ -1,6 +1,10 @@
 const Report = require("../models/Report");
 
 const {
+    generateReport,
+} = require("../services/reportService");
+
+const {
     generatePDF,
 } = require("../services/pdfService");
 
@@ -13,7 +17,12 @@ const {
 } = require("../services/pptService");
 
 
+/* =========================================================
+   CREATE / GENERATE REPORT
+========================================================= */
+
 exports.createReport = async (req, res) => {
+
     try {
 
         const {
@@ -22,62 +31,119 @@ exports.createReport = async (req, res) => {
             description,
         } = req.body;
 
-        const report = await Report.create({
 
-            title,
+        /* ===============================
+           VALIDATION
+        =============================== */
 
-            category,
+        if (!title || !title.trim()) {
 
-            description,
+            return res.status(400).json({
+                success: false,
+                message: "Report title is required.",
+            });
 
-            createdBy: req.user.id,
+        }
 
-            status: "Generated",
 
-            summary: `${title} generated successfully.`
+        if (!category) {
 
-        });
+            return res.status(400).json({
+                success: false,
+                message: "Report category is required.",
+            });
 
-        res.status(201).json({
+        }
+
+
+        if (!description || !description.trim()) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Report description is required.",
+            });
+
+        }
+
+
+        /* ===============================
+           GENERATE FULL REPORT
+        =============================== */
+
+        const report = await generateReport(
+            {
+                title: title.trim(),
+                category,
+                description: description.trim(),
+            },
+            req.user.id
+        );
+
+
+        /* ===============================
+           RESPONSE
+        =============================== */
+
+        return res.status(201).json({
 
             success: true,
 
-            report
+            message: "Report generated successfully.",
 
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        res.status(500).json({
-
-            success: false,
-
-            message: "Unable to create report."
+            report,
 
         });
 
     }
+
+    catch (error) {
+
+        console.error(
+            "CREATE REPORT ERROR:",
+            error
+        );
+
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                error.message ||
+                "Unable to generate report.",
+
+        });
+
+    }
+
 };
 
-/* =========================================
+
+/* =========================================================
    GET ALL REPORTS
-========================================= */
+========================================================= */
 
 exports.getReports = async (req, res) => {
 
     try {
 
-        const reports = await Report.find()
+        const reports =
+            await Report.find()
+                .populate(
+                    "createdBy",
+                    "name email role"
+                )
+                .sort({
+                    createdAt: -1,
+                });
 
-            .sort({ createdAt: -1 });
 
-        res.status(200).json({
+        return res.status(200).json({
 
             success: true,
 
-            reportCount: reports.length,
+            reportCount:
+                reports.length,
 
             reports,
 
@@ -87,13 +153,18 @@ exports.getReports = async (req, res) => {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "GET REPORTS ERROR:",
+            error
+        );
 
-        res.status(500).json({
+
+        return res.status(500).json({
 
             success: false,
 
-            message: "Failed to fetch reports.",
+            message:
+                "Failed to fetch reports.",
 
         });
 
@@ -101,19 +172,27 @@ exports.getReports = async (req, res) => {
 
 };
 
-/* =========================================
-   GET SINGLE REPORT
-========================================= */
 
-exports.getReportById = async (req, res) => {
+/* =========================================================
+   GET SINGLE REPORT
+========================================================= */
+
+exports.getReportById = async (
+    req,
+    res
+) => {
 
     try {
 
-        const report = await Report.findById(
+        const report =
+            await Report.findById(
+                req.params.id
+            )
+            .populate(
+                "createdBy",
+                "name email role"
+            );
 
-            req.params.id
-
-        );
 
         if (!report) {
 
@@ -121,13 +200,15 @@ exports.getReportById = async (req, res) => {
 
                 success: false,
 
-                message: "Report not found.",
+                message:
+                    "Report not found.",
 
             });
 
         }
 
-        res.status(200).json({
+
+        return res.status(200).json({
 
             success: true,
 
@@ -139,13 +220,18 @@ exports.getReportById = async (req, res) => {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "GET REPORT BY ID ERROR:",
+            error
+        );
 
-        res.status(500).json({
+
+        return res.status(500).json({
 
             success: false,
 
-            message: "Failed to fetch report.",
+            message:
+                "Failed to fetch report.",
 
         });
 
@@ -153,19 +239,23 @@ exports.getReportById = async (req, res) => {
 
 };
 
-/* =========================================
-   DOWNLOAD PDF
-========================================= */
 
-exports.downloadPDF = async (req, res) => {
+/* =========================================================
+   DOWNLOAD PDF
+========================================================= */
+
+exports.downloadPDF = async (
+    req,
+    res
+) => {
 
     try {
 
-        const report = await Report.findById(
+        const report =
+            await Report.findById(
+                req.params.id
+            );
 
-            req.params.id
-
-        );
 
         if (!report) {
 
@@ -173,47 +263,52 @@ exports.downloadPDF = async (req, res) => {
 
                 success: false,
 
-                message: "Report not found.",
+                message:
+                    "Report not found.",
 
             });
 
         }
 
-        const pdfBuffer = await generatePDF(
 
-            report
+        const pdfBuffer =
+            await generatePDF(
+                report
+            );
 
-        );
 
         res.setHeader(
-
             "Content-Type",
-
             "application/pdf"
-
         );
+
 
         res.setHeader(
-
             "Content-Disposition",
-
             `attachment; filename="${report.title}.pdf"`
-
         );
 
-        res.send(pdfBuffer);
+
+        return res.send(
+            pdfBuffer
+        );
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "PDF DOWNLOAD ERROR:",
+            error
+        );
 
-        res.status(500).json({
+
+        return res.status(500).json({
 
             success: false,
 
-            message: "Unable to generate PDF.",
+            message:
+                "Unable to generate PDF.",
 
         });
 
@@ -221,25 +316,23 @@ exports.downloadPDF = async (req, res) => {
 
 };
 
-/* =========================================
+
+/* =========================================================
    DOWNLOAD EXCEL
-========================================= */
+========================================================= */
 
 exports.downloadExcel = async (
-
     req,
-
     res
-
 ) => {
 
     try {
 
-        const report = await Report.findById(
+        const report =
+            await Report.findById(
+                req.params.id
+            );
 
-            req.params.id
-
-        );
 
         if (!report) {
 
@@ -247,45 +340,52 @@ exports.downloadExcel = async (
 
                 success: false,
 
-                message: "Report not found.",
+                message:
+                    "Report not found.",
 
             });
 
         }
+
 
         const excelBuffer =
+            await generateExcel(
+                report
+            );
 
-            await generateExcel(report);
 
         res.setHeader(
-
             "Content-Type",
-
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
         );
+
 
         res.setHeader(
-
             "Content-Disposition",
-
             `attachment; filename="${report.title}.xlsx"`
-
         );
 
-        res.send(excelBuffer);
+
+        return res.send(
+            excelBuffer
+        );
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "EXCEL DOWNLOAD ERROR:",
+            error
+        );
 
-        res.status(500).json({
+
+        return res.status(500).json({
 
             success: false,
 
-            message: "Unable to generate Excel file.",
+            message:
+                "Unable to generate Excel file.",
 
         });
 
@@ -293,25 +393,23 @@ exports.downloadExcel = async (
 
 };
 
-/* =========================================
+
+/* =========================================================
    DOWNLOAD POWERPOINT
-========================================= */
+========================================================= */
 
 exports.downloadPresentation = async (
-
     req,
-
     res
-
 ) => {
 
     try {
 
-        const report = await Report.findById(
+        const report =
+            await Report.findById(
+                req.params.id
+            );
 
-            req.params.id
-
-        );
 
         if (!report) {
 
@@ -319,45 +417,52 @@ exports.downloadPresentation = async (
 
                 success: false,
 
-                message: "Report not found.",
+                message:
+                    "Report not found.",
 
             });
 
         }
 
+
         const pptBuffer =
+            await generatePresentation(
+                report
+            );
 
-            await generatePresentation(report);
 
         res.setHeader(
-
             "Content-Type",
-
             "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-
         );
+
 
         res.setHeader(
-
             "Content-Disposition",
-
             `attachment; filename="${report.title}.pptx"`
-
         );
 
-        res.send(pptBuffer);
+
+        return res.send(
+            pptBuffer
+        );
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "PPT DOWNLOAD ERROR:",
+            error
+        );
 
-        res.status(500).json({
+
+        return res.status(500).json({
 
             success: false,
 
-            message: "Unable to generate presentation.",
+            message:
+                "Unable to generate presentation.",
 
         });
 
@@ -365,19 +470,23 @@ exports.downloadPresentation = async (
 
 };
 
-/* =========================================
-   DELETE REPORT
-========================================= */
 
-exports.deleteReport = async (req, res) => {
+/* =========================================================
+   DELETE REPORT
+========================================================= */
+
+exports.deleteReport = async (
+    req,
+    res
+) => {
 
     try {
 
-        const report = await Report.findByIdAndDelete(
+        const report =
+            await Report.findById(
+                req.params.id
+            );
 
-            req.params.id
-
-        );
 
         if (!report) {
 
@@ -385,17 +494,25 @@ exports.deleteReport = async (req, res) => {
 
                 success: false,
 
-                message: "Report not found."
+                message:
+                    "Report not found.",
 
             });
 
         }
 
-        res.json({
+
+        await Report.findByIdAndDelete(
+            req.params.id
+        );
+
+
+        return res.status(200).json({
 
             success: true,
 
-            message: "Report deleted successfully."
+            message:
+                "Report deleted successfully.",
 
         });
 
@@ -403,11 +520,19 @@ exports.deleteReport = async (req, res) => {
 
     catch (error) {
 
-        res.status(500).json({
+        console.error(
+            "DELETE REPORT ERROR:",
+            error
+        );
+
+
+        return res.status(500).json({
 
             success: false,
 
-            message: error.message
+            message:
+                error.message ||
+                "Unable to delete report.",
 
         });
 
@@ -415,19 +540,23 @@ exports.deleteReport = async (req, res) => {
 
 };
 
-/* =========================================
-   ARCHIVE REPORT
-========================================= */
 
-exports.archiveReport = async (req, res) => {
+/* =========================================================
+   ARCHIVE REPORT
+========================================================= */
+
+exports.archiveReport = async (
+    req,
+    res
+) => {
 
     try {
 
-        const report = await Report.findById(
+        const report =
+            await Report.findById(
+                req.params.id
+            );
 
-            req.params.id
-
-        );
 
         if (!report) {
 
@@ -435,19 +564,27 @@ exports.archiveReport = async (req, res) => {
 
                 success: false,
 
-                message: "Report not found."
+                message:
+                    "Report not found.",
 
             });
 
         }
 
-        report.status = "Archived";
+
+        report.status =
+            "Archived";
+
 
         await report.save();
 
-        res.json({
+
+        return res.status(200).json({
 
             success: true,
+
+            message:
+                "Report archived successfully.",
 
             report,
 
@@ -457,11 +594,19 @@ exports.archiveReport = async (req, res) => {
 
     catch (error) {
 
-        res.status(500).json({
+        console.error(
+            "ARCHIVE REPORT ERROR:",
+            error
+        );
+
+
+        return res.status(500).json({
 
             success: false,
 
-            message: error.message,
+            message:
+                error.message ||
+                "Unable to archive report.",
 
         });
 
