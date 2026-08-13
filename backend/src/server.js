@@ -28,6 +28,9 @@ const infrastructureRoutes =
   const settingsRoutes =
 require("./routes/settingsRoutes");
 
+const scenarioRoutes =
+  require("./routes/scenarioRoutes");
+
 const app = express();
 
 // Connect Database
@@ -87,6 +90,12 @@ app.use(
   "/api/reports",
   reportRoutes
 );
+
+app.use(
+  "/api/scenarios",
+  scenarioRoutes
+);
+
 // Server
 const PORT = process.env.PORT || 5000;
 
