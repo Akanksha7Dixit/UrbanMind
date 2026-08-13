@@ -5,11 +5,13 @@ const issueSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
 
     description: {
       type: String,
       required: true,
+      trim: true,
     },
 
     category: {
@@ -19,8 +21,10 @@ const issueSchema = new mongoose.Schema(
         "Water",
         "Electricity",
         "Garbage",
+        "Sanitation",
         "Traffic",
         "Infrastructure",
+        "Other",
       ],
       default: "Infrastructure",
     },
@@ -31,6 +35,7 @@ const issueSchema = new mongoose.Schema(
         "Low",
         "Medium",
         "High",
+        "Critical",
       ],
       default: "Medium",
     },
@@ -48,11 +53,33 @@ const issueSchema = new mongoose.Schema(
     location: {
       type: String,
       default: "",
+      trim: true,
+    },
+
+    latitude: {
+      type: Number,
+      min: -90,
+      max: 90,
+      default: null,
+    },
+
+    longitude: {
+      type: Number,
+      min: -180,
+      max: 180,
+      default: null,
+    },
+
+    resolution: {
+      type: String,
+      default: "",
+      trim: true,
     },
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      default: null,
     },
   },
   {

@@ -1,132 +1,101 @@
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 
-const API_URL =
-  "http://localhost:5000/api/issues";
 
-// ==============================
+// ==========================================
 // GET ALL ISSUES
-// ==============================
+// ==========================================
 
-export const getIssues = async (
-  token
-) => {
-
+export const getIssues = async () => {
   const response =
-    await axios.get(
-      API_URL,
-      {
-        headers: {
-          Authorization:
-            `Bearer ${token}`,
-        },
-      }
+    await axiosInstance.get(
+      "/issues"
     );
 
   return response.data;
-
 };
 
-// ==============================
+
+// ==========================================
+// GET SINGLE ISSUE
+// ==========================================
+
+export const getIssue = async (id) => {
+  const response =
+    await axiosInstance.get(
+      `/issues/${id}`
+    );
+
+  return response.data;
+};
+
+
+// ==========================================
 // CREATE ISSUE
-// ==============================
+// ==========================================
 
-export const createIssue =
-  async (
-    issueData,
-    token
-  ) => {
+export const createIssue = async (
+  issueData
+) => {
+  const response =
+    await axiosInstance.post(
+      "/issues",
+      issueData
+    );
 
-    const response =
-      await axios.post(
-        API_URL,
-        issueData,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+  return response.data;
+};
 
-    return response.data;
 
-  };
-
-// ==============================
+// ==========================================
 // UPDATE ISSUE STATUS
-// ==============================
+// ==========================================
 
 export const updateIssueStatus =
   async (
     issueId,
-    status,
-    token
+    status
   ) => {
-
     const response =
-      await axios.patch(
-        `${API_URL}/${issueId}`,
-        { status },
+      await axiosInstance.patch(
+        `/issues/${issueId}`,
         {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
+          status,
         }
       );
 
     return response.data;
-
   };
 
-// ==============================
+
+// ==========================================
 // UPDATE ISSUE
-// ==============================
+// ==========================================
 
-export const updateIssue =
-  async (
-    id,
-    issueData,
-    token
-  ) => {
+export const updateIssue = async (
+  id,
+  issueData
+) => {
+  const response =
+    await axiosInstance.put(
+      `/issues/${id}`,
+      issueData
+    );
 
-    const response =
-      await axios.put(
-        `${API_URL}/${id}`,
-        issueData,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+  return response.data;
+};
 
-    return response.data;
 
-  };
-
-// ==============================
+// ==========================================
 // DELETE ISSUE
-// ==============================
+// ==========================================
 
-export const deleteIssue =
-  async (
-    id,
-    token
-  ) => {
+export const deleteIssue = async (
+  id
+) => {
+  const response =
+    await axiosInstance.delete(
+      `/issues/${id}`
+    );
 
-    const response =
-      await axios.delete(
-        `${API_URL}/${id}`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
-
-    return response.data;
-
-  };
+  return response.data;
+};
