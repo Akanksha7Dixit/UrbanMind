@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   Building2,
@@ -21,6 +25,17 @@ export default function InfrastructureManagement() {
   const token = useAuthStore(
     (state) => state.token
   );
+
+  // ==========================================
+  // REFS
+  // ==========================================
+
+  // Used to automatically scroll to the form
+  // when the user clicks Edit.
+  const formSectionRef = useRef(null);
+
+  const nameInputRef = useRef(null);
+
 
   // ==========================================
   // STATE
@@ -146,7 +161,6 @@ export default function InfrastructureManagement() {
   // ==========================================
 
   const validateForm = () => {
-
     if (!formData.name.trim()) {
       toast.error(
         "Infrastructure name is required"
@@ -215,7 +229,10 @@ export default function InfrastructureManagement() {
 
     if (
       formData.capacity !== "" &&
-      Number(formData.capacity) < 0
+      (
+        Number.isNaN(Number(formData.capacity)) ||
+        Number(formData.capacity) < 0
+      )
     ) {
       toast.error(
         "Capacity cannot be negative"
@@ -269,8 +286,11 @@ export default function InfrastructureManagement() {
       };
 
 
-      if (editingId) {
+      // ========================================
+      // UPDATE
+      // ========================================
 
+      if (editingId) {
         await updateInfrastructure(
           editingId,
           payload,
@@ -281,8 +301,13 @@ export default function InfrastructureManagement() {
           "Infrastructure updated successfully"
         );
 
-      } else {
+      }
 
+      // ========================================
+      // CREATE
+      // ========================================
+
+      else {
         await createInfrastructure(
           payload,
           token
@@ -294,12 +319,13 @@ export default function InfrastructureManagement() {
       }
 
 
+      // Refresh data
       await fetchInfrastructure();
 
+      // Clear form
       resetForm();
 
     } catch (error) {
-
       console.error(
         "Save infrastructure error:",
         error
@@ -321,7 +347,6 @@ export default function InfrastructureManagement() {
   // ==========================================
 
   const handleDelete = async (id) => {
-
     const confirmDelete =
       window.confirm(
         "Are you sure you want to delete this infrastructure?"
@@ -332,7 +357,6 @@ export default function InfrastructureManagement() {
     }
 
     try {
-
       setDeletingId(id);
 
       await deleteInfrastructure(
@@ -351,7 +375,6 @@ export default function InfrastructureManagement() {
       );
 
     } catch (error) {
-
       console.error(
         "Delete infrastructure error:",
         error
@@ -373,31 +396,55 @@ export default function InfrastructureManagement() {
   // ==========================================
 
   const handleEdit = (item) => {
-
+    // First set the editing state
     setEditingId(item._id);
 
+    // Populate the form
     setFormData({
       name: item.name || "",
+
       type: item.type || "",
+
       status:
         item.status || "Operational",
+
       sector: item.sector || "",
+
       utilization:
         item.utilization ?? "",
+
       latitude:
         item.latitude ?? "",
+
       longitude:
         item.longitude ?? "",
+
       capacity:
         item.capacity ?? "",
+
       description:
         item.description || "",
     });
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
+
+    // ========================================
+    // SCROLL TO EDIT FORM
+    // ========================================
+
+    // Wait until React updates the DOM.
+    // Then scroll directly to the form.
+    requestAnimationFrame(() => {
+      formSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+
+      // Focus the name field after scrolling.
+      setTimeout(() => {
+        nameInputRef.current?.focus();
+      }, 500);
     });
+
 
     toast(
       "Editing infrastructure",
@@ -456,7 +503,6 @@ export default function InfrastructureManagement() {
 
   const filteredInfrastructure =
     infrastructure.filter((item) => {
-
       const query =
         searchTerm
           .toLowerCase()
@@ -474,16 +520,13 @@ export default function InfrastructureManagement() {
           ?.toLowerCase()
           .includes(query);
 
-
       const matchesType =
         typeFilter === "All" ||
         item.type === typeFilter;
 
-
       const matchesStatus =
         statusFilter === "All" ||
         item.status === statusFilter;
-
 
       return (
         matchesSearch &&
@@ -500,13 +543,11 @@ export default function InfrastructureManagement() {
   if (loading) {
     return (
       <div className="p-8">
-
         <div className="ai-card">
           <p className="text-slate-400">
             Loading infrastructure...
           </p>
         </div>
-
       </div>
     );
   }
@@ -524,7 +565,6 @@ export default function InfrastructureManagement() {
       {/* ===================================== */}
 
       <div>
-
         <h1 className="text-4xl font-bold">
           Infrastructure Management
         </h1>
@@ -533,7 +573,6 @@ export default function InfrastructureManagement() {
           Add, update and manage city
           infrastructure.
         </p>
-
       </div>
 
 
@@ -541,16 +580,27 @@ export default function InfrastructureManagement() {
       {/* FORM */}
       {/* ===================================== */}
 
-      <section className="ai-card">
+      <section
+        ref={formSectionRef}
+        className={`
+          ai-card
+          scroll-mt-24
+          transition-all
+          duration-300
+          ${
+            editingId
+              ? "ring-1 ring-cyan-500/40"
+              : ""
+          }
+        `}
+      >
 
         <div className="mb-6">
 
           <h2 className="text-2xl font-bold">
-
             {editingId
               ? "Update Infrastructure"
               : "Add Infrastructure"}
-
           </h2>
 
           <p className="mt-1 text-sm text-slate-400">
@@ -571,6 +621,7 @@ export default function InfrastructureManagement() {
           {/* NAME */}
 
           <input
+            ref={nameInputRef}
             name="name"
             placeholder="Infrastructure Name"
             value={formData.name}
@@ -839,7 +890,6 @@ export default function InfrastructureManagement() {
 
 
             {editingId && (
-
               <button
                 type="button"
                 onClick={resetForm}
@@ -855,7 +905,6 @@ export default function InfrastructureManagement() {
               >
                 Cancel
               </button>
-
             )}
 
           </div>
@@ -872,7 +921,6 @@ export default function InfrastructureManagement() {
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
         <div className="ai-card">
-
           <p className="text-slate-400">
             Total Infrastructure
           </p>
@@ -880,12 +928,10 @@ export default function InfrastructureManagement() {
           <h2 className="mt-3 text-4xl font-bold text-cyan-400">
             {infrastructure.length}
           </h2>
-
         </div>
 
 
         <div className="ai-card">
-
           <p className="text-slate-400">
             Operational
           </p>
@@ -899,12 +945,10 @@ export default function InfrastructureManagement() {
               ).length
             }
           </h2>
-
         </div>
 
 
         <div className="ai-card">
-
           <p className="text-slate-400">
             Under Construction
           </p>
@@ -918,12 +962,10 @@ export default function InfrastructureManagement() {
               ).length
             }
           </h2>
-
         </div>
 
 
         <div className="ai-card">
-
           <p className="text-slate-400">
             Maintenance
           </p>
@@ -937,7 +979,6 @@ export default function InfrastructureManagement() {
               ).length
             }
           </h2>
-
         </div>
 
       </div>
@@ -956,7 +997,6 @@ export default function InfrastructureManagement() {
         <div className="grid gap-6 md:grid-cols-3">
 
           <div>
-
             <p className="text-slate-400">
               Highest Utilization
             </p>
@@ -971,12 +1011,10 @@ export default function InfrastructureManagement() {
                 ? `${highestUtilization.utilization}%`
                 : "—"}
             </p>
-
           </div>
 
 
           <div>
-
             <p className="text-slate-400">
               Lowest Utilization
             </p>
@@ -991,12 +1029,10 @@ export default function InfrastructureManagement() {
                 ? `${lowestUtilization.utilization}%`
                 : "—"}
             </p>
-
           </div>
 
 
           <div>
-
             <p className="text-slate-400">
               Average Utilization
             </p>
@@ -1008,7 +1044,6 @@ export default function InfrastructureManagement() {
             <p className="text-slate-400">
               City Infrastructure Health
             </p>
-
           </div>
 
         </div>
@@ -1111,11 +1146,11 @@ export default function InfrastructureManagement() {
 
         <p className="text-sm text-slate-400">
           Showing{" "}
-          <span className="text-white font-medium">
+          <span className="font-medium text-white">
             {filteredInfrastructure.length}
           </span>{" "}
           of{" "}
-          <span className="text-white font-medium">
+          <span className="font-medium text-white">
             {infrastructure.length}
           </span>{" "}
           infrastructure assets
@@ -1202,7 +1237,6 @@ export default function InfrastructureManagement() {
                       px-3
                       py-1
                       text-sm
-
                       ${
                         item.status ===
                         "Operational"
@@ -1230,7 +1264,9 @@ export default function InfrastructureManagement() {
 
                   <p className="mt-1 text-lg font-semibold text-white">
                     {item.capacity
-                      ? item.capacity.toLocaleString()
+                      ? Number(
+                          item.capacity
+                        ).toLocaleString()
                       : "Not specified"}
                   </p>
 
@@ -1292,13 +1328,9 @@ export default function InfrastructureManagement() {
                 {/* DESCRIPTION */}
 
                 {item.description && (
-
                   <p className="mt-5 text-sm leading-relaxed text-slate-400">
-
                     {item.description}
-
                   </p>
-
                 )}
 
 
@@ -1319,6 +1351,7 @@ export default function InfrastructureManagement() {
                 <div className="mt-6 flex justify-end gap-3">
 
                   <button
+                    type="button"
                     onClick={() =>
                       handleEdit(item)
                     }
@@ -1343,6 +1376,7 @@ export default function InfrastructureManagement() {
 
 
                   <button
+                    type="button"
                     onClick={() =>
                       handleDelete(
                         item._id
