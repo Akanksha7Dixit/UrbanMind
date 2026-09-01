@@ -1,73 +1,90 @@
-const Infrastructure = require("../models/Infrastructure");
-const Issue = require("../models/Issue");
+const Infrastructure =
+    require("../models/Infrastructure");
+
+const Issue =
+    require("../models/Issue");
 
 const {
-  generateRecommendations,
-} = require("../services/aiRecommendationService");
+    generateAIRecommendations,
+} = require("../services/aiService");
+
+
+/* =========================================
+   GET AI RECOMMENDATIONS
+========================================= */
 
 exports.getRecommendations =
-  async (req, res) => {
+    async (req, res) => {
 
-    try {
+        try {
 
-      const infrastructure =
-        await Infrastructure.find();
+            const infrastructure =
+                await Infrastructure
+                    .find()
+                    .lean();
 
-      const issues =
-        await Issue.find();
+            const issues =
+                await Issue
+                    .find()
+                    .lean();
 
-      const recommendations =
-        generateRecommendations(
-          infrastructure,
-          issues
-        );
 
-      let healthScore = 100;
+            const result =
+                await generateAIRecommendations({
 
-      healthScore -=
-        issues.filter(
-          issue =>
-            issue.status === "Pending"
-        ).length;
+                    infrastructure,
 
-      healthScore -=
-        infrastructure.filter(
-          item =>
-            item.status === "Maintenance"
-        ).length * 5;
+                    issues,
 
-      if (healthScore < 0)
-        healthScore = 0;
+                });
 
-      res.json({
 
-        success: true,
+            res.status(200).json({
 
-        healthScore,
+                success: true,
 
-        totalInfrastructure:
-          infrastructure.length,
+                healthScore:
+                    result.healthScore,
 
-        totalIssues:
-          issues.length,
+                overview:
+                    result.overview,
 
-        recommendations,
+                totalInfrastructure:
+                    result.totalInfrastructure,
 
-      });
+                totalIssues:
+                    result.totalIssues,
 
-    } catch (error) {
+                recommendations:
+                    result.recommendations,
 
-      console.log(error);
+            });
 
-      res.status(500).json({
 
-        success: false,
+        } catch (error) {
 
-        message:
-          error.message,
+            console.error(
+                "AI Recommendation Error:",
+                error.response?.data ||
+                error.message
+            );
 
-      });
 
-    }
+            const status =
+                error.response?.status ||
+                500;
 
-  };
+
+            res.status(status).json({
+
+                success: false,
+
+                message:
+                    error.response?.data?.detail ||
+                    "Unable to generate AI recommendations.",
+
+            });
+
+        }
+
+    };

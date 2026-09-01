@@ -1,16 +1,63 @@
-import axios from "axios";
+import axiosInstance
+    from "../api/axiosInstance";
 
-const API_URL =
-  "http://localhost:5000/api/recommendations";
+
+/* =========================================
+   GET AI RECOMMENDATIONS
+========================================= */
 
 export const getRecommendations =
-  async (token) => {
-    const response =
-      await axios.get(API_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    async () => {
 
-    return response.data;
-  };
+        const {
+            data
+        } = await axiosInstance.get(
+            "/recommendations"
+        );
+
+        return data;
+
+    };
+
+
+/* =========================================
+   ASK URBANMIND AI
+========================================= */
+
+export const askUrbanMind =
+    async ({
+        message,
+        history = [],
+    }) => {
+
+        const {
+            data
+        } = await axiosInstance.post(
+            "/ai/chat",
+            {
+                message,
+                history,
+            }
+        );
+
+        return data;
+
+    };
+
+
+/* =========================================
+   AI HEALTH
+========================================= */
+
+export const getAIHealth =
+    async () => {
+
+        const {
+            data
+        } = await axiosInstance.get(
+            "/ai/health"
+        );
+
+        return data;
+
+    };

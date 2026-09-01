@@ -1,407 +1,605 @@
 import {
-  Brain,
-  AlertTriangle,
-  TrendingUp,
-  Building2,
-  ShieldCheck,
-  CheckCircle2,
+    Brain,
+    AlertTriangle,
+    TrendingUp,
+    Building2,
 } from "lucide-react";
 
 import {
-  useEffect,
-  useState,
+    useEffect,
+    useState,
 } from "react";
 
 import {
-  useAuthStore,
-} from "../../store/authStore";
+    getRecommendations,
+} from "../../services/aiRecommendationService";
 
-import {
-  getRecommendations,
-} from "../../services/recommendationService";
 
 export default function AIRecommendationCenter() {
 
-  const token =
-    useAuthStore(
-      (state) => state.token
-    );
+    const [
+        recommendations,
+        setRecommendations,
+    ] = useState([]);
 
-  const [recommendations, setRecommendations] =
-    useState([]);
 
-  const [healthScore, setHealthScore] =
-    useState(0);
+    const [
+        healthScore,
+        setHealthScore,
+    ] = useState(0);
 
-  const [totalInfrastructure, setTotalInfrastructure] =
-    useState(0);
 
-  const [totalIssues, setTotalIssues] =
-    useState(0);
+    const [
+        overview,
+        setOverview,
+    ] = useState("");
 
-  useEffect(() => {
-    const fetchRecommendations =
-      async () => {
-        try {
-          const data =
-            await getRecommendations(
-              token
-            );
 
-          setRecommendations(
-            data.recommendations
-          );
+    const [
+        totalInfrastructure,
+        setTotalInfrastructure,
+    ] = useState(0);
 
-          setHealthScore(
-            data.healthScore
-          );
 
-          setTotalInfrastructure(
-            data.totalInfrastructure
-          );
+    const [
+        totalIssues,
+        setTotalIssues,
+    ] = useState(0);
 
-          setTotalIssues(
-            data.totalIssues
-          );
 
-        } catch (error) {
-          console.error(error);
-        }
-      };
+    const [
+        loading,
+        setLoading,
+    ] = useState(true);
 
-    if (token) {
-      fetchRecommendations();
-    }
-  }, [token]);
 
-  return (
-    <div className="space-y-8 p-8">
+    const [
+        error,
+        setError,
+    ] = useState("");
 
-      {/* HEADER */}
 
-      <div>
-        <h1 className="text-4xl font-bold">
-          AI Recommendation Center
-        </h1>
+    const loadRecommendations =
+        async () => {
 
-        <p className="mt-2 text-slate-400">
-          AI-powered urban planning insights and strategic recommendations.
-        </p>
-      </div>
+            try {
 
-      {/* AI SUMMARY */}
+                setLoading(true);
 
-      <section
-        className="
-          rounded-3xl
-          border border-cyan-500/20
-          bg-cyan-500/5
-          p-8
-        "
-      >
-        <div className="flex items-center gap-3">
-          <Brain className="text-cyan-400" />
-          <p className="text-cyan-400">
-            AI Decision Intelligence
-          </p>
-        </div>
+                setError("");
 
-        <h2 className="mt-4 text-5xl font-bold text-cyan-400">
-          {healthScore}%
-        </h2>
 
-        <p className="mt-4 text-slate-400">
-          UrbanMind continuously evaluates infrastructure utilization,
-maintenance status and citizen complaints to recommend
-priority actions for planners and administrators.
-        </p>
-      </section>
+                const data =
+                    await getRecommendations();
 
-      {/* HIGH PRIORITY */}
 
-      <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          AI Recommendations
-        </h2>
+                setRecommendations(
+                    Array.isArray(
+                        data.recommendations
+                    )
+                        ? data.recommendations
+                        : []
+                );
 
-        <div className="grid gap-6 lg:grid-cols-2">
 
-          {recommendations.map((item) => (
+                setHealthScore(
+                    Number(
+                        data.healthScore || 0
+                    )
+                );
 
-            <div
-              key={item._id}
-              className="ai-card"
-            >
 
-              <AlertTriangle className="text-cyan-400" />
+                setOverview(
+                    data.overview || ""
+                );
 
-              <h3 className="mt-4 text-xl font-semibold">
-                {item.title}
-              </h3>
 
-              <p className="mt-3 text-slate-400">
-                {item.recommendation}
-              </p>
+                setTotalInfrastructure(
+                    Number(
+                        data.totalInfrastructure ||
+                        0
+                    )
+                );
 
-              <div className="mt-5 flex gap-3">
 
-                <span
-                  className={`
-              rounded-full
-              px-3
-              py-1
+                setTotalIssues(
+                    Number(
+                        data.totalIssues ||
+                        0
+                    )
+                );
 
-              ${item.priority === "High"
-                      ? "bg-red-500/20 text-red-400"
 
-                      : item.priority === "Medium"
-                        ? "bg-yellow-500/20 text-yellow-400"
+            } catch (err) {
 
-                        : "bg-green-500/20 text-green-400"
-                    }
-            `}
-                >
-                  {item.priority}
-                </span>
+                console.error(
+                    err
+                );
 
-              </div>
+                setError(
+                    err.response?.data?.message ||
+                    "Unable to load AI recommendations."
+                );
+
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+
+    useEffect(() => {
+
+        loadRecommendations();
+
+    }, []);
+
+
+    return (
+
+        <div className="space-y-8 p-8">
+
+            {/* HEADER */}
+
+            <div>
+
+                <h1 className="text-4xl font-bold">
+
+                    AI Recommendation Center
+
+                </h1>
+
+
+                <p className="mt-2 text-slate-400">
+
+                    Dynamic AI analysis of the
+                    current urban data.
+
+                </p>
 
             </div>
 
-          ))}
+
+            {/* ERROR */}
+
+            {error && (
+
+                <div className="
+                    rounded-2xl
+                    border
+                    border-red-500/20
+                    bg-red-500/10
+                    p-5
+                    text-red-400
+                ">
+
+                    {error}
+
+                </div>
+
+            )}
+
+
+            {/* AI SUMMARY */}
+
+            <section className="
+                rounded-3xl
+                border
+                border-cyan-500/20
+                bg-cyan-500/5
+                p-8
+            ">
+
+                <div className="
+                    flex
+                    items-center
+                    gap-3
+                ">
+
+                    <Brain
+                        className="text-cyan-400"
+                    />
+
+                    <p className="
+                        text-cyan-400
+                        font-medium
+                    ">
+
+                        UrbanMind AI Analysis
+
+                    </p>
+
+                </div>
+
+
+                {loading ? (
+
+                    <p className="
+                        mt-6
+                        text-slate-400
+                    ">
+
+                        AI is analyzing
+                        current city data...
+
+                    </p>
+
+                ) : (
+
+                    <>
+
+                        <h2 className="
+                            mt-4
+                            text-5xl
+                            font-bold
+                            text-cyan-400
+                        ">
+
+                            {healthScore}%
+
+                        </h2>
+
+
+                        {overview && (
+
+                            <p className="
+                                mt-6
+                                max-w-4xl
+                                leading-7
+                                text-slate-400
+                            ">
+
+                                {overview}
+
+                            </p>
+
+                        )}
+
+                    </>
+
+                )}
+
+            </section>
+
+
+            {/* CITY STATISTICS */}
+
+            <section>
+
+                <h2 className="
+                    mb-6
+                    text-2xl
+                    font-semibold
+                ">
+
+                    Current City Data
+
+                </h2>
+
+
+                <div className="
+                    grid
+                    gap-6
+                    lg:grid-cols-3
+                ">
+
+                    <div className="ai-card">
+
+                        <Building2
+                            className="text-cyan-400"
+                        />
+
+                        <p className="
+                            mt-4
+                            text-slate-400
+                        ">
+
+                            Infrastructure
+
+                        </p>
+
+
+                        <h2 className="
+                            mt-3
+                            text-5xl
+                            font-bold
+                        ">
+
+                            {totalInfrastructure}
+
+                        </h2>
+
+                    </div>
+
+
+                    <div className="ai-card">
+
+                        <AlertTriangle
+                            className="text-red-400"
+                        />
+
+                        <p className="
+                            mt-4
+                            text-slate-400
+                        ">
+
+                            Citizen Issues
+
+                        </p>
+
+
+                        <h2 className="
+                            mt-3
+                            text-5xl
+                            font-bold
+                        ">
+
+                            {totalIssues}
+
+                        </h2>
+
+                    </div>
+
+
+                    <div className="ai-card">
+
+                        <TrendingUp
+                            className="text-green-400"
+                        />
+
+                        <p className="
+                            mt-4
+                            text-slate-400
+                        ">
+
+                            AI Recommendations
+
+                        </p>
+
+
+                        <h2 className="
+                            mt-3
+                            text-5xl
+                            font-bold
+                        ">
+
+                            {
+                                recommendations.length
+                            }
+
+                        </h2>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            {/* RECOMMENDATIONS */}
+
+            <section>
+
+                <h2 className="
+                    mb-6
+                    text-2xl
+                    font-semibold
+                ">
+
+                    AI Recommendations
+
+                </h2>
+
+
+                {loading ? (
+
+                    <div className="ai-card">
+
+                        <p className="
+                            text-slate-400
+                        ">
+
+                            Generating
+                            recommendations...
+
+                        </p>
+
+                    </div>
+
+                ) : recommendations.length === 0 ? (
+
+                    <div className="ai-card">
+
+                        <Brain
+                            className="
+                                mb-4
+                                text-cyan-400
+                            "
+                            size={40}
+                        />
+
+
+                        <h2 className="
+                            text-2xl
+                            font-bold
+                        ">
+
+                            No Recommendations
+
+                        </h2>
+
+
+                        <p className="
+                            mt-3
+                            text-slate-400
+                        ">
+
+                            The AI did not identify
+                            a sufficiently supported
+                            recommendation from
+                            the current data.
+
+                        </p>
+
+                    </div>
+
+                ) : (
+
+                    <div className="
+                        grid
+                        gap-6
+                        lg:grid-cols-2
+                    ">
+
+                        {recommendations.map(
+                            (item, index) => (
+
+                                <div
+                                    key={
+                                        item.id ||
+                                        item._id ||
+                                        index
+                                    }
+                                    className="ai-card"
+                                >
+
+                                    <AlertTriangle
+                                        className="
+                                            text-cyan-400
+                                        "
+                                    />
+
+
+                                    <h3 className="
+                                        mt-4
+                                        text-xl
+                                        font-semibold
+                                    ">
+
+                                        {item.title}
+
+                                    </h3>
+
+
+                                    <p className="
+                                        mt-3
+                                        text-slate-400
+                                    ">
+
+                                        {
+                                            item.recommendation
+                                        }
+
+                                    </p>
+
+
+                                    {item.reason && (
+
+                                        <p className="
+                                            mt-4
+                                            text-sm
+                                            text-slate-500
+                                        ">
+
+                                            Reason:
+                                            {" "}
+                                            {item.reason}
+
+                                        </p>
+
+                                    )}
+
+
+                                    <div className="
+                                        mt-5
+                                        flex
+                                        items-center
+                                        gap-3
+                                    ">
+
+                                        <span className="
+                                            rounded-full
+                                            bg-white/5
+                                            px-3
+                                            py-1
+                                            text-sm
+                                        ">
+
+                                            {
+                                                item.category
+                                            }
+
+                                        </span>
+
+
+                                        <span className={`
+                                            rounded-full
+                                            px-3
+                                            py-1
+                                            text-sm
+
+                                            ${
+                                                item.priority ===
+                                                "Critical"
+
+                                                    ? "bg-red-500/20 text-red-400"
+
+                                                    : item.priority ===
+                                                      "High"
+
+                                                    ? "bg-orange-500/20 text-orange-400"
+
+                                                    : item.priority ===
+                                                      "Medium"
+
+                                                    ? "bg-yellow-500/20 text-yellow-400"
+
+                                                    : "bg-green-500/20 text-green-400"
+                                            }
+                                        `}>
+
+                                            {
+                                                item.priority
+                                            }
+
+                                        </span>
+
+
+                                        {typeof item.confidence ===
+                                            "number" && (
+
+                                            <span className="
+                                                text-xs
+                                                text-slate-500
+                                            ">
+
+                                                {
+                                                    item.confidence
+                                                }%
+                                                confidence
+
+                                            </span>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            )
+                        )}
+
+                    </div>
+
+                )}
+
+            </section>
 
         </div>
 
-      </section>
+    );
 
-
-      {/* IMPACT ANALYSIS */}
-{/* ================= CITY STATISTICS ================= */}
-
-<section>
-
-  <h2 className="mb-6 text-2xl font-semibold">
-    City Statistics
-  </h2>
-
-  <div className="grid gap-6 lg:grid-cols-4">
-
-    <div className="ai-card">
-
-      <Building2 className="text-cyan-400" />
-
-      <p className="mt-4 text-slate-400">
-        Infrastructure
-      </p>
-
-      <h2 className="mt-3 text-5xl font-bold">
-        {totalInfrastructure}
-      </h2>
-
-    </div>
-
-    <div className="ai-card">
-
-      <AlertTriangle className="text-red-400" />
-
-      <p className="mt-4 text-slate-400">
-        Citizen Issues
-      </p>
-
-      <h2 className="mt-3 text-5xl font-bold">
-        {totalIssues}
-      </h2>
-
-    </div>
-
-    <div className="ai-card">
-
-      <Brain className="text-cyan-400" />
-
-      <p className="mt-4 text-slate-400">
-        AI Recommendations
-      </p>
-
-      <h2 className="mt-3 text-5xl font-bold">
-        {recommendations.length}
-      </h2>
-
-    </div>
-
-    <div className="ai-card">
-
-      <TrendingUp className="text-green-400" />
-
-      <p className="mt-4 text-slate-400">
-        Urban Health
-      </p>
-
-      <h2 className="mt-3 text-5xl font-bold text-cyan-400">
-        {healthScore}%
-      </h2>
-
-    </div>
-
-  </div>
-
-</section>
-
-      {/* AI REASONING */}
-
-      <section
-        className="
-          rounded-3xl
-          border border-white/10
-          p-8
-        "
-      >
-        <h2 className="text-2xl font-semibold">
-          AI Reasoning
-        </h2>
-
-        <p className="mt-6 leading-8 text-slate-400">
-
-UrbanMind Recommendation Engine evaluates:
-
-<br /><br />
-
-• Infrastructure utilization
-
-<br />
-
-• Infrastructure maintenance status
-
-<br />
-
-• Citizen issue trends
-
-<br />
-
-• Urban planning rules
-
-<br />
-
-• City health indicators
-
-<br /><br />
-
-Based on these factors, the platform automatically
-prioritizes investments, maintenance and future
-development projects.
-
-</p>
-      </section>
-
-      {/* CONFIDENCE MATRIX */}
-<section>
-
-  <h2 className="mb-6 text-2xl font-semibold">
-    Recommendation Priorities
-  </h2>
-
-  <div className="space-y-5">
-{recommendations.length === 0 ? (
-
-  <div className="ai-card col-span-2">
-
-    <Brain
-      className="mb-4 text-cyan-400"
-      size={40}
-    />
-
-    <h2 className="text-2xl font-bold">
-      No Recommendations
-    </h2>
-
-    <p className="mt-3 text-slate-400">
-      UrbanMind AI analyzed the city and found
-      no critical issues requiring immediate action.
-    </p>
-
-  </div>
-
-) : (
-
-  recommendations.map((item, index) => (
-
-    <div
-      key={index}
-      className="ai-card"
-    >
-
-      <AlertTriangle
-        className="text-cyan-400"
-      />
-
-      <h3 className="mt-4 text-xl font-semibold">
-        {item.title}
-      </h3>
-
-      <p className="mt-3 text-slate-400">
-        {item.recommendation}
-      </p>
-
-      <span
-        className={`mt-5 inline-block rounded-full px-3 py-1
-
-        ${
-          item.priority === "Critical"
-            ? "bg-red-500/20 text-red-400"
-
-            : item.priority === "High"
-            ? "bg-orange-500/20 text-orange-400"
-
-            : item.priority === "Medium"
-            ? "bg-yellow-500/20 text-yellow-400"
-
-            : "bg-green-500/20 text-green-400"
-        }`}
-      >
-
-        {item.priority}
-
-      </span>
-
-    </div>
-
-  ))
-
-)}
-
-  </div>
-
-</section>
-
-<section className="ai-card">
-
-  <div className="flex items-center gap-4">
-
-    <Brain
-      size={36}
-      className="text-cyan-400"
-    />
-
-    <div>
-
-      <h2 className="text-2xl font-bold">
-        UrbanMind AI Engine
-      </h2>
-
-      <p className="mt-2 text-slate-400">
-
-        Recommendations are generated
-        dynamically using infrastructure,
-        citizen complaints and city health
-        indicators.
-
-      </p>
-
-    </div>
-
-  </div>
-
-</section>
-
-    </div>
-  );
 }

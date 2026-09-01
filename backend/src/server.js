@@ -10,7 +10,7 @@ const analyticsRoutes =
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
-const userRoutes =require("./routes/userRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const dashboardRoutes =
   require("./routes/dashboardRoutes");
@@ -20,13 +20,16 @@ const recommendationRoutes =
     "./routes/recommendationRoutes"
   );
 
-  const reportRoutes =
+const aiRoutes =
+  require("./routes/aiRoutes");
+
+const reportRoutes =
   require("./routes/reportRoutes");
 const infrastructureRoutes =
   require("./routes/infrastructureRoutes");
 
-  const settingsRoutes =
-require("./routes/settingsRoutes");
+const settingsRoutes =
+  require("./routes/settingsRoutes");
 
 const scenarioRoutes =
   require("./routes/scenarioRoutes");
@@ -51,8 +54,8 @@ app.use(
 );
 
 app.use(
-"/api/settings",
-settingsRoutes
+  "/api/settings",
+  settingsRoutes
 );
 
 // Test Route
@@ -84,6 +87,11 @@ app.use(
 app.use(
   "/api/recommendations",
   recommendationRoutes
+);
+
+app.use(
+  "/api/ai",
+  aiRoutes
 );
 
 app.use(
