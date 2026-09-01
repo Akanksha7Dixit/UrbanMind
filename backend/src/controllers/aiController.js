@@ -1,143 +1,80 @@
-const Infrastructure =
-    require("../models/Infrastructure");
-
-const Issue =
-    require("../models/Issue");
-
+const Infrastructure = require("../models/Infrastructure");
+const Issue = require("../models/Issue");
 const {
-    askAI,
-    getAIHealth,
+  chatWithAI,
+  checkAIHealth,
 } = require("../services/aiService");
 
+const chat = async (req, res) => {
+  try {
+    const { message, history } = req.body;
 
-/* =========================================
-   AI CHAT
-========================================= */
+    if (
+      !message ||
+      typeof message !== "string" ||
+      !message.trim()
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "A message is required.",
+      });
+    }
 
-exports.chat =
-    async (req, res) => {
+    // Always fetch fresh data from MongoDB
+    const infrastructure = await Infrastructure.find({})
+      .sort({ createdAt: -1 })
+      .lean();
 
-        try {
+    const issues = await Issue.find({})
+      .sort({ createdAt: -1 })
+      .lean();
 
-            const {
-                message,
-                history = [],
-            } = req.body;
+    const safeHistory = Array.isArray(history)
+      ? history.slice(-8)
+      : [];
 
+    const result = await chatWithAI(
+      message.trim(),
+      infrastructure,
+      issues,
+      safeHistory
+    );
 
-            if (
-                !message ||
-                typeof message !== "string" ||
-                !message.trim()
-            ) {
+    return res.status(200).json({
+      success: true,
+      answer: result.answer || "",
+    });
+  } catch (error) {
+    console.error(
+      "AI Chat Controller Error:",
+      error.message
+    );
 
-                return res.status(400).json({
+    return res.status(500).json({
+      success: false,
+      message: "Failed to process AI request.",
+      error: error.message,
+    });
+  }
+};
 
-                    success: false,
+const health = async (req, res) => {
+  try {
+    const result = await checkAIHealth();
 
-                    message:
-                        "Message is required.",
+    return res.status(
+      result.success ? 200 : 503
+    ).json(result);
+  } catch (error) {
+    return res.status(503).json({
+      success: false,
+      message: "AI service is unavailable.",
+      error: error.message,
+    });
+  }
+};
 
-                });
-
-            }
-
-
-            const infrastructure =
-                await Infrastructure
-                    .find()
-                    .lean();
-
-
-            const issues =
-                await Issue
-                    .find()
-                    .lean();
-
-
-            const result =
-                await askAI({
-
-                    message:
-                        message.trim(),
-
-                    infrastructure,
-
-                    issues,
-
-                    history,
-
-                });
-
-
-            res.status(200).json({
-
-                success: true,
-
-                answer:
-                    result.answer,
-
-            });
-
-
-        } catch (error) {
-
-            console.error(
-                "AI Chat Error:",
-                error.response?.data ||
-                error.message
-            );
-
-
-            const status =
-                error.response?.status ||
-                500;
-
-
-            res.status(status).json({
-
-                success: false,
-
-                message:
-                    error.response?.data?.detail ||
-                    "Unable to communicate with AI.",
-
-            });
-
-        }
-
-    };
-
-
-/* =========================================
-   AI SERVICE HEALTH
-========================================= */
-
-exports.health =
-    async (req, res) => {
-
-        try {
-
-            const result =
-                await getAIHealth();
-
-
-            res.status(200).json(
-                result
-            );
-
-
-        } catch (error) {
-
-            res.status(503).json({
-
-                success: false,
-
-                message:
-                    "AI service unavailable.",
-
-            });
-
-        }
-
-    };
+module.exports = {
+  chat,
+  health,
+};

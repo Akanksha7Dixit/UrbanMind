@@ -1,90 +1,56 @@
-const Infrastructure =
-    require("../models/Infrastructure");
-
-const Issue =
-    require("../models/Issue");
-
+const Infrastructure = require("../models/Infrastructure");
+const Issue = require("../models/Issue");
 const {
-    generateAIRecommendations,
+  generateRecommendations,
 } = require("../services/aiService");
 
+const getRecommendations = async (req, res) => {
+  try {
+    // Fetch the latest data directly from MongoDB
+    const infrastructure = await Infrastructure.find({})
+      .sort({ createdAt: -1 })
+      .lean();
 
-/* =========================================
-   GET AI RECOMMENDATIONS
-========================================= */
+    const issues = await Issue.find({})
+      .sort({ createdAt: -1 })
+      .lean();
 
-exports.getRecommendations =
-    async (req, res) => {
+    // Send only live database data to the AI service
+    const aiResult = await generateRecommendations(
+      infrastructure,
+      issues
+    );
 
-        try {
+    return res.status(200).json({
+      success: true,
+      healthScore:
+        typeof aiResult.healthScore === "number"
+          ? aiResult.healthScore
+          : null,
 
-            const infrastructure =
-                await Infrastructure
-                    .find()
-                    .lean();
+      overview: aiResult.overview || "",
 
-            const issues =
-                await Issue
-                    .find()
-                    .lean();
+      totalInfrastructure: infrastructure.length,
+      totalIssues: issues.length,
 
+      recommendations: Array.isArray(aiResult.recommendations)
+        ? aiResult.recommendations
+        : [],
+    });
+  } catch (error) {
+    console.error(
+      "Get Recommendations Error:",
+      error.message
+    );
 
-            const result =
-                await generateAIRecommendations({
+    return res.status(500).json({
+      success: false,
+      message: "Failed to generate AI recommendations.",
+      error: error.message,
+    });
+  }
+};
 
-                    infrastructure,
-
-                    issues,
-
-                });
-
-
-            res.status(200).json({
-
-                success: true,
-
-                healthScore:
-                    result.healthScore,
-
-                overview:
-                    result.overview,
-
-                totalInfrastructure:
-                    result.totalInfrastructure,
-
-                totalIssues:
-                    result.totalIssues,
-
-                recommendations:
-                    result.recommendations,
-
-            });
-
-
-        } catch (error) {
-
-            console.error(
-                "AI Recommendation Error:",
-                error.response?.data ||
-                error.message
-            );
-
-
-            const status =
-                error.response?.status ||
-                500;
-
-
-            res.status(status).json({
-
-                success: false,
-
-                message:
-                    error.response?.data?.detail ||
-                    "Unable to generate AI recommendations.",
-
-            });
-
-        }
-
-    };
+module.exports = {
+  getRecommendations,
+};

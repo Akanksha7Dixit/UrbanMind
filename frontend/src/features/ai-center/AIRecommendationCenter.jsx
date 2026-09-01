@@ -10,10 +10,7 @@ import {
     useState,
 } from "react";
 
-import {
-    getRecommendations,
-} from "../../services/aiRecommendationService";
-
+import { getRecommendations } from "../../services/recommendationService";
 
 export default function AIRecommendationCenter() {
 

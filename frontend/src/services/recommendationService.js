@@ -1,63 +1,48 @@
-import axiosInstance
-    from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 
+export const getRecommendations = async (token) => {
+  const response = await axiosInstance.get(
+    "/recommendations",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
-/* =========================================
-   GET AI RECOMMENDATIONS
-========================================= */
+  return response.data;
+};
 
-export const getRecommendations =
-    async () => {
+export const askAI = async (
+  token,
+  message,
+  history = []
+) => {
+  const response = await axiosInstance.post(
+    "/ai/chat",
+    {
+      message,
+      history,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
-        const {
-            data
-        } = await axiosInstance.get(
-            "/recommendations"
-        );
+  return response.data;
+};
 
-        return data;
+export const getAIHealth = async (token) => {
+  const response = await axiosInstance.get(
+    "/ai/health",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
-    };
-
-
-/* =========================================
-   ASK URBANMIND AI
-========================================= */
-
-export const askUrbanMind =
-    async ({
-        message,
-        history = [],
-    }) => {
-
-        const {
-            data
-        } = await axiosInstance.post(
-            "/ai/chat",
-            {
-                message,
-                history,
-            }
-        );
-
-        return data;
-
-    };
-
-
-/* =========================================
-   AI HEALTH
-========================================= */
-
-export const getAIHealth =
-    async () => {
-
-        const {
-            data
-        } = await axiosInstance.get(
-            "/ai/health"
-        );
-
-        return data;
-
-    };
+  return response.data;
+};

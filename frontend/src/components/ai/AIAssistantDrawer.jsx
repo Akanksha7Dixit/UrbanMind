@@ -7,12 +7,9 @@ import {
 
 import {
     useState,
+
 } from "react";
-
-import {
-    askUrbanMind,
-} from "../../services/aiRecommendationService";
-
+import { askAI } from "../../services/recommendationService";
 
 export default function AIAssistantDrawer({
     open,
@@ -84,7 +81,7 @@ export default function AIAssistantDrawer({
             try {
 
                 const result =
-                    await askUrbanMind({
+                    await askAI(token, {
 
                         message:
                             cleanMessage,
