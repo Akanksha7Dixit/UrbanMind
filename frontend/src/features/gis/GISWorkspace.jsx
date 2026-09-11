@@ -1,19 +1,5 @@
-import {
-  Layers3,
-  Filter,
-  Pencil,
-  Ruler,
-  Download,
-  Share2,
-  Sparkles,
-  X,
-  MapPin,
-  Building2,
-  AlertTriangle,
-  Activity,
-  Navigation,
-} from "lucide-react";
-
+import {Layers3, Filter,Pencil, Ruler, Download, Share2, Sparkles, X, MapPin, Building2,
+  AlertTriangle,Activity, Navigation,} from "lucide-react";
 import {
   MapContainer,
   TileLayer,
@@ -51,6 +37,10 @@ import {
   getIssues,
 } from "../../services/issueService";
 
+import {
+  getRecommendations,
+} from "../../services/recommendationService";
+
 
 // =====================================================
 // LEAFLET MARKER FIX
@@ -65,139 +55,6 @@ L.Icon.Default.mergeOptions({
 });
 
 
-// =====================================================
-// DEMO INFRASTRUCTURE DATA
-// =====================================================
-
-const DEMO_INFRASTRUCTURE = [
-  {
-    _id: "demo-hospital-1",
-    name: "UrbanMind General Hospital",
-    type: "Hospital",
-    sector: "North Delhi",
-    status: "Operational",
-    utilization: 82,
-    latitude: 28.6448,
-    longitude: 77.2167,
-  },
-
-  {
-    _id: "demo-hospital-2",
-    name: "City Care Medical Center",
-    type: "Hospital",
-    sector: "Central Delhi",
-    status: "Operational",
-    utilization: 68,
-    latitude: 28.6139,
-    longitude: 77.2090,
-  },
-
-  {
-    _id: "demo-school-1",
-    name: "Smart City Public School",
-    type: "School",
-    sector: "East Delhi",
-    status: "Operational",
-    utilization: 74,
-    latitude: 28.6280,
-    longitude: 77.2780,
-  },
-
-  {
-    _id: "demo-school-2",
-    name: "Urban Knowledge Academy",
-    type: "School",
-    sector: "South Delhi",
-    status: "Operational",
-    utilization: 61,
-    latitude: 28.5680,
-    longitude: 77.2410,
-  },
-
-  {
-    _id: "demo-police-1",
-    name: "Central Police Station",
-    type: "Police",
-    sector: "Central Delhi",
-    status: "Operational",
-    utilization: 57,
-    latitude: 28.6304,
-    longitude: 77.2177,
-  },
-
-  {
-    _id: "demo-metro-1",
-    name: "Rajiv Chowk Metro Station",
-    type: "Metro",
-    sector: "Central Delhi",
-    status: "Operational",
-    utilization: 88,
-    latitude: 28.6328,
-    longitude: 77.2197,
-  },
-
-  {
-    _id: "demo-road-1",
-    name: "Ring Road Corridor",
-    type: "Road",
-    sector: "West Delhi",
-    status: "Operational",
-    utilization: 91,
-    latitude: 28.6500,
-    longitude: 77.1500,
-  },
-
-  {
-    _id: "demo-road-2",
-    name: "Outer Ring Road",
-    type: "Road",
-    sector: "South Delhi",
-    status: "Maintenance",
-    utilization: 79,
-    latitude: 28.5600,
-    longitude: 77.1900,
-  },
-];
-
-
-// =====================================================
-// DEMO ISSUES
-// =====================================================
-
-const DEMO_ISSUES = [
-  {
-    _id: "demo-issue-1",
-    title: "Road Damage",
-    description:
-      "Pothole cluster reported near the main intersection.",
-    status: "Pending",
-    category: "Road",
-    latitude: 28.6200,
-    longitude: 77.2300,
-  },
-
-  {
-    _id: "demo-issue-2",
-    title: "Street Light Failure",
-    description:
-      "Multiple street lights are not operational.",
-    status: "In Progress",
-    category: "Electricity",
-    latitude: 28.6000,
-    longitude: 77.2500,
-  },
-
-  {
-    _id: "demo-issue-3",
-    title: "Water Supply Issue",
-    description:
-      "Residents reported reduced water pressure.",
-    status: "Resolved",
-    category: "Water",
-    latitude: 28.6400,
-    longitude: 77.2600,
-  },
-];
 
 
 // =====================================================
@@ -270,6 +127,36 @@ function MapInteractionController({
 }
 
 
+
+// =====================================================
+// LIVE MAP VIEW CONTROLLER
+// Keeps the map centered on current MongoDB records
+// =====================================================
+
+function LiveMapViewController({ coordinates }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!coordinates.length) {
+      return;
+    }
+
+    if (coordinates.length === 1) {
+      map.setView(coordinates[0], map.getZoom());
+      return;
+    }
+
+    const bounds = L.latLngBounds(coordinates);
+    map.fitBounds(bounds, {
+      padding: [60, 60],
+      maxZoom: 15,
+    });
+  }, [map, coordinates]);
+
+  return null;
+}
+
+
 // =====================================================
 // MAIN GIS COMPONENT
 // =====================================================
@@ -298,13 +185,9 @@ export default function GISWorkspace() {
       (state) => state.user
     );
 
-
   // ===================================================
-  // DEMO MODE
+  // LIVE DATA STATE
   // ===================================================
-
-  const isDemoMode = !token;
-
 
   // ===================================================
   // DATA
@@ -320,6 +203,10 @@ export default function GISWorkspace() {
     setIssues,
   ] = useState([]);
 
+  const [
+    aiRecommendations,
+    setAiRecommendations,
+  ] = useState([]);
 
   // ===================================================
   // SEARCH
@@ -448,75 +335,92 @@ export default function GISWorkspace() {
     setSelectedLocation,
   ] = useState(null);
 
+// ===================================================
+// FETCH LIVE DATA
+// ===================================================
+
+useEffect(() => {
+  const fetchData = async () => {
+    if (!token) {
+      setInfrastructure([]);
+      setIssues([]);
+      setAiRecommendations([]);
+      return;
+    }
+
+    try {
+      const [
+        infrastructureResponse,
+        issuesResponse,
+        aiResponse,
+      ] = await Promise.all([
+        getInfrastructure(token),
+        getIssues(token),
+        getRecommendations(token),
+      ]);
+
+      const liveInfrastructure =
+        Array.isArray(infrastructureResponse?.infrastructure)
+          ? infrastructureResponse.infrastructure
+          : [];
+
+      const liveIssues =
+        Array.isArray(issuesResponse?.issues)
+          ? issuesResponse.issues
+          : [];
+
+      const liveRecommendations =
+        Array.isArray(aiResponse?.recommendations)
+          ? aiResponse.recommendations
+          : [];
+
+      setInfrastructure(liveInfrastructure);
+      setIssues(liveIssues);
+      setAiRecommendations(liveRecommendations);
+
+    } catch (error) {
+      console.error(
+        "GIS live data error:",
+        error
+      );
+
+      setInfrastructure([]);
+      setIssues([]);
+      setAiRecommendations([]);
+    }
+  };
+
+  fetchData();
+}, [token]);
 
   // ===================================================
-  // FETCH DATA
+  // LIVE MAP COORDINATES
   // ===================================================
 
-  useEffect(() => {
+  const mappedCoordinates = [
+    ...infrastructure,
+    ...issues,
+  ]
+    .map((item) => {
+      const latitude = Number(item.latitude);
+      const longitude = Number(item.longitude);
 
-    const fetchData = async () => {
-
-      // -----------------------------------------------
-      // DEMO MODE
-      // -----------------------------------------------
-
-      if (!token) {
-
-        setInfrastructure(
-          DEMO_INFRASTRUCTURE
-        );
-
-        setIssues(
-          DEMO_ISSUES
-        );
-
-        return;
+      if (
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude) ||
+        latitude < -90 ||
+        latitude > 90 ||
+        longitude < -180 ||
+        longitude > 180
+      ) {
+        return null;
       }
 
+      return [latitude, longitude];
+    })
+    .filter(Boolean);
 
-      // -----------------------------------------------
-      // REAL USER
-      // -----------------------------------------------
-
-      try {
-
-        const infra =
-          await getInfrastructure(
-            token
-          );
-
-        setInfrastructure(
-          infra.infrastructure || []
-        );
-
-
-        const issueData =
-          await getIssues(
-            token
-          );
-
-        setIssues(
-          issueData.issues || []
-        );
-
-      } catch (error) {
-
-        console.error(
-          "GIS data error:",
-          error
-        );
-
-        setInfrastructure([]);
-        setIssues([]);
-      }
-    };
-
-
-    fetchData();
-
-  }, [token]);
-
+  const hasMappedData = mappedCoordinates.length > 0;
 
   // ===================================================
   // INFRASTRUCTURE TYPE VISIBILITY
@@ -810,9 +714,9 @@ export default function GISWorkspace() {
         new Date().toISOString(),
 
       mode:
-        isDemoMode
-          ? "demo"
-          : "live",
+        token
+          ? "live"
+          : "unauthenticated",
 
       infrastructure,
 
@@ -1415,9 +1319,9 @@ export default function GISWorkspace() {
                   "
                 >
 
-                  {isDemoMode
-                    ? "Demo GIS"
-                    : "Live GIS"}
+                  {token
+                    ? "Live GIS"
+                    : "Sign in required"}
 
                 </span>
 
@@ -1610,19 +1514,17 @@ export default function GISWorkspace() {
                       </h3>
 
 
-                      {isDemoMode && (
-
+                      {!token && (
                         <span
                           className="
                             text-[10px]
                             uppercase
                             tracking-wider
-                            text-cyan-400
+                            text-yellow-400
                           "
                         >
-                          Demo
+                          Sign in
                         </span>
-
                       )}
 
                     </div>
@@ -2250,11 +2152,9 @@ export default function GISWorkspace() {
                     LEAFLET MAP
                 ================================================= */}
 
-                <MapContainer
-                  center={[
-                    28.6139,
-                    77.209,
-                  ]}
+                {hasMappedData ? (
+                  <MapContainer
+                  center={mappedCoordinates[0]}
                   zoom={12}
                   zoomControl={false}
                   doubleClickZoom={
@@ -2269,6 +2169,10 @@ export default function GISWorkspace() {
 
                   <ZoomControl
                     position="bottomright"
+                  />
+
+                  <LiveMapViewController
+                    coordinates={mappedCoordinates}
                   />
 
 
@@ -2724,6 +2628,34 @@ export default function GISWorkspace() {
                       )}
 
                 </MapContainer>
+                ) : (
+                  <div
+                    className="
+                      flex
+                      h-full
+                      w-full
+                      items-center
+                      justify-center
+                      bg-slate-900
+                      p-8
+                      text-center
+                    "
+                  >
+                    <div className="max-w-md">
+                      <MapPin
+                        size={36}
+                        className="mx-auto text-slate-500"
+                      />
+                      <h3 className="mt-4 text-xl font-semibold text-white">
+                        No Mapped Records Available
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                        Live infrastructure and citizen issue records are available,
+                        but none currently contain valid latitude and longitude values.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
 
                 {/* =================================================
@@ -2751,99 +2683,14 @@ export default function GISWorkspace() {
                       backdrop-blur-xl
                     "
                   >
-
-                    <p
-                      className="
-                        text-xs
-                        text-slate-400
-                      "
-                    >
-                      Population
-                    </p>
-
-                    <h3
-                      className="
-                        mt-1
-                        text-2xl
-                        font-bold
-                        text-white
-                      "
-                    >
-                      1.2M
-                    </h3>
-
-                  </div>
-
-
-                  <div
-                    className="
-                      rounded-2xl
-                      border
-                      border-white/10
-                      bg-slate-950/90
-                      p-4
-                      backdrop-blur-xl
-                    "
-                  >
-
-                    <p
-                      className="
-                        text-xs
-                        text-slate-400
-                      "
-                    >
-                      Coverage
-                    </p>
-
-                    <h3
-                      className="
-                        mt-1
-                        text-2xl
-                        font-bold
-                        text-white
-                      "
-                    >
-                      91%
-                    </h3>
-
-                  </div>
-
-
-                  <div
-                    className="
-                      rounded-2xl
-                      border
-                      border-white/10
-                      bg-slate-950/90
-                      p-4
-                      backdrop-blur-xl
-                    "
-                  >
-
-                    <p
-                      className="
-                        text-xs
-                        text-slate-400
-                      "
-                    >
+                    <p className="text-xs text-slate-400">
                       Infrastructure
                     </p>
 
-                    <h3
-                      className="
-                        mt-1
-                        text-2xl
-                        font-bold
-                        text-white
-                      "
-                    >
-                      {
-                        infrastructure.length
-                      }
+                    <h3 className="mt-1 text-2xl font-bold text-white">
+                      {infrastructure.length}
                     </h3>
-
                   </div>
-
 
                   <div
                     className="
@@ -2855,29 +2702,55 @@ export default function GISWorkspace() {
                       backdrop-blur-xl
                     "
                   >
-
-                    <p
-                      className="
-                        text-xs
-                        text-slate-400
-                      "
-                    >
+                    <p className="text-xs text-slate-400">
                       Active Issues
                     </p>
 
-                    <h3
-                      className="
-                        mt-1
-                        text-2xl
-                        font-bold
-                        text-white
-                      "
-                    >
-                      {
-                        issues.length
-                      }
+                    <h3 className="mt-1 text-2xl font-bold text-white">
+                      {issues.filter(
+                        (issue) => issue.status !== "Resolved"
+                      ).length}
                     </h3>
+                  </div>
 
+                  <div
+                    className="
+                      rounded-2xl
+                      border
+                      border-white/10
+                      bg-slate-950/90
+                      p-4
+                      backdrop-blur-xl
+                    "
+                  >
+                    <p className="text-xs text-slate-400">
+                      Operational Assets
+                    </p>
+
+                    <h3 className="mt-1 text-2xl font-bold text-white">
+                      {infrastructure.filter(
+                        (item) => item.status === "Operational"
+                      ).length}
+                    </h3>
+                  </div>
+
+                  <div
+                    className="
+                      rounded-2xl
+                      border
+                      border-white/10
+                      bg-slate-950/90
+                      p-4
+                      backdrop-blur-xl
+                    "
+                  >
+                    <p className="text-xs text-slate-400">
+                      AI Recommendations
+                    </p>
+
+                    <h3 className="mt-1 text-2xl font-bold text-white">
+                      {aiRecommendations.length}
+                    </h3>
                   </div>
 
                 </div>
@@ -3942,17 +3815,30 @@ export default function GISWorkspace() {
                   </div>
 
 
-                  <p
-                    className="
-                      mt-4
-                      text-slate-400
-                    "
-                  >
-                    High-utilization healthcare
-                    assets should be evaluated
-                    before projected population
-                    growth.
-                  </p>
+                  {aiRecommendations.length > 0 ? (
+                    <>
+                      <p
+                        className="
+                          mt-4
+                          text-slate-300
+                        "
+                      >
+                        {aiRecommendations[0].recommendation ||
+                          aiRecommendations[0].description ||
+                          aiRecommendations[0].title}
+                      </p>
+
+                      {aiRecommendations[0].reason && (
+                        <p className="mt-3 text-sm leading-relaxed text-slate-500">
+                          {aiRecommendations[0].reason}
+                        </p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="mt-4 text-slate-400">
+                      No AI recommendations are currently available from the live city data.
+                    </p>
+                  )}
 
                 </div>
 
@@ -4379,7 +4265,7 @@ export default function GISWorkspace() {
 
 
             {/* =================================================
-                DEMAND FORECAST
+                LIVE PLANNING SIGNALS
             ================================================= */}
 
             <section
@@ -4396,119 +4282,80 @@ export default function GISWorkspace() {
                   text-white
                 "
               >
-                Demand Forecast
+                Live Planning Signals
               </h2>
-
 
               <div
                 className="
                   grid
                   gap-6
-                  lg:grid-cols-3
+                  lg:grid-cols-4
                 "
               >
 
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-lg
-                      font-semibold
-                    "
-                  >
-                    Healthcare
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-lg font-semibold text-white">
+                    High-Utilization Assets
                   </h3>
-
-
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    AI predicts a 23%
-                    increase in healthcare
-                    demand over the next
-                    five years.
+                  <p className="mt-3 text-slate-400">
+                    Infrastructure assets currently operating above 80% utilization.
                   </p>
-
+                  <p className="mt-4 text-4xl font-bold text-cyan-400">
+                    {infrastructure.filter(
+                      (item) => Number(item.utilization) > 80
+                    ).length}
+                  </p>
                 </div>
 
-
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-lg
-                      font-semibold
-                    "
-                  >
-                    Transportation
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-lg font-semibold text-white">
+                    Maintenance Assets
                   </h3>
-
-
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    Public transport demand
-                    is expected to increase by
-                    18% in the city center.
+                  <p className="mt-3 text-slate-400">
+                    Infrastructure records currently marked for maintenance.
                   </p>
-
+                  <p className="mt-4 text-4xl font-bold text-yellow-400">
+                    {infrastructure.filter(
+                      (item) => item.status === "Maintenance"
+                    ).length}
+                  </p>
                 </div>
 
-
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-lg
-                      font-semibold
-                    "
-                  >
-                    Education
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-lg font-semibold text-white">
+                    High-Priority Issues
                   </h3>
-
-
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    Two additional schools
-                    are recommended for newly
-                    developing residential
-                    zones.
+                  <p className="mt-3 text-slate-400">
+                    Unresolved issues classified as High or Critical priority.
                   </p>
+                  <p className="mt-4 text-4xl font-bold text-red-400">
+                    {issues.filter(
+                      (issue) =>
+                        issue.status !== "Resolved" &&
+                        (issue.priority === "High" ||
+                          issue.priority === "Critical")
+                    ).length}
+                  </p>
+                </div>
 
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-lg font-semibold text-white">
+                    Average Utilization
+                  </h3>
+                  <p className="mt-3 text-slate-400">
+                    Average utilization across live infrastructure records.
+                  </p>
+                  <p className="mt-4 text-4xl font-bold text-green-400">
+                    {infrastructure.length > 0
+                      ? Math.round(
+                          infrastructure.reduce(
+                            (sum, item) =>
+                              sum + Number(item.utilization || 0),
+                            0
+                          ) / infrastructure.length
+                        )
+                      : 0}%
+                  </p>
                 </div>
 
               </div>
@@ -4537,7 +4384,6 @@ export default function GISWorkspace() {
                 Infrastructure Health
               </h2>
 
-
               <div
                 className="
                   grid
@@ -4546,135 +4392,69 @@ export default function GISWorkspace() {
                 "
               >
 
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-slate-400
-                    "
-                  >
-                    Water
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-slate-400">
+                    Operational Rate
                   </h3>
-
-
-                  <h2
-                    className="
-                      mt-3
-                      text-5xl
-                      font-bold
-                      text-cyan-400
-                    "
-                  >
-                    94%
+                  <h2 className="mt-3 text-5xl font-bold text-cyan-400">
+                    {infrastructure.length > 0
+                      ? Math.round(
+                          (infrastructure.filter(
+                            (item) => item.status === "Operational"
+                          ).length /
+                            infrastructure.length) *
+                            100
+                        )
+                      : 0}%
                   </h2>
-
                 </div>
 
-
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-slate-400
-                    "
-                  >
-                    Electricity
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-slate-400">
+                    Issue Resolution Rate
                   </h3>
-
-
-                  <h2
-                    className="
-                      mt-3
-                      text-5xl
-                      font-bold
-                      text-green-400
-                    "
-                  >
-                    98%
+                  <h2 className="mt-3 text-5xl font-bold text-green-400">
+                    {issues.length > 0
+                      ? Math.round(
+                          (issues.filter(
+                            (issue) => issue.status === "Resolved"
+                          ).length /
+                            issues.length) *
+                            100
+                        )
+                      : 0}%
                   </h2>
-
                 </div>
 
-
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-slate-400
-                    "
-                  >
-                    Roads
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-slate-400">
+                    Average Utilization
                   </h3>
-
-
-                  <h2
-                    className="
-                      mt-3
-                      text-5xl
-                      font-bold
-                      text-yellow-400
-                    "
-                  >
-                    86%
+                  <h2 className="mt-3 text-5xl font-bold text-yellow-400">
+                    {infrastructure.length > 0
+                      ? Math.round(
+                          infrastructure.reduce(
+                            (sum, item) =>
+                              sum + Number(item.utilization || 0),
+                            0
+                          ) / infrastructure.length
+                        )
+                      : 0}%
                   </h2>
-
                 </div>
 
-
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-slate-400
-                    "
-                  >
-                    Public Safety
+                <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+                  <h3 className="text-slate-400">
+                    High-Priority Issues
                   </h3>
-
-
-                  <h2
-                    className="
-                      mt-3
-                      text-5xl
-                      font-bold
-                      text-red-400
-                    "
-                  >
-                    91%
+                  <h2 className="mt-3 text-5xl font-bold text-red-400">
+                    {issues.filter(
+                      (issue) =>
+                        issue.status !== "Resolved" &&
+                        (issue.priority === "High" ||
+                          issue.priority === "Critical")
+                    ).length}
                   </h2>
-
                 </div>
 
               </div>
@@ -4692,131 +4472,176 @@ export default function GISWorkspace() {
               "
             >
 
-              <h2
-                className="
-                  mb-8
-                  text-3xl
-                  font-semibold
-                  text-white
-                "
-              >
-                AI Scenario Opportunities
-              </h2>
-
-
               <div
                 className="
-                  grid
-                  gap-6
-                  lg:grid-cols-3
+                  mb-8
+                  flex
+                  flex-col
+                  gap-4
+                  md:flex-row
+                  md:items-center
+                  md:justify-between
                 "
               >
 
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
+                <div>
+                  <h2
                     className="
-                      text-xl
+                      text-3xl
                       font-semibold
+                      text-white
                     "
                   >
-                    New Hospital
-                  </h3>
+                    AI Scenario Opportunities
+                  </h2>
 
-
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    Build a 250-bed
-                    hospital in the
-                    north-west region
-                    to reduce travel
-                    time by 18%.
+                  <p className="mt-2 text-slate-400">
+                    Opportunities identified from the current infrastructure and citizen issue data.
                   </p>
-
                 </div>
 
-
-                <div
+                <button
+                  type="button"
+                  onClick={() => setAiOpen(true)}
                   className="
-                    rounded-3xl
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-2xl
                     border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
+                    border-cyan-500/30
+                    bg-cyan-500/10
+                    px-5
+                    py-3
+                    font-medium
+                    text-cyan-400
+                    transition
+                    hover:bg-cyan-500/20
                   "
                 >
-
-                  <h3
-                    className="
-                      text-xl
-                      font-semibold
-                    "
-                  >
-                    Smart Traffic Signals
-                  </h3>
-
-
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    AI recommends adaptive
-                    traffic control for five
-                    high-congestion
-                    intersections.
-                  </p>
-
-                </div>
-
-
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-6
-                  "
-                >
-
-                  <h3
-                    className="
-                      text-xl
-                      font-semibold
-                    "
-                  >
-                    Green Corridor
-                  </h3>
-
-
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    Develop a green mobility
-                    corridor connecting
-                    major public institutions.
-                  </p>
-
-                </div>
+                  <Sparkles size={18} />
+                  Open AI Assistant
+                </button>
 
               </div>
+
+              {aiRecommendations.length === 0 ? (
+                <div
+                  className="
+                    rounded-3xl
+                    border
+                    border-white/10
+                    bg-white/[0.03]
+                    p-8
+                    text-slate-400
+                  "
+                >
+                  No AI scenario opportunities are currently available from the live city data.
+                </div>
+              ) : (
+                <div
+                  className="
+                    grid
+                    gap-6
+                    lg:grid-cols-3
+                  "
+                >
+
+                  {aiRecommendations.slice(0, 3).map(
+                    (recommendation, index) => (
+                      <div
+                        key={
+                          recommendation._id ||
+                          `${recommendation.title || "recommendation"}-${index}`
+                        }
+                        className="
+                          rounded-3xl
+                          border
+                          border-white/10
+                          bg-white/[0.03]
+                          p-6
+                        "
+                      >
+
+                        <div className="flex items-start justify-between gap-4">
+                          <h3
+                            className="
+                              text-xl
+                              font-semibold
+                              text-white
+                            "
+                          >
+                            {recommendation.title || "AI Planning Recommendation"}
+                          </h3>
+
+                          {recommendation.priority && (
+                            <span
+                              className="
+                                shrink-0
+                                rounded-full
+                                bg-cyan-500/10
+                                px-3
+                                py-1
+                                text-xs
+                                font-medium
+                                text-cyan-400
+                              "
+                            >
+                              {recommendation.priority}
+                            </span>
+                          )}
+                        </div>
+
+                        {recommendation.category && (
+                          <p className="mt-2 text-xs uppercase tracking-wider text-slate-500">
+                            {recommendation.category}
+                          </p>
+                        )}
+
+                        <p
+                          className="
+                            mt-4
+                            leading-relaxed
+                            text-slate-300
+                          "
+                        >
+                          {recommendation.recommendation ||
+                            recommendation.description ||
+                            "AI identified an opportunity from the current city data."}
+                        </p>
+
+                        {recommendation.reason && (
+                          <div
+                            className="
+                              mt-4
+                              rounded-2xl
+                              bg-white/[0.03]
+                              p-4
+                            "
+                          >
+                            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                              Reason
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                              {recommendation.reason}
+                            </p>
+                          </div>
+                        )}
+
+                        {recommendation.confidence != null && (
+                          <p className="mt-4 text-xs text-slate-500">
+                            AI confidence:{" "}
+                            {recommendation.confidence}%
+                          </p>
+                        )}
+
+                      </div>
+                    )
+                  )}
+
+                </div>
+              )}
 
             </section>
 
