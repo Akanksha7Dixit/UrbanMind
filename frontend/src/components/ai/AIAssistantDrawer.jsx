@@ -9,19 +9,16 @@ import {
     useState,
 
 } from "react";
+
+import { useAuthStore } from "../../store/authStore";
 import { askAI } from "../../services/recommendationService";
 
-export default function AIAssistantDrawer({
-    open,
-    onClose,
-}) {
-
+export default function AIAssistantDrawer({ open, onClose, }) {
+    const token = useAuthStore((state) => state.token);
     const [
         message,
         setMessage,
     ] = useState("");
-
-
     const [
         messages,
         setMessages,
@@ -79,17 +76,12 @@ export default function AIAssistantDrawer({
 
 
             try {
-
                 const result =
-                    await askAI(token, {
-
-                        message:
-                            cleanMessage,
-
-                        history:
-                            messages,
-
-                    });
+                    await askAI(
+                        token,
+                        cleanMessage,
+                        messages
+                    );
 
 
                 setMessages(
@@ -127,9 +119,8 @@ export default function AIAssistantDrawer({
                             role: "assistant",
 
                             content:
-                                error.response
-                                    ?.data
-                                    ?.message ||
+                                error.response?.data?.message ||
+                                error.response?.data?.detail ||
                                 "Unable to connect to UrbanMind AI.",
 
                         },
@@ -307,8 +298,7 @@ export default function AIAssistantDrawer({
                             className={`
                                 rounded-2xl
                                 p-4
-                                ${
-                                    item.role ===
+                                ${item.role ===
                                     "user"
 
                                     ? "ml-8 bg-cyan-500/10"

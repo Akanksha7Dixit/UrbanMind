@@ -219,40 +219,29 @@ async def ask_ollama(
 ):
 
     payload = {
-
         "model": OLLAMA_MODEL,
-
         "messages": messages,
-
         "stream": False,
-
+        "think": False,
         "options": {
-
             "temperature": 0.2,
-
-            "num_ctx": 4096,
-
+            "num_ctx": 2048,
+            "num_predict": 500,
         },
-
     }
 
     if json_mode:
-
         payload["format"] = "json"
-
 
     try:
 
         async with httpx.AsyncClient(
-            timeout=180
+            timeout=120
         ) as client:
 
             response = await client.post(
-
                 f"{OLLAMA_URL}/api/chat",
-
                 json=payload
-
             )
 
             response.raise_for_status()
@@ -261,43 +250,26 @@ async def ask_ollama(
 
             return data["message"]["content"]
 
-
     except httpx.ConnectError:
 
         raise HTTPException(
-
             status_code=503,
-
-            detail=(
-                "Ollama is not running. "
-                "Please start Ollama and try again."
-            )
-
+            detail="Ollama is not running. Please start Ollama and try again."
         )
 
     except httpx.TimeoutException:
 
         raise HTTPException(
-
             status_code=504,
-
-            detail=(
-                "AI request timed out. "
-                "The local model may be busy."
-            )
-
+            detail="AI request timed out. The local model may be busy."
         )
 
     except Exception as error:
 
         raise HTTPException(
-
             status_code=500,
-
             detail=str(error)
-
         )
-
 
 # =========================================================
 # AI RECOMMENDATIONS
