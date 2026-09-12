@@ -1,405 +1,8 @@
-// import {
-//   useEffect,
-//   useState,
-// } from "react";
+import { useEffect, useState } from "react";
 
-// import {
-//   useAuthStore,
-// } from "../../store/authStore";
+import { useAuthStore } from "../../store/authStore";
 
-// import {
-//   getAnalytics,
-// } from "../../services/analyticsService";
-
-// import {
-//   BarChart3,
-//   Building2,
-//   AlertTriangle,
-//   CheckCircle2,
-// } from "lucide-react";
-
-// import {
-//   PieChart,
-//   Pie,
-//   Cell,
-//   Tooltip,
-//   ResponsiveContainer,
-//   BarChart,
-//   Bar,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-// } from "recharts";
-
-// export default function AnalyticsPage() {
-
-//   const token =
-//     useAuthStore(
-//       (state) => state.token
-//     );
-
-//   const [
-//     analytics,
-//     setAnalytics,
-//   ] = useState(null);
-
-//   useEffect(() => {
-//     const fetchAnalytics =
-//       async () => {
-//         try {
-//           const data =
-//             await getAnalytics(
-//               token
-//             );
-//           setAnalytics(
-//             data.analytics
-//           );
-//         } catch (error) {
-//           console.error(error);
-//         }
-//       };
-
-//     if (token) {
-
-//       fetchAnalytics();
-
-//     }
-
-//   }, [token]);
-
-//   if (!analytics) {
-
-//     return (
-//       <div className="p-8">
-//         Loading Analytics...
-//       </div>
-//     );
-
-//   }
-
-//   const infrastructureData = [
-//     {
-//       name: "Operational",
-//       value:
-//         analytics.operationalInfrastructure,
-//     },
-
-//     {
-//       name: "Maintenance",
-//       value:
-//         analytics.maintenanceInfrastructure,
-//     },
-
-//     {
-//       name: "Construction",
-//       value:
-//         analytics.constructionInfrastructure,
-//     },
-
-//   ];
-
-//   const issueData = [
-
-//     {
-//       name: "Pending",
-//       value:
-//         analytics.pendingIssues,
-//     },
-
-//     {
-//       name: "In Progress",
-//       value:
-//         analytics.inProgressIssues,
-//     },
-
-//     {
-//       name: "Resolved",
-//       value:
-//         analytics.resolvedIssues,
-//     },
-
-//   ];
-
-//   return (
-
-//     <div className="space-y-8 p-8">
-
-//       {/* ================= HEADER ================= */}
-
-//       <div>
-
-//         <h1 className="text-4xl font-bold">
-
-//           Analytics Dashboard
-
-//         </h1>
-
-//         <p className="mt-2 text-slate-400">
-
-//           Monitor infrastructure performance,
-//           citizen engagement and city health
-//           using real-time analytics.
-
-//         </p>
-
-//       </div>
-
-//       {/* ================= HERO ================= */}
-
-//       <section
-//         className="
-//       rounded-3xl
-//       border border-cyan-500/20
-//       bg-cyan-500/5
-//       p-8
-//     "
-//       >
-
-//         <div className="flex items-center gap-3">
-
-//           <BarChart3
-//             className="text-cyan-400"
-//           />
-
-//           <p className="text-cyan-400">
-
-//             Urban Analytics
-
-//           </p>
-
-//         </div>
-
-//         <h2 className="mt-4 text-5xl font-bold">
-
-//           Live City Intelligence
-
-//         </h2>
-
-//         <p className="mt-5 max-w-3xl text-slate-400">
-
-//           UrbanMind continuously monitors
-//           infrastructure assets, citizen
-//           issues and operational status to
-//           provide planners with actionable
-//           insights.
-
-//         </p>
-
-//       </section>
-
-//       {/* ================= KPI ================= */}
-
-//       <div className="grid gap-6 lg:grid-cols-4">
-//         <div className="ai-card">
-//           <Building2
-//             className="text-cyan-400"
-//           />
-//           <h2 className="mt-4 text-5xl font-bold">
-//             {analytics.totalInfrastructure}
-//           </h2>
-//           <p className="mt-2 text-slate-400">
-//             Infrastructure
-//           </p>
-//         </div>
-//         <div className="ai-card">
-//           <AlertTriangle
-//             className="text-red-400"
-//           />
-//           <h2 className="mt-4 text-5xl font-bold">
-//             {analytics.totalIssues}
-//           </h2>
-//           <p className="mt-2 text-slate-400">
-//             Citizen Issues
-//           </p>
-//         </div>
-//         <div className="ai-card">
-//           <CheckCircle2
-//             className="text-green-400"
-//           />
-//           <h2 className="mt-4 text-5xl font-bold">
-//             {analytics.operationalInfrastructure}
-//           </h2>
-//           <p className="mt-2 text-slate-400">
-//             Operational
-//           </p>
-//         </div>
-//         <div className="ai-card">
-
-//           <BarChart3
-//             className="text-cyan-400"
-//           />
-//           <h2 className="mt-4 text-5xl font-bold">
-//             {analytics.resolvedIssues}
-//           </h2>
-//           <p className="mt-2 text-slate-400"> Resolved Issues</p>
-//         </div>
-        
-//       </div>
-//       <section>
-
-//           <h2 className="mb-6 text-2xl font-semibold">
-//             Infrastructure Analytics
-//           </h2>
-
-//           <div className="grid gap-6 lg:grid-cols-2">
-
-//             <div className="ai-card">
-
-//               <h3 className="mb-4 text-xl font-semibold">
-//                 Infrastructure Status
-//               </h3>
-
-//               <div className="h-80">
-
-//                 <ResponsiveContainer>
-
-//                   <PieChart>
-
-//                     <Pie
-//                       data={infrastructureData}
-//                       dataKey="value"
-//                       nameKey="name"
-//                       outerRadius={100}
-//                     >
-
-//                       <Cell fill="#22c55e" />
-
-//                       <Cell fill="#f59e0b" />
-
-//                       <Cell fill="#ef4444" />
-
-//                     </Pie>
-
-//                     <Tooltip />
-
-//                   </PieChart>
-
-//                 </ResponsiveContainer>
-
-//               </div>
-
-//             </div>
-
-//             <div className="ai-card">
-
-//               <h3 className="mb-4 text-xl font-semibold">
-//                 Issue Status
-//               </h3>
-
-//               <div className="h-80">
-
-//                 <ResponsiveContainer>
-
-//                   <BarChart data={issueData}>
-
-//                     <CartesianGrid strokeDasharray="3 3" />
-
-//                     <XAxis dataKey="name" />
-
-//                     <YAxis />
-
-//                     <Tooltip />
-
-//                     <Bar
-//                       dataKey="value"
-//                       fill="#06b6d4"
-//                     />
-
-//                   </BarChart>
-
-//                 </ResponsiveContainer>
-
-//               </div>
-
-//             </div>
-
-//           </div>
-
-//         </section>
-
-//         <section className="ai-card">
-
-//           <h2 className="text-2xl font-semibold">
-//             AI Insights
-//           </h2>
-
-//           <p className="mt-5 text-slate-400">
-
-//             UrbanMind analyzed all infrastructure
-//             assets and citizen issues to generate
-//             the following summary.
-
-//           </p>
-
-//           <div className="mt-8 grid gap-6 lg:grid-cols-3">
-
-//             <div>
-
-//               <h3 className="font-semibold">
-
-//                 Operational
-
-//               </h3>
-
-//               <p className="text-5xl font-bold text-green-400">
-
-//                 {analytics.operationalInfrastructure}
-
-//               </p>
-
-//             </div>
-
-//             <div>
-
-//               <h3 className="font-semibold">
-
-//                 Pending Issues
-
-//               </h3>
-
-//               <p className="text-5xl font-bold text-yellow-400">
-
-//                 {analytics.pendingIssues}
-
-//               </p>
-
-//             </div>
-
-//             <div>
-
-//               <h3 className="font-semibold">
-
-//                 Resolved
-
-//               </h3>
-
-//               <p className="text-5xl font-bold text-cyan-400">
-
-//                 {analytics.resolvedIssues}
-
-//               </p>
-
-//             </div>
-
-//           </div>
-
-//         </section>
-//         </div>
-//     );
-// }
-
-import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
-  useAuthStore,
-} from "../../store/authStore";
-
-import {
-  getAnalytics,
-} from "../../services/analyticsService";
+import { getAnalytics } from "../../services/analyticsService";
 
 import {
   BarChart3,
@@ -407,6 +10,9 @@ import {
   AlertTriangle,
   CheckCircle2,
   Brain,
+  Wrench,
+  ClipboardCheck,
+  TrendingUp,
 } from "lucide-react";
 
 import {
@@ -424,57 +30,44 @@ import {
 } from "recharts";
 
 export default function AnalyticsPage() {
+  const token = useAuthStore((state) => state.token);
 
-  const token =
-    useAuthStore(
-      (state) => state.token
-    );
-
-  const [
-    analytics,
-    setAnalytics,
-  ] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        setError("");
 
-    const fetchAnalytics =
-      async () => {
+        const data = await getAnalytics(token);
 
-        try {
+        setAnalytics(data.analytics);
+      } catch (error) {
+        console.error(error);
 
-          const data =
-            await getAnalytics(
-              token
-            );
-
-          setAnalytics(
-            data.analytics
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-        }
-
-      };
+        setError(
+          error?.response?.data?.message ||
+            "Unable to load live analytics."
+        );
+      }
+    };
 
     if (token) {
-
       fetchAnalytics();
-
     }
-
   }, [token]);
 
-  if (!analytics) {
+  /*
+   * ==============================
+   * LOADING / ERROR
+   * ==============================
+   */
 
+  if (!analytics && !error) {
     return (
-
       <div className="flex h-screen items-center justify-center">
-
         <div className="text-center">
-
           <h2 className="text-3xl font-bold">
             Loading Analytics...
           </h2>
@@ -482,57 +75,120 @@ export default function AnalyticsPage() {
           <p className="mt-3 text-slate-400">
             Fetching live city analytics.
           </p>
-
         </div>
-
       </div>
-
     );
-
   }
 
-  const infrastructureData = [
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center p-8">
+        <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+          <AlertTriangle className="mx-auto text-red-400" />
 
+          <h2 className="mt-4 text-2xl font-bold">
+            Analytics Unavailable
+          </h2>
+
+          <p className="mt-3 text-slate-400">
+            {error}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  /*
+   * ==============================
+   * SAFE VALUES
+   * ==============================
+   */
+
+  const totalInfrastructure =
+    Number(analytics.totalInfrastructure) || 0;
+
+  const operationalInfrastructure =
+    Number(analytics.operationalInfrastructure) || 0;
+
+  const maintenanceInfrastructure =
+    Number(analytics.maintenanceInfrastructure) || 0;
+
+  const constructionInfrastructure =
+    Number(analytics.constructionInfrastructure) || 0;
+
+  const totalIssues =
+    Number(analytics.totalIssues) || 0;
+
+  const pendingIssues =
+    Number(analytics.pendingIssues) || 0;
+
+  const inProgressIssues =
+    Number(analytics.inProgressIssues) || 0;
+
+  const resolvedIssues =
+    Number(analytics.resolvedIssues) || 0;
+
+  /*
+   * ==============================
+   * DERIVED LIVE METRICS
+   * ==============================
+   */
+
+  const infrastructureHealth =
+    totalInfrastructure > 0
+      ? Math.round(
+          (operationalInfrastructure /
+            totalInfrastructure) *
+            100
+        )
+      : 0;
+
+  const issueResolution =
+    totalIssues > 0
+      ? Math.round(
+          (resolvedIssues / totalIssues) * 100
+        )
+      : 0;
+
+  const issueWorkload =
+    totalIssues > 0
+      ? pendingIssues + inProgressIssues
+      : 0;
+
+  /*
+   * ==============================
+   * CHART DATA
+   * ==============================
+   */
+
+  const infrastructureData = [
     {
       name: "Operational",
-      value:
-        analytics.operationalInfrastructure,
+      value: operationalInfrastructure,
     },
-
     {
       name: "Maintenance",
-      value:
-        analytics.maintenanceInfrastructure,
+      value: maintenanceInfrastructure,
     },
-
     {
       name: "Construction",
-      value:
-        analytics.constructionInfrastructure,
+      value: constructionInfrastructure,
     },
-
   ];
 
   const issueData = [
-
     {
       name: "Pending",
-      value:
-        analytics.pendingIssues,
+      value: pendingIssues,
     },
-
     {
       name: "In Progress",
-      value:
-        analytics.inProgressIssues,
+      value: inProgressIssues,
     },
-
     {
       name: "Resolved",
-      value:
-        analytics.resolvedIssues,
+      value: resolvedIssues,
     },
-
   ];
 
   const COLORS = [
@@ -541,29 +197,112 @@ export default function AnalyticsPage() {
     "#ef4444",
   ];
 
-  return (
+  /*
+   * ==============================
+   * DYNAMIC INSIGHTS
+   * ==============================
+   *
+   * These are generated from the
+   * actual analytics returned by
+   * MongoDB through the backend.
+   */
+const insights = [];
 
+if (totalInfrastructure === 0) {
+  insights.push({
+    title: "Infrastructure Data",
+    icon: Building2,
+    text:
+      "No infrastructure assets are currently available in the live dataset.",
+  });
+} else if (maintenanceInfrastructure > 0) {
+  insights.push({
+    title: "Maintenance Activity",
+    icon: Wrench,
+    text:
+      `${maintenanceInfrastructure} infrastructure asset${
+        maintenanceInfrastructure === 1 ? "" : "s"
+      } ${
+        maintenanceInfrastructure === 1 ? "is" : "are"
+      } currently marked for maintenance.`,
+  });
+} else {
+  insights.push({
+    title: "Infrastructure Status",
+    icon: CheckCircle2,
+    text:
+      "No infrastructure assets are currently marked for maintenance.",
+  });
+}
+
+if (totalIssues === 0) {
+  insights.push({
+    title: "Citizen Issues",
+    icon: ClipboardCheck,
+    text:
+      "No citizen issues are currently present in the live dataset.",
+  });
+} else if (pendingIssues > 0) {
+  insights.push({
+    title: "Pending Issues",
+    icon: AlertTriangle,
+    text:
+      `${pendingIssues} citizen issue${
+        pendingIssues === 1 ? "" : "s"
+      } ${
+        pendingIssues === 1 ? "is" : "are"
+      } currently pending resolution.`,
+  });
+} else {
+  insights.push({
+    title: "Issue Processing",
+    icon: CheckCircle2,
+    text:
+      "There are currently no pending citizen issues in the live dataset.",
+  });
+}
+
+if (totalIssues > 0) {
+  insights.push({
+    title: "Resolution Performance",
+    icon: TrendingUp,
+    text:
+      `${resolvedIssues} of ${totalIssues} citizen issue${
+        totalIssues === 1 ? "" : "s"
+      } ${
+        resolvedIssues === 1 ? "has" : "have"
+      } been resolved, giving a current resolution rate of ${issueResolution}%.`,
+  });
+} else {
+  insights.push({
+    title: "Resolution Performance",
+    icon: TrendingUp,
+    text:
+      "A resolution rate cannot be calculated because there are no citizen issues in the live dataset.",
+  });
+}
+
+  /*
+   * ==============================
+   * RETURN
+   * ==============================
+   */
+
+  return (
     <div className="space-y-8 p-8">
 
       {/* ================= HEADER ================= */}
 
       <div>
-
         <h1 className="text-4xl font-bold">
-
           Analytics Dashboard
-
         </h1>
 
         <p className="mt-2 text-slate-400">
-
           Monitor infrastructure performance,
           operational health and citizen
-          engagement using real-time
-          analytics.
-
+          issues using live analytics.
         </p>
-
       </div>
 
       {/* ================= HERO ================= */}
@@ -576,120 +315,75 @@ export default function AnalyticsPage() {
           p-8
         "
       >
-
         <div className="flex items-center gap-3">
-
-          <BarChart3
-            className="text-cyan-400"
-          />
+          <BarChart3 className="text-cyan-400" />
 
           <p className="text-cyan-400">
-
             Urban Analytics
-
           </p>
-
         </div>
 
         <h2 className="mt-5 text-5xl font-bold">
-
           Live City Intelligence
-
         </h2>
 
         <p className="mt-5 max-w-3xl text-slate-400">
-
-          UrbanMind continuously monitors
-          infrastructure assets, maintenance
-          activity and citizen issues to
-          provide actionable planning
-          insights.
-
+          UrbanMind presents analytics derived from
+          the infrastructure and citizen issue
+          records currently stored in the platform.
         </p>
-
       </section>
-            {/* ================= KPI CARDS ================= */}
+
+      {/* ================= KPI CARDS ================= */}
 
       <div className="grid gap-6 lg:grid-cols-4">
 
         <div className="ai-card">
-
-          <Building2
-            className="text-cyan-400"
-          />
+          <Building2 className="text-cyan-400" />
 
           <h2 className="mt-4 text-5xl font-bold">
-
-            {analytics.totalInfrastructure}
-
+            {totalInfrastructure}
           </h2>
 
           <p className="mt-2 text-slate-400">
-
             Total Infrastructure
-
           </p>
-
         </div>
 
         <div className="ai-card">
-
-          <AlertTriangle
-            className="text-red-400"
-          />
+          <AlertTriangle className="text-red-400" />
 
           <h2 className="mt-4 text-5xl font-bold">
-
-            {analytics.totalIssues}
-
+            {totalIssues}
           </h2>
 
           <p className="mt-2 text-slate-400">
-
             Citizen Issues
-
           </p>
-
         </div>
 
         <div className="ai-card">
-
-          <CheckCircle2
-            className="text-green-400"
-          />
+          <CheckCircle2 className="text-green-400" />
 
           <h2 className="mt-4 text-5xl font-bold">
-
-            {analytics.operationalInfrastructure}
-
+            {operationalInfrastructure}
           </h2>
 
           <p className="mt-2 text-slate-400">
-
             Operational Assets
-
           </p>
-
         </div>
 
         <div className="ai-card">
-
-          <BarChart3
-            className="text-cyan-400"
-          />
+          <BarChart3 className="text-cyan-400" />
 
           <h2 className="mt-4 text-5xl font-bold">
-
-            {analytics.resolvedIssues}
-
+            {resolvedIssues}
           </h2>
 
           <p className="mt-2 text-slate-400">
-
             Resolved Issues
-
           </p>
-
         </div>
 
       </div>
@@ -704,273 +398,222 @@ export default function AnalyticsPage() {
           p-8
         "
       >
-
         <h2 className="text-2xl font-semibold">
-
           City Overview
-
         </h2>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-4">
 
           <div>
-
             <p className="text-slate-400">
-
               Operational
-
             </p>
 
             <h3 className="mt-3 text-4xl font-bold text-green-400">
-
-              {analytics.operationalInfrastructure}
-
+              {operationalInfrastructure}
             </h3>
-
           </div>
 
           <div>
-
             <p className="text-slate-400">
-
               Maintenance
-
             </p>
 
             <h3 className="mt-3 text-4xl font-bold text-yellow-400">
-
-              {analytics.maintenanceInfrastructure}
-
+              {maintenanceInfrastructure}
             </h3>
-
           </div>
 
           <div>
-
             <p className="text-slate-400">
-
               Construction
-
             </p>
 
             <h3 className="mt-3 text-4xl font-bold text-red-400">
-
-              {analytics.constructionInfrastructure}
-
+              {constructionInfrastructure}
             </h3>
-
           </div>
 
           <div>
-
             <p className="text-slate-400">
-
               Pending Issues
-
             </p>
 
             <h3 className="mt-3 text-4xl font-bold text-cyan-400">
-
-              {analytics.pendingIssues}
-
+              {pendingIssues}
             </h3>
-
           </div>
 
         </div>
-
       </section>
 
       {/* ================= ANALYTICS CHARTS ================= */}
 
       <section>
-
         <h2 className="mb-6 text-2xl font-semibold">
-
           Infrastructure Analytics
-
         </h2>
 
-          <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
+
+          {/* ================= PIE CHART ================= */}
 
-    {/* ================= PIE CHART ================= */}
+          <div className="ai-card">
+            <h3 className="mb-6 text-xl font-semibold">
+              Infrastructure Status
+            </h3>
 
-    <div className="ai-card">
+            <div className="h-80">
 
-      <h3 className="mb-6 text-xl font-semibold">
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
+                <PieChart>
 
-        Infrastructure Status
+                  <Pie
+                    data={infrastructureData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={110}
+                    label
+                  >
+                    {infrastructureData.map(
+                      (entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={COLORS[index]}
+                        />
+                      )
+                    )}
+                  </Pie>
 
-      </h3>
+                  <Tooltip />
 
-      <div className="h-80">
+                  <Legend />
 
-        <ResponsiveContainer width="100%" height="100%">
+                </PieChart>
+              </ResponsiveContainer>
 
-          <PieChart>
+            </div>
+          </div>
 
-            <Pie
-              data={infrastructureData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={110}
-              label
-            >
+          {/* ================= BAR CHART ================= */}
 
-              {infrastructureData.map((entry, index) => (
+          <div className="ai-card">
 
-                <Cell
-                  key={index}
-                  fill={COLORS[index]}
-                />
+            <h3 className="mb-6 text-xl font-semibold">
+              Citizen Issue Status
+            </h3>
 
-              ))}
+            <div className="h-80">
 
-            </Pie>
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+              >
+                <BarChart data={issueData}>
 
-            <Tooltip />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#334155"
+                  />
 
-            <Legend />
+                  <XAxis dataKey="name" />
 
-          </PieChart>
+                  <YAxis allowDecimals={false} />
 
-        </ResponsiveContainer>
+                  <Tooltip />
 
-      </div>
+                  <Bar
+                    dataKey="value"
+                    radius={[8, 8, 0, 0]}
+                    fill="#06b6d4"
+                  />
 
-    </div>
+                </BarChart>
 
-    {/* ================= BAR CHART ================= */}
+              </ResponsiveContainer>
 
-    <div className="ai-card">
+            </div>
+          </div>
 
-      <h3 className="mb-6 text-xl font-semibold">
+        </div>
+      </section>
 
-        Citizen Issue Status
+      {/* ================= PERFORMANCE SUMMARY ================= */}
 
-      </h3>
+      <section
+        className="
+          rounded-3xl
+          border border-white/10
+          bg-white/[0.02]
+          p-8
+        "
+      >
+        <h2 className="text-2xl font-semibold">
+          Performance Summary
+        </h2>
 
-      <div className="h-80">
+        <div className="mt-8 grid gap-6 lg:grid-cols-3">
 
-        <ResponsiveContainer width="100%" height="100%">
+          <div className="ai-card">
 
-          <BarChart
-            data={issueData}
-          >
+            <p className="text-slate-400">
+              Infrastructure Health
+            </p>
 
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#334155"
-            />
+            <h2 className="mt-4 text-5xl font-bold text-green-400">
+              {infrastructureHealth}%
+            </h2>
 
-            <XAxis
-              dataKey="name"
-            />
+            <p className="mt-3 text-sm text-slate-500">
+              Operational assets divided by
+              total infrastructure assets.
+            </p>
 
-            <YAxis />
+          </div>
 
-            <Tooltip />
+          <div className="ai-card">
 
-            <Bar
-              dataKey="value"
-              radius={[8, 8, 0, 0]}
-              fill="#06b6d4"
-            />
+            <p className="text-slate-400">
+              Issue Resolution
+            </p>
 
-          </BarChart>
+            <h2 className="mt-4 text-5xl font-bold text-cyan-400">
+              {issueResolution}%
+            </h2>
 
-        </ResponsiveContainer>
+            <p className="mt-3 text-sm text-slate-500">
+              Resolved issues divided by total
+              citizen issues.
+            </p>
 
-      </div>
+          </div>
 
-    </div>
+          <div className="ai-card">
 
-  </div>
+            <p className="text-slate-400">
+              Active Issue Workload
+            </p>
 
-</section>
+            <h2 className="mt-4 text-5xl font-bold text-yellow-400">
+              {issueWorkload}
+            </h2>
 
-{/* ================= PERFORMANCE SUMMARY ================= */}
+            <p className="mt-3 text-sm text-slate-500">
+              Pending and in-progress citizen
+              issues combined.
+            </p>
 
-<section
-  className="
-    rounded-3xl
-    border border-white/10
-    bg-white/[0.02]
-    p-8
-  "
->
+          </div>
 
-  <h2 className="text-2xl font-semibold">
+        </div>
+      </section>
 
-    Performance Summary
-
-  </h2>
-
-  <div className="mt-8 grid gap-6 lg:grid-cols-3">
-
-    <div className="ai-card">
-
-      <p className="text-slate-400">
-
-        Infrastructure Health
-
-      </p>
-
-      <h2 className="mt-4 text-5xl font-bold text-green-400">
-
-        {Math.round(
-          (analytics.operationalInfrastructure /
-            analytics.totalInfrastructure) *
-            100
-        ) || 0}%
-
-      </h2>
-
-    </div>
-
-    <div className="ai-card">
-
-      <p className="text-slate-400">
-
-        Issue Resolution
-
-      </p>
-
-      <h2 className="mt-4 text-5xl font-bold text-cyan-400">
-
-        {Math.round(
-          (analytics.resolvedIssues /
-            analytics.totalIssues) *
-            100
-        ) || 0}%
-
-      </h2>
-
-    </div>
-
-    <div className="ai-card">
-
-      <p className="text-slate-400">
-
-        Pending Issues
-
-      </p>
-
-      <h2 className="mt-4 text-5xl font-bold text-yellow-400">
-
-        {analytics.pendingIssues}
-
-      </h2>
-
-    </div>
-
-  </div>
-
-</section>
-
-      {/* ================= AI INSIGHTS ================= */}
+      {/* ================= LIVE INSIGHTS ================= */}
 
       <section
         className="
@@ -983,36 +626,43 @@ export default function AnalyticsPage() {
 
         <div className="flex items-center gap-3">
 
-          <Brain
-            className="text-cyan-400"
-          />
+          <Brain className="text-cyan-400" />
 
           <h2 className="text-2xl font-bold">
-
-            AI Insights
-
+            Live Insights
           </h2>
 
         </div>
 
-        <p className="mt-6 leading-8 text-slate-400">
-
-          UrbanMind AI has analyzed the
-          current city infrastructure,
-          operational health and citizen
-          issues.
-
-          <br /><br />
-
-          Based on current analytics, the
-          city maintains a healthy level of
-          operational infrastructure while
-          requiring attention towards
-          pending citizen complaints and
-          maintenance activities.
-
+        <p className="mt-3 text-sm text-slate-500">
+          Automatically derived from the current
+          analytics dataset.
         </p>
 
+        <div className="mt-8 grid gap-6 lg:grid-cols-3">
+
+          {insights.map((insight) => {
+            const Icon = insight.icon;
+
+            return (
+              <div
+                key={insight.title}
+                className="ai-card"
+              >
+                <Icon className="text-cyan-400" />
+
+                <h3 className="mt-4 font-semibold">
+                  {insight.title}
+                </h3>
+
+                <p className="mt-3 leading-7 text-slate-400">
+                  {insight.text}
+                </p>
+              </div>
+            );
+          })}
+
+        </div>
       </section>
 
       {/* ================= EXECUTIVE SUMMARY ================= */}
@@ -1026,9 +676,7 @@ export default function AnalyticsPage() {
       >
 
         <h2 className="text-2xl font-bold">
-
           Executive Summary
-
         </h2>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-2">
@@ -1036,35 +684,29 @@ export default function AnalyticsPage() {
           <div>
 
             <h3 className="text-xl font-semibold">
-
               Current Status
-
             </h3>
 
             <ul className="mt-4 space-y-3 text-slate-400">
 
               <li>
-                ✅ Total Infrastructure :
-                {" "}
-                {analytics.totalInfrastructure}
+                Total Infrastructure:{" "}
+                {totalInfrastructure}
               </li>
 
               <li>
-                ✅ Operational Assets :
-                {" "}
-                {analytics.operationalInfrastructure}
+                Operational Assets:{" "}
+                {operationalInfrastructure}
               </li>
 
               <li>
-                ⚠ Maintenance Assets :
-                {" "}
-                {analytics.maintenanceInfrastructure}
+                Maintenance Assets:{" "}
+                {maintenanceInfrastructure}
               </li>
 
               <li>
-                🚧 Under Construction :
-                {" "}
-                {analytics.constructionInfrastructure}
+                Under Construction:{" "}
+                {constructionInfrastructure}
               </li>
 
             </ul>
@@ -1074,116 +716,32 @@ export default function AnalyticsPage() {
           <div>
 
             <h3 className="text-xl font-semibold">
-
               Citizen Issues
-
             </h3>
 
             <ul className="mt-4 space-y-3 text-slate-400">
 
               <li>
-                📌 Total Issues :
-                {" "}
-                {analytics.totalIssues}
+                Total Issues:{" "}
+                {totalIssues}
               </li>
 
               <li>
-                🟡 Pending :
-                {" "}
-                {analytics.pendingIssues}
+                Pending:{" "}
+                {pendingIssues}
               </li>
 
               <li>
-                🔵 In Progress :
-                {" "}
-                {analytics.inProgressIssues}
+                In Progress:{" "}
+                {inProgressIssues}
               </li>
 
               <li>
-                🟢 Resolved :
-                {" "}
-                {analytics.resolvedIssues}
+                Resolved:{" "}
+                {resolvedIssues}
               </li>
 
             </ul>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* ================= FUTURE RECOMMENDATIONS ================= */}
-
-      <section
-        className="
-          rounded-3xl
-          border border-white/10
-          bg-white/[0.02]
-          p-8
-        "
-      >
-
-        <h2 className="text-2xl font-bold">
-
-          AI Suggested Next Actions
-
-        </h2>
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
-
-          <div className="ai-card">
-
-            <h3 className="font-semibold">
-
-              Infrastructure
-
-            </h3>
-
-            <p className="mt-3 text-slate-400">
-
-              Prioritize maintenance of
-              aging infrastructure to
-              improve operational health.
-
-            </p>
-
-          </div>
-
-          <div className="ai-card">
-
-            <h3 className="font-semibold">
-
-              Citizen Services
-
-            </h3>
-
-            <p className="mt-3 text-slate-400">
-
-              Resolve pending complaints
-              quickly to improve citizen
-              satisfaction.
-
-            </p>
-
-          </div>
-
-          <div className="ai-card">
-
-            <h3 className="font-semibold">
-
-              Urban Planning
-
-            </h3>
-
-            <p className="mt-3 text-slate-400">
-
-              Continue expanding
-              infrastructure in
-              high-growth zones based
-              on AI recommendations.
-
-            </p>
 
           </div>
 
@@ -1192,7 +750,5 @@ export default function AnalyticsPage() {
       </section>
 
     </div>
-
   );
-
 }
