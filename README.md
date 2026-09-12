@@ -2,8 +2,6 @@
 
 ### AI-Powered Urban Planning & Smart City Decision Intelligence Platform
 
-> 🚧 **Status:** Under Active Development
-
 UrbanMind is a smart city planning platform that combines GIS visualization, urban simulations, analytics, and AI-powered recommendations to help planners evaluate infrastructure, population growth, traffic, pollution, and budget decisions.
 
 ## ✨ Features
