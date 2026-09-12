@@ -7,16 +7,16 @@ import {
   Tooltip,
 } from "recharts";
 
-const data = [
-  { year: "2020", population: 900 },
-  { year: "2021", population: 980 },
-  { year: "2022", population: 1050 },
-  { year: "2023", population: 1120 },
-  { year: "2024", population: 1180 },
-  { year: "2025", population: 1250 },
-];
+export default function PopulationChart({ data = [] }) {
+  const validData = Array.isArray(data)
+    ? data.filter(
+        (item) =>
+          item &&
+          item.year !== undefined &&
+          Number.isFinite(Number(item.population))
+      )
+    : [];
 
-export default function PopulationChart() {
   return (
     <div
       className="
@@ -30,25 +30,35 @@ export default function PopulationChart() {
         Population Growth
       </h3>
 
-      <div className="h-[320px]">
-        <ResponsiveContainer
-          width="100%"
-          height="100%"
-        >
-          <AreaChart data={data}>
-            <XAxis dataKey="year" />
-            <YAxis />
-
-            <Tooltip />
-
-            <Area
-              dataKey="population"
-              stroke="#22d3ee"
-              fill="#22d3ee22"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+      {validData.length > 0 ? (
+        <div className="h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={validData}>
+              <XAxis dataKey="year" />
+              <YAxis />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="population"
+                stroke="#22d3ee"
+                fill="#22d3ee22"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="flex h-[320px] items-center justify-center">
+          <div className="max-w-md rounded-2xl border border-white/10 bg-slate-900/50 p-6 text-center">
+            <p className="font-medium text-slate-200">
+              Population data unavailable
+            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Population growth will be displayed when a verified
+              population dataset is connected to UrbanMind.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
