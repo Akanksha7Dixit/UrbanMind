@@ -4,11 +4,12 @@ const Infrastructure =
 const Issue =
     require("../models/Issue");
 
-const Recommendation =
-    require("../models/Recommendation");
-
 const Report =
     require("../models/Report");
+
+const {
+    generateRecommendations,
+} = require("./aiService");
 
 const {
     generateSummary,
@@ -17,14 +18,29 @@ const {
 
 async function generateReport(data, userId) {
 
+    // Fetch the latest live urban data
     const infrastructure =
         await Infrastructure.find();
 
     const issues =
         await Issue.find();
 
+
+    // Generate recommendations from the
+    // same live data using UrbanMind AI / Qwen
+    const aiResult =
+        await generateRecommendations(
+            infrastructure,
+            issues
+        );
+
+
     const recommendations =
-        await Recommendation.find();
+        Array.isArray(
+            aiResult.recommendations
+        )
+            ? aiResult.recommendations
+            : [];
 
 
     const totalInfrastructure =
@@ -51,7 +67,7 @@ async function generateReport(data, userId) {
     const constructionInfrastructure =
         infrastructure.filter(
             i =>
-                i.status === "Construction"
+                i.status === "Under Construction"
         ).length;
 
 
@@ -67,86 +83,110 @@ async function generateReport(data, userId) {
             i =>
                 i.status === "Pending"
         ).length;
+
+
     const inProgressIssues =
         issues.filter(
             i =>
                 i.status === "In Progress"
         ).length;
-    /* ===============================
-       HEALTH SCORE
-    =============================== */
+
+
+    /*
+     * Use the AI health score when the AI
+     * provides a valid score.
+     *
+     * Otherwise keep it unavailable rather
+     * than inventing a value.
+     */
     const healthScore =
-        Math.max(
-            0,
-            Math.round(
-                (
-                    (
-                        operationalInfrastructure /
-                        Math.max(
-                            totalInfrastructure,
-                            1
-                        )
-                    ) * 70
-                )
-                +
-                (
-                    (
-                        resolvedIssues /
-                        Math.max(
-                            totalIssues,
-                            1
-                        )
-                    ) * 30
-                )
-            )
-        );
-    /* ===============================
-       CREATE REPORT
-    =============================== */
+        typeof aiResult.healthScore === "number"
+            ? aiResult.healthScore
+            : null;
+
+
+    /*
+     * Create the report using the same live
+     * infrastructure, issues and AI results.
+     */
     const report =
         await Report.create({
+
             title:
                 data.title,
+
             category:
                 data.category,
+
             description:
                 data.description,
+
             status:
                 "Generated",
+
             createdBy:
                 userId,
+
             analytics: {
+
                 healthScore,
+
                 totalInfrastructure,
+
                 operationalInfrastructure,
+
                 maintenanceInfrastructure,
+
                 constructionInfrastructure,
+
                 totalIssues,
+
                 pendingIssues,
+
                 inProgressIssues,
+
                 resolvedIssues,
+
             },
 
             infrastructure,
+
             issues,
+
             recommendations,
+
         });
 
-    /* ===============================
-       SUMMARY
-    =============================== */
+
+    /*
+     * Generate the report summary from
+     * the actual current data.
+     */
     const summary =
         generateSummary({
+
             healthScore,
+
             totalInfrastructure,
+
             totalIssues,
+
             recommendations,
+
         });
+
+
     report.summary =
         summary;
+
+
     await report.save();
+
+
     return report;
 }
+
+
 module.exports = {
 
     generateReport,
