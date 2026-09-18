@@ -1,47 +1,51 @@
 function generateSummary({
+    healthScore,
+    totalInfrastructure,
+    totalIssues,
+    recommendations,
+}) {
+    const infrastructureCount =
+        Number.isFinite(totalInfrastructure)
+            ? totalInfrastructure
+            : 0;
 
-healthScore,
+    const issueCount =
+        Number.isFinite(totalIssues)
+            ? totalIssues
+            : 0;
 
-totalInfrastructure,
+    const recommendationCount =
+        Array.isArray(recommendations)
+            ? recommendations.length
+            : 0;
 
-totalIssues,
+    const summaryParts = [];
 
-recommendations,
+    if (typeof healthScore === "number") {
+        summaryParts.push(
+            `The current AI-assessed city health score is ${healthScore}%.`
+        );
+    } else {
+        summaryParts.push(
+            "An AI-assessed city health score was not available for this report."
+        );
+    }
 
-}){
+    summaryParts.push(
+        `${infrastructureCount} infrastructure assets are included in the current dataset.`
+    );
 
-let summary="";
+    summaryParts.push(
+        `${issueCount} citizen issues are included in the current dataset.`
+    );
 
-if(healthScore>=90){
+    summaryParts.push(
+        `${recommendationCount} AI recommendations were generated from the current city data.`
+    );
 
-summary+="Overall city health is excellent. ";
-
+    return summaryParts.join(" ");
 }
 
-else if(healthScore>=75){
-
-summary+="Overall city health is stable with moderate improvements required. ";
-
-}
-
-else{
-
-summary+="Critical infrastructure improvements are required. ";
-
-}
-
-summary+=`${totalInfrastructure} infrastructure assets are being monitored. `;
-
-summary+=`${totalIssues} citizen issues are currently registered. `;
-
-summary+=`${recommendations.length} AI recommendations have been generated.`;
-
-return summary;
-
-}
-
-module.exports={
-
-generateSummary,
-
+module.exports = {
+    generateSummary,
 };
