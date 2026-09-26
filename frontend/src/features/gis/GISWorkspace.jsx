@@ -37,9 +37,6 @@ import {
   getIssues,
 } from "../../services/issueService";
 
-import {
-  getRecommendations,
-} from "../../services/recommendationService";
 
 
 // =====================================================
@@ -203,11 +200,6 @@ export default function GISWorkspace() {
     setIssues,
   ] = useState([]);
 
-  const [
-    aiRecommendations,
-    setAiRecommendations,
-  ] = useState([]);
-
   // ===================================================
   // SEARCH
   // ===================================================
@@ -352,11 +344,9 @@ useEffect(() => {
       const [
         infrastructureResponse,
         issuesResponse,
-        aiResponse,
       ] = await Promise.all([
         getInfrastructure(token),
         getIssues(token),
-        getRecommendations(token),
       ]);
 
       const liveInfrastructure =
@@ -369,14 +359,8 @@ useEffect(() => {
           ? issuesResponse.issues
           : [];
 
-      const liveRecommendations =
-        Array.isArray(aiResponse?.recommendations)
-          ? aiResponse.recommendations
-          : [];
-
       setInfrastructure(liveInfrastructure);
       setIssues(liveIssues);
-      setAiRecommendations(liveRecommendations);
 
     } catch (error) {
       console.error(
@@ -386,7 +370,6 @@ useEffect(() => {
 
       setInfrastructure([]);
       setIssues([]);
-      setAiRecommendations([]);
     }
   };
 
@@ -2745,11 +2728,11 @@ useEffect(() => {
                     "
                   >
                     <p className="text-xs text-slate-400">
-                      AI Recommendations
+                      AI Analysis
                     </p>
 
-                    <h3 className="mt-1 text-2xl font-bold text-white">
-                      {aiRecommendations.length}
+                    <h3 className="mt-1 text-sm font-semibold text-cyan-400">
+                      Open AI Center
                     </h3>
                   </div>
 
@@ -3776,7 +3759,7 @@ useEffect(() => {
                 </div>
 
 
-                {/* RECOMMENDATION */}
+                {/* AI CENTER */}
 
                 <div
                   className="
@@ -3809,36 +3792,40 @@ useEffect(() => {
                         font-semibold
                       "
                     >
-                      Urban Recommendation
+                      AI Urban Analysis
                     </h3>
 
                   </div>
 
+                  <p className="mt-4 leading-relaxed text-slate-400">
+                    AI recommendations are generated in the dedicated AI Center
+                    when requested. GIS loads only live infrastructure and citizen
+                    issue data so the map remains fast.
+                  </p>
 
-                  {aiRecommendations.length > 0 ? (
-                    <>
-                      <p
-                        className="
-                          mt-4
-                          text-slate-300
-                        "
-                      >
-                        {aiRecommendations[0].recommendation ||
-                          aiRecommendations[0].description ||
-                          aiRecommendations[0].title}
-                      </p>
-
-                      {aiRecommendations[0].reason && (
-                        <p className="mt-3 text-sm leading-relaxed text-slate-500">
-                          {aiRecommendations[0].reason}
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="mt-4 text-slate-400">
-                      No AI recommendations are currently available from the live city data.
-                    </p>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setAiOpen(true)}
+                    className="
+                      mt-5
+                      flex
+                      w-full
+                      items-center
+                      justify-center
+                      gap-2
+                      rounded-xl
+                      bg-cyan-500
+                      px-4
+                      py-3
+                      font-medium
+                      text-slate-950
+                      transition
+                      hover:bg-cyan-400
+                    "
+                  >
+                    <Sparkles size={16} />
+                    Open AI Assistant
+                  </button>
 
                 </div>
 
@@ -4463,7 +4450,7 @@ useEffect(() => {
 
 
             {/* =================================================
-                AI SCENARIO OPPORTUNITIES
+                LIVE SCENARIO SIGNALS
             ================================================= */}
 
             <section
@@ -4492,11 +4479,12 @@ useEffect(() => {
                       text-white
                     "
                   >
-                    AI Scenario Opportunities
+                    Live Scenario Signals
                   </h2>
 
                   <p className="mt-2 text-slate-400">
-                    Opportunities identified from the current infrastructure and citizen issue data.
+                    Planning signals calculated directly from the current
+                    infrastructure and citizen issue records.
                   </p>
                 </div>
 
@@ -4526,122 +4514,69 @@ useEffect(() => {
 
               </div>
 
-              {aiRecommendations.length === 0 ? (
-                <div
-                  className="
-                    rounded-3xl
-                    border
-                    border-white/10
-                    bg-white/[0.03]
-                    p-8
-                    text-slate-400
-                  "
-                >
-                  No AI scenario opportunities are currently available from the live city data.
-                </div>
-              ) : (
+              <div
+                className="
+                  rounded-3xl
+                  border
+                  border-white/10
+                  bg-white/[0.03]
+                  p-6
+                "
+              >
+
                 <div
                   className="
                     grid
                     gap-6
-                    lg:grid-cols-3
+                    md:grid-cols-3
                   "
                 >
 
-                  {aiRecommendations.slice(0, 3).map(
-                    (recommendation, index) => (
-                      <div
-                        key={
-                          recommendation._id ||
-                          `${recommendation.title || "recommendation"}-${index}`
-                        }
-                        className="
-                          rounded-3xl
-                          border
-                          border-white/10
-                          bg-white/[0.03]
-                          p-6
-                        "
-                      >
+                  <div>
+                    <p className="text-sm text-slate-500">
+                      High-utilization assets
+                    </p>
+                    <p className="mt-2 text-3xl font-bold text-cyan-400">
+                      {infrastructure.filter(
+                        (item) => Number(item.utilization) > 80
+                      ).length}
+                    </p>
+                  </div>
 
-                        <div className="flex items-start justify-between gap-4">
-                          <h3
-                            className="
-                              text-xl
-                              font-semibold
-                              text-white
-                            "
-                          >
-                            {recommendation.title || "AI Planning Recommendation"}
-                          </h3>
+                  <div>
+                    <p className="text-sm text-slate-500">
+                      High-priority unresolved issues
+                    </p>
+                    <p className="mt-2 text-3xl font-bold text-red-400">
+                      {issues.filter(
+                        (issue) =>
+                          issue.status !== "Resolved" &&
+                          (issue.priority === "High" ||
+                            issue.priority === "Critical")
+                      ).length}
+                    </p>
+                  </div>
 
-                          {recommendation.priority && (
-                            <span
-                              className="
-                                shrink-0
-                                rounded-full
-                                bg-cyan-500/10
-                                px-3
-                                py-1
-                                text-xs
-                                font-medium
-                                text-cyan-400
-                              "
-                            >
-                              {recommendation.priority}
-                            </span>
-                          )}
-                        </div>
-
-                        {recommendation.category && (
-                          <p className="mt-2 text-xs uppercase tracking-wider text-slate-500">
-                            {recommendation.category}
-                          </p>
-                        )}
-
-                        <p
-                          className="
-                            mt-4
-                            leading-relaxed
-                            text-slate-300
-                          "
-                        >
-                          {recommendation.recommendation ||
-                            recommendation.description ||
-                            "AI identified an opportunity from the current city data."}
-                        </p>
-
-                        {recommendation.reason && (
-                          <div
-                            className="
-                              mt-4
-                              rounded-2xl
-                              bg-white/[0.03]
-                              p-4
-                            "
-                          >
-                            <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                              Reason
-                            </p>
-                            <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                              {recommendation.reason}
-                            </p>
-                          </div>
-                        )}
-
-                        {recommendation.confidence != null && (
-                          <p className="mt-4 text-xs text-slate-500">
-                            AI confidence:{" "}
-                            {recommendation.confidence}%
-                          </p>
-                        )}
-
-                      </div>
-                    )
-                  )}
+                  <div>
+                    <p className="text-sm text-slate-500">
+                      Assets requiring maintenance
+                    </p>
+                    <p className="mt-2 text-3xl font-bold text-yellow-400">
+                      {infrastructure.filter(
+                        (item) => item.status === "Maintenance"
+                      ).length}
+                    </p>
+                  </div>
 
                 </div>
-              )}
+
+                <p className="mt-6 text-sm leading-relaxed text-slate-500">
+                  These signals use only the records currently loaded from the
+                  database. Use AI Assistant when you want Qwen to analyze the
+                  live city data.
+                </p>
+
+              </div>
 
             </section>
 

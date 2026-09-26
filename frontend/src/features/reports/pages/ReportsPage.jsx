@@ -2258,16 +2258,19 @@ export default function ReportsPage() {
                 open={
                     isCreateModalOpen
                 }
-                onClose={() =>
-                    setIsCreateModalOpen(
-                        false
-                    )
-                }
+                onClose={() => {
+                    if (!createMutation.isPending) {
+                        setIsCreateModalOpen(false);
+                    }
+                }}
                 onSubmit={
                     handleCreateReport
                 }
                 initialCategory={
                     selectedCategory
+                }
+                isSubmitting={
+                    createMutation.isPending
                 }
             />
 

@@ -23,10 +23,6 @@ import {
 } from "../../services/issueService";
 
 import {
-  getRecommendations,
-} from "../../services/recommendationService";
-
-import {
   Users,
   Car,
   Wind,
@@ -43,7 +39,6 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [infrastructure, setInfrastructure] = useState([]);
   const [issues, setIssues] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [dataError, setDataError] = useState("");
 
@@ -53,7 +48,6 @@ export default function DashboardPage() {
         setStats(null);
         setInfrastructure([]);
         setIssues([]);
-        setRecommendations([]);
         setLoading(false);
         return;
       }
@@ -66,12 +60,10 @@ export default function DashboardPage() {
           dashboardData,
           infrastructureData,
           issueData,
-          recommendationData,
         ] = await Promise.all([
           getDashboardStats(token),
           getInfrastructure(token),
           getIssues(token),
-          getRecommendations(),
         ]);
 
         setStats(dashboardData || null);
@@ -83,11 +75,6 @@ export default function DashboardPage() {
         setIssues(
           Array.isArray(issueData?.issues)
             ? issueData.issues
-            : []
-        );
-        setRecommendations(
-          Array.isArray(recommendationData?.recommendations)
-            ? recommendationData.recommendations
             : []
         );
       } catch (error) {
@@ -205,11 +192,6 @@ export default function DashboardPage() {
     }, null);
   }, [infrastructure]);
 
-  const primaryRecommendation =
-    recommendations.length > 0
-      ? recommendations[0]
-      : null;
-
   return (
     <div className="space-y-8 p-8">
       <PageHeader
@@ -267,13 +249,13 @@ export default function DashboardPage() {
 
             <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
               <p className="text-xs uppercase tracking-wide text-slate-500">
-                AI Signals
+                Mapped Assets
               </p>
               <p className="mt-2 text-2xl font-bold">
-                {loading ? "—" : recommendations.length}
+                {loading ? "—" : mappedInfrastructure.length}
               </p>
               <p className="mt-1 text-xs text-slate-400">
-                recommendations
+                valid coordinates
               </p>
             </div>
           </div>
@@ -569,74 +551,28 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* AI Recommendations */}
+        {/* AI Center */}
         <div className="xl:col-span-5 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex items-center gap-3">
+            <Activity className="text-cyan-400" size={22} />
             <div>
               <h3 className="text-xl font-semibold">
-                AI Recommendations
+                AI Urban Intelligence
               </h3>
               <p className="text-sm text-slate-400">
-                Based on the current urban dataset.
+                AI analysis is generated on demand from the current urban dataset.
               </p>
             </div>
-
-            <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs text-cyan-400">
-              {recommendations.length} live
-            </span>
           </div>
 
-          {primaryRecommendation ? (
-            <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5 shadow-[0_0_30px_rgba(34,211,238,0.08)]">
-              <p className="text-sm text-cyan-400">
-                Recommended Action
-              </p>
-
-              <h4 className="mt-2 text-xl font-semibold">
-                {primaryRecommendation.title}
-              </h4>
-
-              <p className="mt-4 text-sm leading-6 text-slate-400">
-                {primaryRecommendation.recommendation}
-              </p>
-
-              <div className="mt-5 flex flex-wrap gap-4 text-sm">
-                {primaryRecommendation.category && (
-                  <span className="text-cyan-400">
-                    {primaryRecommendation.category}
-                  </span>
-                )}
-
-                {primaryRecommendation.priority && (
-                  <span className="text-amber-400">
-                    {primaryRecommendation.priority}
-                  </span>
-                )}
-
-                {Number.isFinite(
-                  Number(primaryRecommendation.confidence)
-                ) && (
-                  <span className="text-emerald-400">
-                    Confidence{" "}
-                    {Number(
-                      primaryRecommendation.confidence
-                    ).toFixed(0)}
-                    %
-                  </span>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
-              <p className="font-medium">
-                No AI recommendations available
-              </p>
-              <p className="mt-2 text-sm text-slate-400">
-                Recommendations will appear when the AI service
-                has current urban data to analyze.
-              </p>
-            </div>
-          )}
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+            <p className="text-sm leading-6 text-slate-400">
+              The dashboard does not run the local AI model while loading. This keeps
+              the core dashboard fast and prevents unnecessary AI requests. Open the
+              AI Recommendation Center when you want fresh recommendations from the
+              latest infrastructure and citizen-issue records.
+            </p>
+          </div>
         </div>
       </div>
     </div>

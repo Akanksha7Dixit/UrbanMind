@@ -6,7 +6,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { getRecommendations } from "../../services/recommendationService";
 import { useAuthStore } from "../../store/authStore";
@@ -23,85 +23,71 @@ export default function AIRecommendationCenter() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const requestInProgress = useRef(false);
-
-  const loadRecommendations = async () => {
-    if (!token) {
-      setError("Authentication token is not available.");
-      setLoading(false);
-      return;
-    }
-
-    if (requestInProgress.current) {
-      return;
-    }
-
-    requestInProgress.current = true;
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const data = await getRecommendations(token);
-
-      console.log(
-        "URBANMIND AI RESPONSE:",
-        data
-      );
-
-      if (!data || data.success !== true) {
-        throw new Error(
-          data?.message ||
-            "AI recommendation request failed."
-        );
+  const loadRecommendations = useCallback(
+    async (forceRefresh = false) => {
+      if (!token) {
+        setError("Authentication token is not available.");
+        setLoading(false);
+        return;
       }
 
-      setHealthScore(
-        Number(data.healthScore ?? 0)
-      );
+      try {
+        setLoading(true);
+        setError("");
 
-      setOverview(
-        typeof data.overview === "string"
-          ? data.overview
-          : ""
-      );
+        const data = await getRecommendations(token, {
+          forceRefresh,
+        });
 
-      setTotalInfrastructure(
-        Number(
-          data.totalInfrastructure ?? 0
-        )
-      );
+        console.log("URBANMIND AI RESPONSE:", data);
 
-      setTotalIssues(
-        Number(data.totalIssues ?? 0)
-      );
+        if (!data || data.success !== true) {
+          throw new Error(
+            data?.message ||
+              "AI recommendation request failed."
+          );
+        }
 
-      setRecommendations(
-        Array.isArray(data.recommendations)
-          ? data.recommendations
-          : []
-      );
-    } catch (err) {
-      console.error(
-        "UrbanMind AI Error:",
-        err
-      );
+        setHealthScore(Number(data.healthScore ?? 0));
 
-      setError(
-        err.response?.data?.message ||
-          err.response?.data?.detail ||
-          err.message ||
-          "Unable to load AI recommendations."
-      );
-    } finally {
-      setLoading(false);
-      requestInProgress.current = false;
-    }
-  };
+        setOverview(
+          typeof data.overview === "string"
+            ? data.overview
+            : ""
+        );
+
+        setTotalInfrastructure(
+          Number(data.totalInfrastructure ?? 0)
+        );
+
+        setTotalIssues(
+          Number(data.totalIssues ?? 0)
+        );
+
+        setRecommendations(
+          Array.isArray(data.recommendations)
+            ? data.recommendations
+            : []
+        );
+      } catch (err) {
+        console.error("UrbanMind AI Error:", err);
+
+        setError(
+          err.response?.data?.message ||
+            err.response?.data?.detail ||
+            err.message ||
+            "Unable to load AI recommendations."
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token]
+  );
 
   useEffect(() => {
-    loadRecommendations();
-  }, [token]);
+    loadRecommendations(false);
+  }, [loadRecommendations]);
 
   return (
     <div className="space-y-8 p-8">
@@ -113,14 +99,13 @@ export default function AIRecommendationCenter() {
           </h1>
 
           <p className="mt-2 text-slate-400">
-            Dynamic AI analysis of the current
-            urban data.
+            Dynamic AI analysis of the current urban data.
           </p>
         </div>
 
         <button
           type="button"
-          onClick={loadRecommendations}
+          onClick={() => loadRecommendations(true)}
           disabled={loading}
           className="
             inline-flex
@@ -142,16 +127,10 @@ export default function AIRecommendationCenter() {
         >
           <RefreshCw
             size={18}
-            className={
-              loading
-                ? "animate-spin"
-                : ""
-            }
+            className={loading ? "animate-spin" : ""}
           />
 
-          {loading
-            ? "Analyzing..."
-            : "Refresh AI"}
+          {loading ? "Analyzing..." : "Refresh AI"}
         </button>
       </div>
 
@@ -181,23 +160,10 @@ export default function AIRecommendationCenter() {
           p-8
         "
       >
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-          <Brain
-            className="text-cyan-400"
-          />
+        <div className="flex items-center gap-3">
+          <Brain className="text-cyan-400" />
 
-          <p
-            className="
-              font-medium
-              text-cyan-400
-            "
-          >
+          <p className="font-medium text-cyan-400">
             UrbanMind AI Analysis
           </p>
         </div>
@@ -205,8 +171,7 @@ export default function AIRecommendationCenter() {
         {loading ? (
           <div className="mt-6">
             <p className="text-slate-400">
-              AI is analyzing current city
-              data...
+              AI is analyzing current city data...
             </p>
 
             <div
@@ -232,14 +197,7 @@ export default function AIRecommendationCenter() {
           </div>
         ) : (
           <>
-            <div
-              className="
-                mt-5
-                flex
-                items-end
-                gap-2
-              "
-            >
+            <div className="mt-5 flex items-end gap-2">
               <span
                 className="
                   text-5xl
@@ -289,104 +247,47 @@ export default function AIRecommendationCenter() {
 
       {/* CITY STATISTICS */}
       <section>
-        <h2
-          className="
-            mb-6
-            text-2xl
-            font-semibold
-          "
-        >
+        <h2 className="mb-6 text-2xl font-semibold">
           Current City Data
         </h2>
 
-        <div
-          className="
-            grid
-            gap-6
-            lg:grid-cols-3
-          "
-        >
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* INFRASTRUCTURE */}
           <div className="ai-card">
-            <Building2
-              className="text-cyan-400"
-            />
+            <Building2 className="text-cyan-400" />
 
-            <p
-              className="
-                mt-4
-                text-slate-400
-              "
-            >
+            <p className="mt-4 text-slate-400">
               Infrastructure
             </p>
 
-            <h2
-              className="
-                mt-3
-                text-5xl
-                font-bold
-              "
-            >
-              {loading
-                ? "..."
-                : totalInfrastructure}
+            <h2 className="mt-3 text-5xl font-bold">
+              {loading ? "..." : totalInfrastructure}
             </h2>
           </div>
 
           {/* ISSUES */}
           <div className="ai-card">
-            <AlertTriangle
-              className="text-red-400"
-            />
+            <AlertTriangle className="text-red-400" />
 
-            <p
-              className="
-                mt-4
-                text-slate-400
-              "
-            >
+            <p className="mt-4 text-slate-400">
               Citizen Issues
             </p>
 
-            <h2
-              className="
-                mt-3
-                text-5xl
-                font-bold
-              "
-            >
-              {loading
-                ? "..."
-                : totalIssues}
+            <h2 className="mt-3 text-5xl font-bold">
+              {loading ? "..." : totalIssues}
             </h2>
           </div>
 
           {/* RECOMMENDATIONS */}
           <div className="ai-card">
-            <TrendingUp
-              className="text-green-400"
-            />
+            <TrendingUp className="text-green-400" />
 
-            <p
-              className="
-                mt-4
-                text-slate-400
-              "
-            >
+            <p className="mt-4 text-slate-400">
               AI Recommendations
             </p>
 
-            <h2
-              className="
-                mt-3
-                text-5xl
-                font-bold
-              "
-            >
-              {loading
-                ? "..."
-                : recommendations.length}
+            <h2 className="mt-3 text-5xl font-bold">
+              {loading ? "..." : recommendations.length}
             </h2>
           </div>
         </div>
@@ -394,26 +295,13 @@ export default function AIRecommendationCenter() {
 
       {/* RECOMMENDATIONS */}
       <section>
-        <h2
-          className="
-            mb-6
-            text-2xl
-            font-semibold
-          "
-        >
+        <h2 className="mb-6 text-2xl font-semibold">
           AI Recommendations
         </h2>
 
         {loading ? (
           <div className="ai-card">
-            <div
-              className="
-                flex
-                items-center
-                gap-3
-                text-slate-400
-              "
-            >
+            <div className="flex items-center gap-3 text-slate-400">
               <RefreshCw
                 size={18}
                 className="animate-spin"
@@ -424,162 +312,96 @@ export default function AIRecommendationCenter() {
               </span>
             </div>
           </div>
-        ) : recommendations.length ===
-          0 ? (
+        ) : recommendations.length === 0 ? (
           <div className="ai-card">
             <Brain
-              className="
-                mb-4
-                text-cyan-400
-              "
+              className="mb-4 text-cyan-400"
               size={40}
             />
 
-            <h2
-              className="
-                text-2xl
-                font-bold
-              "
-            >
+            <h2 className="text-2xl font-bold">
               No Recommendations
             </h2>
 
-            <p
-              className="
-                mt-3
-                text-slate-400
-              "
-            >
-              The AI did not identify a
-              sufficiently supported
-              recommendation from the current
+            <p className="mt-3 text-slate-400">
+              The AI did not identify a sufficiently
+              supported recommendation from the current
               data.
             </p>
           </div>
         ) : (
-          <div
-            className="
-              grid
-              gap-6
-              lg:grid-cols-2
-            "
-          >
-            {recommendations.map(
-              (item, index) => (
-                <div
-                  key={
-                    item.id ||
-                    item._id ||
-                    index
-                  }
-                  className="ai-card"
-                >
-                  <AlertTriangle
-                    className="text-cyan-400"
-                  />
+          <div className="grid gap-6 lg:grid-cols-2">
+            {recommendations.map((item, index) => (
+              <div
+                key={item.id || item._id || index}
+                className="ai-card"
+              >
+                <AlertTriangle className="text-cyan-400" />
 
-                  <h3
-                    className="
-                      mt-4
-                      text-xl
-                      font-semibold
-                    "
-                  >
-                    {item.title ||
-                      "AI Recommendation"}
-                  </h3>
+                <h3 className="mt-4 text-xl font-semibold">
+                  {item.title || "AI Recommendation"}
+                </h3>
 
-                  <p
-                    className="
-                      mt-3
-                      text-slate-400
-                    "
-                  >
-                    {item.recommendation ||
-                      item.description ||
-                      ""}
+                <p className="mt-3 text-slate-400">
+                  {item.recommendation ||
+                    item.description ||
+                    ""}
+                </p>
+
+                {item.reason && (
+                  <p className="mt-4 text-sm text-slate-500">
+                    <span className="font-medium text-slate-400">
+                      Reason:
+                    </span>{" "}
+                    {item.reason}
                   </p>
+                )}
 
-                  {item.reason && (
-                    <p
+                <div className="mt-5 flex flex-wrap items-center gap-3">
+                  {item.category && (
+                    <span
                       className="
-                        mt-4
+                        rounded-full
+                        bg-white/5
+                        px-3
+                        py-1
                         text-sm
-                        text-slate-500
                       "
                     >
-                      <span className="font-medium text-slate-400">
-                        Reason:
-                      </span>{" "}
-                      {item.reason}
-                    </p>
+                      {item.category}
+                    </span>
                   )}
 
-                  <div
-                    className="
-                      mt-5
-                      flex
-                      flex-wrap
-                      items-center
-                      gap-3
-                    "
-                  >
-                    {item.category && (
-                      <span
-                        className="
-                          rounded-full
-                          bg-white/5
-                          px-3
-                          py-1
-                          text-sm
-                        "
-                      >
-                        {item.category}
-                      </span>
-                    )}
+                  {item.priority && (
+                    <span
+                      className={`
+                        rounded-full
+                        px-3
+                        py-1
+                        text-sm
+                        ${
+                          item.priority === "Critical"
+                            ? "bg-red-500/20 text-red-400"
+                            : item.priority === "High"
+                            ? "bg-orange-500/20 text-orange-400"
+                            : item.priority === "Medium"
+                            ? "bg-yellow-500/20 text-yellow-400"
+                            : "bg-green-500/20 text-green-400"
+                        }
+                      `}
+                    >
+                      {item.priority}
+                    </span>
+                  )}
 
-                    {item.priority && (
-                      <span
-                        className={`
-                          rounded-full
-                          px-3
-                          py-1
-                          text-sm
-
-                          ${
-                            item.priority ===
-                            "Critical"
-                              ? "bg-red-500/20 text-red-400"
-                              : item.priority ===
-                                "High"
-                              ? "bg-orange-500/20 text-orange-400"
-                              : item.priority ===
-                                "Medium"
-                              ? "bg-yellow-500/20 text-yellow-400"
-                              : "bg-green-500/20 text-green-400"
-                          }
-                        `}
-                      >
-                        {item.priority}
-                      </span>
-                    )}
-
-                    {typeof item.confidence ===
-                      "number" && (
-                      <span
-                        className="
-                          text-xs
-                          text-slate-500
-                        "
-                      >
-                        {item.confidence}%
-                        confidence
-                      </span>
-                    )}
-                  </div>
+                  {typeof item.confidence === "number" && (
+                    <span className="text-xs text-slate-500">
+                      {item.confidence}% confidence
+                    </span>
+                  )}
                 </div>
-              )
-            )}
+              </div>
+            ))}
           </div>
         )}
       </section>
