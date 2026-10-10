@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:5000/api/auth";
+"https://urbanmind-backend-ix55.onrender.com/api/auth";
 
 export const loginUser = async (
   email,

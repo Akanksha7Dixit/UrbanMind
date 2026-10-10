@@ -1,30 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api",
-});
-
-axiosInstance.interceptors.request.use((config) => {
-  try {
-    const auth = JSON.parse(
-      localStorage.getItem("urbanmind-auth")
-    );
-
-    const token = auth?.state?.token;
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  } catch (error) {
-    console.error(
-      "Failed to read authentication token:",
-      error
-    );
-  }
-
-  return config;
+  baseURL: "https://urbanmind-backend-ix55.onrender.com/api",
 });
 
 export default axiosInstance;

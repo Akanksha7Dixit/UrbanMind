@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:5000/api/analytics";
+  "https://urbanmind-backend-ix55.onrender.com/api/analytics";
 
 export const getAnalytics =
   async (token) => {
