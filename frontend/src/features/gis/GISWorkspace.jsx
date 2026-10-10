@@ -1,5 +1,7 @@
-import {Layers3, Filter,Pencil, Ruler, Download, Share2, Sparkles, X, MapPin, Building2,
-  AlertTriangle,Activity, Navigation,} from "lucide-react";
+import {
+  Layers3, Filter, Pencil, Ruler, Download, Share2, Sparkles, X, MapPin, Building2,
+  AlertTriangle, Activity, Navigation,
+} from "lucide-react";
 import {
   MapContainer,
   TileLayer,
@@ -327,54 +329,54 @@ export default function GISWorkspace() {
     setSelectedLocation,
   ] = useState(null);
 
-// ===================================================
-// FETCH LIVE DATA
-// ===================================================
+  // ===================================================
+  // FETCH LIVE DATA
+  // ===================================================
 
-useEffect(() => {
-  const fetchData = async () => {
-    if (!token) {
-      setInfrastructure([]);
-      setIssues([]);
-      setAiRecommendations([]);
-      return;
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!token) {
+        setInfrastructure([]);
+        setIssues([]);
+        setAiRecommendations([]);
+        return;
+      }
 
-    try {
-      const [
-        infrastructureResponse,
-        issuesResponse,
-      ] = await Promise.all([
-        getInfrastructure(token),
-        getIssues(token),
-      ]);
+      try {
+        const [
+          infrastructureResponse,
+          issuesResponse,
+        ] = await Promise.all([
+          getInfrastructure(token),
+          getIssues(token),
+        ]);
 
-      const liveInfrastructure =
-        Array.isArray(infrastructureResponse?.infrastructure)
-          ? infrastructureResponse.infrastructure
-          : [];
+        const liveInfrastructure =
+          Array.isArray(infrastructureResponse?.infrastructure)
+            ? infrastructureResponse.infrastructure
+            : [];
 
-      const liveIssues =
-        Array.isArray(issuesResponse?.issues)
-          ? issuesResponse.issues
-          : [];
+        const liveIssues =
+          Array.isArray(issuesResponse?.issues)
+            ? issuesResponse.issues
+            : [];
 
-      setInfrastructure(liveInfrastructure);
-      setIssues(liveIssues);
+        setInfrastructure(liveInfrastructure);
+        setIssues(liveIssues);
 
-    } catch (error) {
-      console.error(
-        "GIS live data error:",
-        error
-      );
+      } catch (error) {
+        console.error(
+          "GIS live data error:",
+          error
+        );
 
-      setInfrastructure([]);
-      setIssues([]);
-    }
-  };
+        setInfrastructure([]);
+        setIssues([]);
+      }
+    };
 
-  fetchData();
-}, [token]);
+    fetchData();
+  }, [token]);
 
   // ===================================================
   // LIVE MAP COORDINATES
@@ -889,14 +891,13 @@ useEffect(() => {
                 py-2.5
                 transition
 
-                ${
-                  layersOpen
-                    ? `
+                ${layersOpen
+                  ? `
                       border-cyan-500/40
                       bg-cyan-500/10
                       text-cyan-400
                     `
-                    : `
+                  : `
                       border-white/10
                       bg-slate-900
                       text-white
@@ -938,14 +939,13 @@ useEffect(() => {
                 py-2.5
                 transition
 
-                ${
-                  filtersOpen
-                    ? `
+                ${filtersOpen
+                  ? `
                       border-cyan-500/40
                       bg-cyan-500/10
                       text-cyan-400
                     `
-                    : `
+                  : `
                       border-white/10
                       bg-slate-900
                       text-white
@@ -979,14 +979,13 @@ useEffect(() => {
                 py-2.5
                 transition
 
-                ${
-                  drawMode
-                    ? `
+                ${drawMode
+                  ? `
                       border-cyan-500/40
                       bg-cyan-500/10
                       text-cyan-400
                     `
-                    : `
+                  : `
                       border-white/10
                       bg-slate-900
                       text-white
@@ -1022,14 +1021,13 @@ useEffect(() => {
                 py-2.5
                 transition
 
-                ${
-                  measureMode
-                    ? `
+                ${measureMode
+                  ? `
                       border-yellow-500/40
                       bg-yellow-500/10
                       text-yellow-400
                     `
-                    : `
+                  : `
                       border-white/10
                       bg-slate-900
                       text-white
@@ -2137,385 +2135,204 @@ useEffect(() => {
 
                 {hasMappedData ? (
                   <MapContainer
-                  center={mappedCoordinates[0]}
-                  zoom={12}
-                  zoomControl={false}
-                  doubleClickZoom={
-                    !drawMode &&
-                    !measureMode
-                  }
-                  className="
+                    center={mappedCoordinates[0]}
+                    zoom={12}
+                    zoomControl={false}
+                    doubleClickZoom={
+                      !drawMode &&
+                      !measureMode
+                    }
+                    className="
                     h-full
                     w-full
                   "
-                >
+                  >
 
-                  <ZoomControl
-                    position="bottomright"
-                  />
+                    <ZoomControl
+                      position="bottomright"
+                    />
 
-                  <LiveMapViewController
-                    coordinates={mappedCoordinates}
-                  />
-
-
-                  <MapInteractionController
-                    drawMode={
-                      drawMode
-                    }
-                    measureMode={
-                      measureMode
-                    }
-                  />
+                    <LiveMapViewController
+                      coordinates={mappedCoordinates}
+                    />
 
 
-                  <MapClickHandler
-                    drawMode={
-                      drawMode
-                    }
-                    measureMode={
-                      measureMode
-                    }
-                    onMapClick={
-                      handleMapClick
-                    }
-                    onDrawClick={
-                      handleDrawClick
-                    }
-                    onMeasureClick={
-                      handleMeasureClick
-                    }
-                  />
+                    <MapInteractionController
+                      drawMode={
+                        drawMode
+                      }
+                      measureMode={
+                        measureMode
+                      }
+                    />
 
 
-                  <TileLayer
-                    attribution="
-                      &copy; OpenStreetMap
-                    "
-                    url="
-                      https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png
-                    "
-                  />
+                    <MapClickHandler
+                      drawMode={
+                        drawMode
+                      }
+                      measureMode={
+                        measureMode
+                      }
+                      onMapClick={
+                        handleMapClick
+                      }
+                      onDrawClick={
+                        handleDrawClick
+                      }
+                      onMeasureClick={
+                        handleMeasureClick
+                      }
+                    />
 
 
-                  {/* =================================================
+
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+
+
+
+                    {/* =================================================
                       DRAWING LINE
                   ================================================= */}
 
-                  {drawingPoints.length > 0 && (
+                    {drawingPoints.length > 0 && (
 
-                    <>
-                      <Polyline
-                        positions={
-                          drawingPoints.map(
-                            (point) => [
-                              point.latitude,
-                              point.longitude,
-                            ]
+                      <>
+                        <Polyline
+                          positions={
+                            drawingPoints.map(
+                              (point) => [
+                                point.latitude,
+                                point.longitude,
+                              ]
+                            )
+                          }
+                          pathOptions={{
+                            color:
+                              "#22d3ee",
+                            weight: 5,
+                            dashArray:
+                              drawMode
+                                ? "10 10"
+                                : undefined,
+                          }}
+                        />
+
+
+                        {drawingPoints.map(
+                          (
+                            point,
+                            index
+                          ) => (
+
+                            <CircleMarker
+                              key={
+                                `draw-${index}`
+                              }
+                              center={[
+                                point.latitude,
+                                point.longitude,
+                              ]}
+                              radius={6}
+                              pathOptions={{
+                                color:
+                                  "#22d3ee",
+                                fillColor:
+                                  "#22d3ee",
+                                fillOpacity: 1,
+                              }}
+                              interactive={
+                                false
+                              }
+                            />
+
                           )
-                        }
-                        pathOptions={{
-                          color:
-                            "#22d3ee",
-                          weight: 5,
-                          dashArray:
-                            drawMode
-                              ? "10 10"
-                              : undefined,
-                        }}
-                      />
+                        )}
 
+                      </>
 
-                      {drawingPoints.map(
-                        (
-                          point,
-                          index
-                        ) => (
-
-                          <CircleMarker
-                            key={
-                              `draw-${index}`
-                            }
-                            center={[
-                              point.latitude,
-                              point.longitude,
-                            ]}
-                            radius={6}
-                            pathOptions={{
-                              color:
-                                "#22d3ee",
-                              fillColor:
-                                "#22d3ee",
-                              fillOpacity: 1,
-                            }}
-                            interactive={
-                              false
-                            }
-                          />
-
-                        )
-                      )}
-
-                    </>
-
-                  )}
-
-
-                  {/* =================================================
-                      MEASUREMENT LINE
-                  ================================================= */}
-
-                  {measurePoints.length > 0 && (
-
-                    <>
-
-                      <Polyline
-                        positions={
-                          measurePoints.map(
-                            (point) => [
-                              point.latitude,
-                              point.longitude,
-                            ]
-                          )
-                        }
-                        pathOptions={{
-                          color:
-                            "#facc15",
-                          weight: 4,
-                        }}
-                      />
-
-
-                      {measurePoints.map(
-                        (
-                          point,
-                          index
-                        ) => (
-
-                          <CircleMarker
-                            key={
-                              `measure-${index}`
-                            }
-                            center={[
-                              point.latitude,
-                              point.longitude,
-                            ]}
-                            radius={6}
-                            pathOptions={{
-                              color:
-                                "#facc15",
-                              fillColor:
-                                "#facc15",
-                              fillOpacity: 1,
-                            }}
-                            interactive={
-                              false
-                            }
-                          />
-
-                        )
-                      )}
-
-                    </>
-
-                  )}
-
-
-                  {/* =================================================
-                      INFRASTRUCTURE MARKERS
-                  ================================================= */}
-
-                  {showInfrastructure &&
-                    filteredInfrastructure.map(
-                      (item) => {
-
-                        const latitude =
-                          Number(
-                            item.latitude
-                          );
-
-                        const longitude =
-                          Number(
-                            item.longitude
-                          );
-
-
-                        if (
-                          !Number.isFinite(
-                            latitude
-                          ) ||
-                          !Number.isFinite(
-                            longitude
-                          )
-                        ) {
-                          return null;
-                        }
-
-
-                        return (
-
-                          <Marker
-                            key={
-                              item._id
-                            }
-                            position={[
-                              latitude,
-                              longitude,
-                            ]}
-
-                            /*
-                              IMPORTANT:
-                              During Draw/Measure the
-                              marker must NOT capture
-                              the map click.
-                            */
-
-                            interactive={
-                              !drawMode &&
-                              !measureMode
-                            }
-
-                            eventHandlers={{
-                              click: () => {
-
-                                if (
-                                  !drawMode &&
-                                  !measureMode
-                                ) {
-
-                                  handleAssetClick(
-                                    item
-                                  );
-
-                                }
-
-                              },
-                            }}
-                          >
-
-                            <Popup>
-
-                              <div
-                                className="
-                                  min-w-[220px]
-                                "
-                              >
-
-                                <h3
-                                  className="
-                                    text-lg
-                                    font-bold
-                                  "
-                                >
-                                  {item.name}
-                                </h3>
-
-
-                                <p>
-                                  <strong>
-                                    Type:
-                                  </strong>{" "}
-                                  {item.type}
-                                </p>
-
-
-                                <p>
-                                  <strong>
-                                    Sector:
-                                  </strong>{" "}
-                                  {item.sector}
-                                </p>
-
-
-                                <p>
-                                  <strong>
-                                    Status:
-                                  </strong>{" "}
-                                  {item.status}
-                                </p>
-
-
-                                <p>
-                                  <strong>
-                                    Utilization:
-                                  </strong>{" "}
-                                  {item.utilization}%
-                                </p>
-
-
-                                {item.capacity && (
-
-                                  <p>
-                                    <strong>
-                                      Capacity:
-                                    </strong>{" "}
-                                    {Number(
-                                      item.capacity
-                                    ).toLocaleString()}
-                                  </p>
-
-                                )}
-
-
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleAssetClick(
-                                      item
-                                    )
-                                  }
-                                  className="
-                                    mt-3
-                                    w-full
-                                    rounded-lg
-                                    bg-cyan-500
-                                    px-3
-                                    py-2
-                                    font-medium
-                                    text-slate-950
-                                  "
-                                >
-                                  View Details
-                                </button>
-
-                              </div>
-
-                            </Popup>
-
-                          </Marker>
-
-                        );
-                      }
                     )}
 
 
-                  {/* =================================================
-                      CITIZEN ISSUE MARKERS
+                    {/* =================================================
+                      MEASUREMENT LINE
                   ================================================= */}
 
-                  {showIssues &&
+                    {measurePoints.length > 0 && (
 
-                    issues
+                      <>
 
-                      .filter(
-                        (issue) =>
-                          issue.latitude !=
-                            null &&
-                          issue.longitude !=
-                            null
-                      )
+                        <Polyline
+                          positions={
+                            measurePoints.map(
+                              (point) => [
+                                point.latitude,
+                                point.longitude,
+                              ]
+                            )
+                          }
+                          pathOptions={{
+                            color:
+                              "#facc15",
+                            weight: 4,
+                          }}
+                        />
 
-                      .map(
-                        (issue) => {
+
+                        {measurePoints.map(
+                          (
+                            point,
+                            index
+                          ) => (
+
+                            <CircleMarker
+                              key={
+                                `measure-${index}`
+                              }
+                              center={[
+                                point.latitude,
+                                point.longitude,
+                              ]}
+                              radius={6}
+                              pathOptions={{
+                                color:
+                                  "#facc15",
+                                fillColor:
+                                  "#facc15",
+                                fillOpacity: 1,
+                              }}
+                              interactive={
+                                false
+                              }
+                            />
+
+                          )
+                        )}
+
+                      </>
+
+                    )}
+
+
+                    {/* =================================================
+                      INFRASTRUCTURE MARKERS
+                  ================================================= */}
+
+                    {showInfrastructure &&
+                      filteredInfrastructure.map(
+                        (item) => {
 
                           const latitude =
                             Number(
-                              issue.latitude
+                              item.latitude
                             );
 
                           const longitude =
                             Number(
-                              issue.longitude
+                              item.longitude
                             );
 
 
@@ -2535,69 +2352,127 @@ useEffect(() => {
 
                             <Marker
                               key={
-                                issue._id
+                                item._id
                               }
                               position={[
                                 latitude,
                                 longitude,
                               ]}
+
+                              /*
+                                IMPORTANT:
+                                During Draw/Measure the
+                                marker must NOT capture
+                                the map click.
+                              */
+
                               interactive={
                                 !drawMode &&
                                 !measureMode
                               }
+
+                              eventHandlers={{
+                                click: () => {
+
+                                  if (
+                                    !drawMode &&
+                                    !measureMode
+                                  ) {
+
+                                    handleAssetClick(
+                                      item
+                                    );
+
+                                  }
+
+                                },
+                              }}
                             >
 
                               <Popup>
 
                                 <div
                                   className="
-                                    min-w-[220px]
-                                  "
+                                  min-w-[220px]
+                                "
                                 >
 
                                   <h3
                                     className="
-                                      font-bold
-                                    "
+                                    text-lg
+                                    font-bold
+                                  "
                                   >
-                                    {issue.title}
+                                    {item.name}
                                   </h3>
 
 
-                                  <p
-                                    className="
-                                      mt-2
-                                      text-sm
-                                    "
-                                  >
-                                    {
-                                      issue.description
-                                    }
-                                  </p>
-
-
-                                  <p
-                                    className="
-                                      mt-2
-                                    "
-                                  >
+                                  <p>
                                     <strong>
-                                      Status:
+                                      Type:
                                     </strong>{" "}
-                                    {
-                                      issue.status
-                                    }
+                                    {item.type}
                                   </p>
 
 
                                   <p>
                                     <strong>
-                                      Category:
+                                      Sector:
                                     </strong>{" "}
-                                    {
-                                      issue.category
-                                    }
+                                    {item.sector}
                                   </p>
+
+
+                                  <p>
+                                    <strong>
+                                      Status:
+                                    </strong>{" "}
+                                    {item.status}
+                                  </p>
+
+
+                                  <p>
+                                    <strong>
+                                      Utilization:
+                                    </strong>{" "}
+                                    {item.utilization}%
+                                  </p>
+
+
+                                  {item.capacity && (
+
+                                    <p>
+                                      <strong>
+                                        Capacity:
+                                      </strong>{" "}
+                                      {Number(
+                                        item.capacity
+                                      ).toLocaleString()}
+                                    </p>
+
+                                  )}
+
+
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleAssetClick(
+                                        item
+                                      )
+                                    }
+                                    className="
+                                    mt-3
+                                    w-full
+                                    rounded-lg
+                                    bg-cyan-500
+                                    px-3
+                                    py-2
+                                    font-medium
+                                    text-slate-950
+                                  "
+                                  >
+                                    View Details
+                                  </button>
 
                                 </div>
 
@@ -2606,11 +2481,132 @@ useEffect(() => {
                             </Marker>
 
                           );
-
                         }
                       )}
 
-                </MapContainer>
+
+                    {/* =================================================
+                      CITIZEN ISSUE MARKERS
+                  ================================================= */}
+
+                    {showIssues &&
+
+                      issues
+
+                        .filter(
+                          (issue) =>
+                            issue.latitude !=
+                            null &&
+                            issue.longitude !=
+                            null
+                        )
+
+                        .map(
+                          (issue) => {
+
+                            const latitude =
+                              Number(
+                                issue.latitude
+                              );
+
+                            const longitude =
+                              Number(
+                                issue.longitude
+                              );
+
+
+                            if (
+                              !Number.isFinite(
+                                latitude
+                              ) ||
+                              !Number.isFinite(
+                                longitude
+                              )
+                            ) {
+                              return null;
+                            }
+
+
+                            return (
+
+                              <Marker
+                                key={
+                                  issue._id
+                                }
+                                position={[
+                                  latitude,
+                                  longitude,
+                                ]}
+                                interactive={
+                                  !drawMode &&
+                                  !measureMode
+                                }
+                              >
+
+                                <Popup>
+
+                                  <div
+                                    className="
+                                    min-w-[220px]
+                                  "
+                                  >
+
+                                    <h3
+                                      className="
+                                      font-bold
+                                    "
+                                    >
+                                      {issue.title}
+                                    </h3>
+
+
+                                    <p
+                                      className="
+                                      mt-2
+                                      text-sm
+                                    "
+                                    >
+                                      {
+                                        issue.description
+                                      }
+                                    </p>
+
+
+                                    <p
+                                      className="
+                                      mt-2
+                                    "
+                                    >
+                                      <strong>
+                                        Status:
+                                      </strong>{" "}
+                                      {
+                                        issue.status
+                                      }
+                                    </p>
+
+
+                                    <p>
+                                      <strong>
+                                        Category:
+                                      </strong>{" "}
+                                      {
+                                        issue.category
+                                      }
+                                    </p>
+
+                                  </div>
+
+                                </Popup>
+
+                              </Marker>
+
+                            );
+
+                          }
+                        )}
+
+                  </MapContainer>
                 ) : (
                   <div
                     className="
@@ -2746,8 +2742,8 @@ useEffect(() => {
                 {(drawMode ||
                   measureMode) && (
 
-                  <div
-                    className="
+                    <div
+                      className="
                       absolute
                       bottom-6
                       left-1/2
@@ -2764,87 +2760,87 @@ useEffect(() => {
                       shadow-2xl
                       backdrop-blur-xl
                     "
-                  >
+                    >
 
-                    {drawMode ? (
+                      {drawMode ? (
 
-                      <>
+                        <>
 
-                        <span
-                          className="
+                          <span
+                            className="
                             text-cyan-400
                           "
-                        >
-                          Drawing mode
-                        </span>
+                          >
+                            Drawing mode
+                          </span>
 
-                        {" — "}
+                          {" — "}
 
-                        click the map
-                        to add points.
+                          click the map
+                          to add points.
 
-                        <span
-                          className="
+                          <span
+                            className="
                             ml-2
                             text-slate-500
                           "
-                        >
-                          {
-                            drawingPoints.length
-                          }{" "}
-                          point
-                          {
-                            drawingPoints.length ===
-                            1
-                              ? ""
-                              : "s"
-                          }
-                        </span>
+                          >
+                            {
+                              drawingPoints.length
+                            }{" "}
+                            point
+                            {
+                              drawingPoints.length ===
+                                1
+                                ? ""
+                                : "s"
+                            }
+                          </span>
 
-                      </>
+                        </>
 
-                    ) : (
+                      ) : (
 
-                      <>
+                        <>
 
-                        <span
-                          className="
+                          <span
+                            className="
                             text-yellow-400
                           "
-                        >
-                          Measuring mode
-                        </span>
+                          >
+                            Measuring mode
+                          </span>
 
-                        {" — "}
+                          {" — "}
 
-                        click the map
-                        to measure.
+                          click the map
+                          to measure.
 
-                        <span
-                          className="
+                          <span
+                            className="
                             ml-2
                             text-slate-500
                           "
-                        >
-                          {
-                            measurePoints.length
-                          }{" "}
-                          point
-                          {
-                            measurePoints.length ===
-                            1
-                              ? ""
-                              : "s"
-                          }
-                        </span>
+                          >
+                            {
+                              measurePoints.length
+                            }{" "}
+                            point
+                            {
+                              measurePoints.length ===
+                                1
+                                ? ""
+                                : "s"
+                            }
+                          </span>
 
-                      </>
+                        </>
 
-                    )}
+                      )}
 
-                  </div>
+                    </div>
 
-                )}
+                  )}
 
 
                 {/* =================================================
@@ -2854,8 +2850,8 @@ useEffect(() => {
                 {measurePoints.length >=
                   2 && (
 
-                  <div
-                    className="
+                    <div
+                      className="
                       absolute
                       bottom-6
                       right-6
@@ -2871,27 +2867,27 @@ useEffect(() => {
                       shadow-2xl
                       backdrop-blur-xl
                     "
-                  >
+                    >
 
-                    Distance:
+                      Distance:
 
-                    <span
-                      className="
+                      <span
+                        className="
                         ml-2
                         font-semibold
                         text-yellow-400
                       "
-                    >
-                      {(
-                        calculateDistance() /
-                        1000
-                      ).toFixed(2)}{" "}
-                      km
-                    </span>
+                      >
+                        {(
+                          calculateDistance() /
+                          1000
+                        ).toFixed(2)}{" "}
+                        km
+                      </span>
 
-                  </div>
+                    </div>
 
-                )}
+                  )}
 
 
                 {/* =================================================
@@ -3113,8 +3109,8 @@ useEffect(() => {
                           {
                             selectedAsset.capacity
                               ? Number(
-                                  selectedAsset.capacity
-                                ).toLocaleString()
+                                selectedAsset.capacity
+                              ).toLocaleString()
                               : "Not specified"
                           }
                         </p>
@@ -4205,14 +4201,13 @@ useEffect(() => {
                                 py-1
                                 text-sm
 
-                                ${
-                                  item.status ===
+                                ${item.status ===
                                   "Operational"
-                                    ? `
+                                  ? `
                                       bg-green-500/20
                                       text-green-400
                                     `
-                                    : `
+                                  : `
                                       bg-yellow-500/20
                                       text-yellow-400
                                     `
@@ -4335,12 +4330,12 @@ useEffect(() => {
                   <p className="mt-4 text-4xl font-bold text-green-400">
                     {infrastructure.length > 0
                       ? Math.round(
-                          infrastructure.reduce(
-                            (sum, item) =>
-                              sum + Number(item.utilization || 0),
-                            0
-                          ) / infrastructure.length
-                        )
+                        infrastructure.reduce(
+                          (sum, item) =>
+                            sum + Number(item.utilization || 0),
+                          0
+                        ) / infrastructure.length
+                      )
                       : 0}%
                   </p>
                 </div>
@@ -4386,12 +4381,12 @@ useEffect(() => {
                   <h2 className="mt-3 text-5xl font-bold text-cyan-400">
                     {infrastructure.length > 0
                       ? Math.round(
-                          (infrastructure.filter(
-                            (item) => item.status === "Operational"
-                          ).length /
-                            infrastructure.length) *
-                            100
-                        )
+                        (infrastructure.filter(
+                          (item) => item.status === "Operational"
+                        ).length /
+                          infrastructure.length) *
+                        100
+                      )
                       : 0}%
                   </h2>
                 </div>
@@ -4403,12 +4398,12 @@ useEffect(() => {
                   <h2 className="mt-3 text-5xl font-bold text-green-400">
                     {issues.length > 0
                       ? Math.round(
-                          (issues.filter(
-                            (issue) => issue.status === "Resolved"
-                          ).length /
-                            issues.length) *
-                            100
-                        )
+                        (issues.filter(
+                          (issue) => issue.status === "Resolved"
+                        ).length /
+                          issues.length) *
+                        100
+                      )
                       : 0}%
                   </h2>
                 </div>
@@ -4420,12 +4415,12 @@ useEffect(() => {
                   <h2 className="mt-3 text-5xl font-bold text-yellow-400">
                     {infrastructure.length > 0
                       ? Math.round(
-                          infrastructure.reduce(
-                            (sum, item) =>
-                              sum + Number(item.utilization || 0),
-                            0
-                          ) / infrastructure.length
-                        )
+                        infrastructure.reduce(
+                          (sum, item) =>
+                            sum + Number(item.utilization || 0),
+                          0
+                        ) / infrastructure.length
+                      )
                       : 0}%
                   </h2>
                 </div>
